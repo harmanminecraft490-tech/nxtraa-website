@@ -16,7 +16,6 @@ import Footer from "../components/layout/footer";
 import ProductVisual from "../components/ui/productvisual";
 import { useCart } from "../components/lib/cartcontext";
 import { getProductById } from "../components/lib/products";
-import { DEMO_ACCOUNT_EMAIL } from "@/lib/demo-account";
 
 import { Suspense } from "react";
 
@@ -40,6 +39,12 @@ type RazorpayOrderResponse = {
 type OrderResponse = {
   error?: string;
   order?: { id: string };
+};
+
+type SessionUser = {
+  id: string;
+  name: string | null;
+  email: string | null;
 };
 
 type RazorpayOptions = {
@@ -81,6 +86,8 @@ export default function CheckoutPage() {
 function CheckoutPageContent() {
   const router = useRouter();
   const { items, subtotal, deliveryFee, total, clearCart } = useCart();
+  const [user, setUser] = useState<SessionUser | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const [payment, setPayment] = useState("UPI");
   const [step, setStep] = useState<"address" | "payment">("address");
   const [placingOrder, setPlacingOrder] = useState(false);
@@ -108,6 +115,44 @@ function CheckoutPageContent() {
     };
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch("/api/auth/me", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok || cancelled) {
+          return;
+        }
+
+        const data = (await response.json()) as { user: SessionUser | null };
+        if (!cancelled) {
+          setUser(data.user);
+          setAuthChecked(true);
+          if (!data.user) {
+            router.replace("/account/signin?next=/checkout");
+          }
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setAuthChecked(true);
+          router.replace("/account/signin?next=/checkout");
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [router]);
+
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen bg-canvas flex items-center justify-center">
+        <div className="animate-spin h-8 w-8 text-accent border-4 border-t-transparent border-accent/20 rounded-full" />
+      </div>
+    );
+  }
+
   if (items.length === 0) {
     return (
       <>
@@ -131,7 +176,6 @@ function CheckoutPageContent() {
   }
 
   const handleRazorpayPayment = async () => {
-    // Authentication is temporarily disabled. Proceed with demo user.
     setPlacingOrder(true);
 
     try {
@@ -189,12 +233,16 @@ function CheckoutPageContent() {
             clearCart();
             router.push(`/order-success?id=${data.order.id}`);
           } else {
+            if (verifyResponse.status === 401) {
+              router.push("/account/signin?next=/checkout");
+              return;
+            }
             alert(data.error ?? "Order placement failed. Contact support.");
           }
         },
         prefill: {
-          name: form.name,
-          email: DEMO_ACCOUNT_EMAIL,
+          name: form.name || user?.name || "",
+          email: user?.email,
           contact: form.phone,
         },
         theme: {
@@ -213,8 +261,6 @@ function CheckoutPageContent() {
   };
 
   const handlePlaceOrder = async () => {
-    // Authentication is temporarily disabled. Proceed with demo user.
-
     // For online payments, use Razorpay
     if (payment === "UPI" || payment === "Card") {
       if (!razorpayLoaded) {
@@ -247,6 +293,10 @@ function CheckoutPageContent() {
       const data = (await response.json()) as OrderResponse;
 
       if (!response.ok || !data.order) {
+        if (response.status === 401) {
+          router.push("/account/signin?next=/checkout");
+          return;
+        }
         alert(data.error ?? "We could not place your order. Please try again.");
         return;
       }
@@ -271,10 +321,10 @@ function CheckoutPageContent() {
 
           <div className="grid gap-8 lg:grid-cols-[1fr_380px] lg:gap-12">
             <div className="space-y-6">
-              <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
-                <p className="font-bold">Demo mode</p>
+              <div className="rounded-2xl border border-line-soft bg-white px-5 py-4 text-sm text-ink-600">
+                <p className="font-bold text-ink-950">Signed in as {user?.email ?? "your account"}</p>
                 <p className="mt-1">
-                  Authentication is temporarily disabled. Your order will be saved to the local demo account.
+                  Your order will be attached to your Nxteraa account so it appears in account history.
                 </p>
               </div>
 

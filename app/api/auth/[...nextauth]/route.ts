@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 
-const response = NextResponse.json(
-  { error: "Authentication is temporarily disabled." },
+const disabledResponse = NextResponse.json(
+  { error: "OAuth sign-in is not enabled for this site." },
   { status: 404 },
 );
 
 export function GET() {
-  return response;
+  return disabledResponse;
 }
 
 export function POST() {
-  return response;
+  return disabledResponse;
 }

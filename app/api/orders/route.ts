@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import type { CartItem } from "@/app/components/lib/cartcontext";
 import type { OrderAddress } from "@/app/components/lib/orders";
 import { getProductById } from "@/app/components/lib/products";
-import { createOrderForUser, ensureDemoUser, getOrdersForUser } from "@/lib/order-data";
+import { getSessionUser } from "@/lib/auth/session";
+import { createOrderForUser, getOrdersForUser } from "@/lib/order-data";
 
 function isValidAddress(address: unknown): address is OrderAddress {
   if (!address || typeof address !== "object") {
@@ -36,16 +37,21 @@ function isValidItems(items: unknown): items is CartItem[] {
 }
 
 export async function GET() {
-  // Authentication is temporarily disabled. Use demo user.
-  const demoUser = await ensureDemoUser();
-  const orders = await getOrdersForUser(demoUser.id);
+  const user = await getSessionUser();
+  if (!user) {
+    return NextResponse.json({ error: "Authentication required." }, { status: 401 });
+  }
+
+  const orders = await getOrdersForUser(user.id);
 
   return NextResponse.json({ orders });
 }
 
 export async function POST(request: Request) {
-  // Authentication is temporarily disabled. Use demo user.
-  const demoUser = await ensureDemoUser();
+  const user = await getSessionUser();
+  if (!user) {
+    return NextResponse.json({ error: "Please sign in to place your order." }, { status: 401 });
+  }
 
   const body = await request.json();
   const items = body.items;
@@ -79,7 +85,7 @@ export async function POST(request: Request) {
   }
 
   const order = await createOrderForUser({
-    userId: demoUser.id,
+    userId: user.id,
     items,
     subtotal: computedSubtotal,
     deliveryFee: computedDeliveryFee,

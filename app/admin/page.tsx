@@ -1,8 +1,17 @@
+import { redirect } from "next/navigation";
+
+import { getSessionUser, isAdminEmail } from "@/lib/auth/session";
 import AdminClient from "./admin-client";
 
 export default async function AdminPage() {
-  // Authentication is temporarily disabled.
-  // Admin access is available without sign-in.
+  const user = await getSessionUser();
+  if (!user) {
+    redirect("/account/signin?next=/admin");
+  }
+
+  if (!isAdminEmail(user.email)) {
+    redirect("/account");
+  }
 
   return <AdminClient />;
 }

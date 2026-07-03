@@ -2,12 +2,17 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
+import { getSessionUser, isAdminEmail } from "@/lib/auth/session";
+
 const PRODUCTS_DATA_PATH = path.join(process.cwd(), "app/components/lib/products-data.json");
 const UPLOAD_DIR = path.join(process.cwd(), "public/products");
 const MAX_IMAGES = 3;
 
 export async function POST(request: Request) {
-  // Authentication is temporarily disabled.
+  const user = await getSessionUser();
+  if (!user || !isAdminEmail(user.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   try {
     const formData = await request.formData();

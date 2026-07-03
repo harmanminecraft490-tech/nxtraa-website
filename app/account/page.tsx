@@ -1,11 +1,13 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Package, User } from "lucide-react";
 
 import AnnouncementBar from "../components/layout/announcementbar";
 import Navbar from "../components/layout/navbar";
 import Footer from "../components/layout/footer";
-import { DEMO_ACCOUNT_EMAIL, DEMO_ACCOUNT_NAME } from "@/lib/demo-account";
-import { ensureDemoUser, getOrdersForUser } from "@/lib/order-data";
+import { getSessionUser } from "@/lib/auth/session";
+import { getOrdersForUser } from "@/lib/order-data";
+import SignOutButton from "../components/account/signoutbutton";
 
 type AccountPageProps = {
   searchParams: Promise<{
@@ -15,33 +17,24 @@ type AccountPageProps = {
   }>;
 };
 
-function getSafeRedirectPath(
-  nextPath: string | undefined,
-  callbackUrl: string | undefined,
-) {
-  if (nextPath?.startsWith("/")) {
-    return nextPath;
-  }
-
-  if (callbackUrl) {
-    try {
-      const url = new URL(callbackUrl);
-      return `${url.pathname}${url.search}${url.hash}`;
-    } catch {
-      if (callbackUrl.startsWith("/")) {
-        return callbackUrl;
-      }
-    }
-  }
-
-  return "/";
-}
-
 export default async function AccountPage({ searchParams }: AccountPageProps) {
   const params = await searchParams;
-  const redirectTo = getSafeRedirectPath(params.next, params.callbackUrl);
-  const demoUser = await ensureDemoUser();
-  const orders = await getOrdersForUser(demoUser.id);
+  const user = await getSessionUser();
+
+  if (!user) {
+    const target = new URLSearchParams();
+    if (params.next) target.set("next", params.next);
+    if (params.callbackUrl) target.set("callbackUrl", params.callbackUrl);
+    const query = target.toString();
+    redirect(`/account/signin${query ? `?${query}` : ""}`);
+  }
+
+  const redirectTarget = params.next ?? params.callbackUrl ?? "/account";
+  const displayName = user.name ?? user.email ?? "Nxteraa customer";
+  const displayEmail = user.email ?? "No email on file";
+  const initialsSource = (user.name ?? user.email ?? "N").trim();
+  const initials = initialsSource.charAt(0).toUpperCase();
+  const orders = await getOrdersForUser(user.id);
 
   return (
     <>
@@ -54,29 +47,31 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
               <div className="flex flex-col gap-5 border-b border-line pb-6 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-4">
                   <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent-soft text-accent">
-                    <User size={32} />
+                    {user.name ? (
+                      <span className="text-2xl font-black">{initials}</span>
+                    ) : (
+                      <User size={32} />
+                    )}
                   </div>
                   <div>
                     <h1 className="text-3xl font-black text-ink-950">My account</h1>
-                    <p className="mt-1 text-ink-500">{DEMO_ACCOUNT_NAME}</p>
+                    <p className="mt-1 text-ink-500">{displayName}</p>
                   </div>
                 </div>
 
-                <div className="rounded-full border border-line bg-canvas px-4 py-2 text-sm font-bold text-ink-600">
-                  Demo mode
-                </div>
+                <SignOutButton />
               </div>
 
-              <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
-                <p className="font-bold">Authentication is temporarily disabled.</p>
+              <div className="mt-6 rounded-2xl border border-line-soft bg-canvas px-5 py-4 text-sm text-ink-600">
+                <p className="font-bold text-ink-950">Signed in successfully</p>
                 <p className="mt-1">
-                  This page stays available with demo profile details while sign-in is turned off.
+                  Your session is active and protected routes now open normally.
                 </p>
-                {params.switch === "1" || redirectTo !== "/" ? (
+                {(params.switch === "1" || redirectTarget !== "/account") && (
                   <p className="mt-2">
-                    Requested destination: <span className="font-bold">{redirectTo}</span>
+                    Last requested destination: <span className="font-bold">{redirectTarget}</span>
                   </p>
-                ) : null}
+                )}
               </div>
 
               <div className="mt-8 grid gap-4 sm:grid-cols-2">
@@ -84,7 +79,9 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                   <p className="text-xs font-bold uppercase tracking-[0.2em] text-ink-400">
                     Email
                   </p>
-                  <p className="mt-3 text-lg font-bold text-ink-950">{DEMO_ACCOUNT_EMAIL}</p>
+                  <p className="mt-3 break-words text-lg font-bold text-ink-950">
+                    {displayEmail}
+                  </p>
                 </div>
                 <div className="rounded-2xl bg-canvas p-5">
                   <p className="text-xs font-bold uppercase tracking-[0.2em] text-ink-400">
@@ -112,7 +109,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
 
                 {orders.length === 0 ? (
                   <div className="mt-6 rounded-2xl border border-dashed border-line bg-ink-50 p-6 text-sm text-ink-600">
-                    No demo orders yet. Orders placed while authentication is disabled appear here temporarily.
+                    No orders yet. Your next completed purchase will appear here automatically.
                   </div>
                 ) : (
                   <div className="mt-6 space-y-4">
@@ -174,7 +171,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                       Name
                     </dt>
                     <dd className="mt-2 text-base font-bold text-ink-950">
-                      {DEMO_ACCOUNT_NAME}
+                      {displayName}
                     </dd>
                   </div>
                   <div>
@@ -182,7 +179,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                       Email
                     </dt>
                     <dd className="mt-2 text-base font-bold text-ink-950">
-                      {DEMO_ACCOUNT_EMAIL}
+                      {displayEmail}
                     </dd>
                   </div>
                 </dl>

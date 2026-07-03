@@ -1,14 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ChevronDown, User } from "lucide-react";
 
-import { DEMO_ACCOUNT_EMAIL, DEMO_ACCOUNT_NAME } from "@/lib/demo-account";
+import SignOutButton from "./signoutbutton";
 
 type ProfileMenuProps = {
   mobile?: boolean;
   onAction?: () => void;
+};
+
+type SessionUser = {
+  id: string;
+  name: string | null;
+  email: string | null;
 };
 
 export default function ProfileMenu({
@@ -16,9 +22,45 @@ export default function ProfileMenu({
   onAction,
 }: ProfileMenuProps) {
   const [open, setOpen] = useState(false);
-  const accountLabel = DEMO_ACCOUNT_NAME;
-  const accountSubLabel = DEMO_ACCOUNT_EMAIL;
-  const accountInitial = accountLabel.charAt(0).toUpperCase();
+  const [user, setUser] = useState<SessionUser | null>(null);
+  const [checkedAuth, setCheckedAuth] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch("/api/auth/me", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok || cancelled) {
+          return;
+        }
+
+        const data = (await response.json()) as { user: SessionUser | null };
+        if (!cancelled) {
+          setUser(data.user);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setUser(null);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setCheckedAuth(true);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const accountLabel = user?.name?.trim() || user?.email || "My account";
+  const accountSubLabel = user?.email || "Sign in to track orders";
+  const accountInitial = useMemo(() => {
+    const source = accountLabel.trim();
+    return source.charAt(0).toUpperCase() || "A";
+  }, [accountLabel]);
 
   if (mobile) {
     return (
@@ -33,23 +75,55 @@ export default function ProfileMenu({
           </div>
         </div>
 
-        <div className="grid gap-2">
-          <Link
-            href="/account"
-            onClick={onAction}
-            className="rounded-2xl bg-white px-4 py-3 text-sm font-bold text-ink-900"
-          >
-            Profile account
-          </Link>
-          <Link
-            href="/track-order"
-            onClick={onAction}
-            className="rounded-2xl border border-line bg-white px-4 py-3 text-sm font-bold text-ink-900"
-          >
-            Track order
-          </Link>
-        </div>
+        {user ? (
+          <div className="grid gap-2">
+            <Link
+              href="/account"
+              onClick={onAction}
+              className="rounded-2xl bg-white px-4 py-3 text-sm font-bold text-ink-900"
+            >
+              Profile account
+            </Link>
+            <Link
+              href="/track-order"
+              onClick={onAction}
+              className="rounded-2xl border border-line bg-white px-4 py-3 text-sm font-bold text-ink-900"
+            >
+              Track order
+            </Link>
+            <SignOutButton compact onComplete={onAction} />
+          </div>
+        ) : (
+          <div className="grid gap-2">
+            <Link
+              href="/account/signin"
+              onClick={onAction}
+              className="rounded-2xl bg-white px-4 py-3 text-sm font-bold text-ink-900"
+            >
+              Sign in
+            </Link>
+            <Link
+              href="/account/signin?mode=register"
+              onClick={onAction}
+              className="rounded-2xl border border-line bg-white px-4 py-3 text-sm font-bold text-ink-900"
+            >
+              Create account
+            </Link>
+          </div>
+        )}
       </div>
+    );
+  }
+
+  if (checkedAuth && !user) {
+    return (
+      <Link
+        href="/account/signin"
+        className="hidden min-h-11 items-center gap-2 rounded-full border border-line px-4 py-2 text-sm font-semibold text-ink-700 transition hover:border-ink-950 hover:text-ink-950 md:inline-flex"
+      >
+        <User size={16} />
+        <span>Sign in</span>
+      </Link>
     );
   }
 
@@ -99,6 +173,9 @@ export default function ProfileMenu({
               >
                 Track order
               </Link>
+              <div className="px-1 pt-1">
+                <SignOutButton compact onComplete={() => setOpen(false)} />
+              </div>
             </div>
           </div>
         </>

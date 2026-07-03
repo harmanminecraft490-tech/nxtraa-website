@@ -35,34 +35,54 @@ const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "nxteraa-cart";
 const STORAGE_EVENT = "nxteraa-cart-change";
 
-// Cached server snapshot to avoid infinite loop in useSyncExternalStore
-const EMPTY_CART: CartItem[] = [];
+const EMPTY_CART = Object.freeze([]) as unknown as CartItem[];
 
-// Cache for the last read value to ensure stable references
-let cachedItems: CartItem[] | undefined = undefined;
-let cachedString: string | undefined = undefined;
+let cachedItems: CartItem[] = EMPTY_CART;
+let cachedString = "";
 
-function readStoredItems(): CartItem[] {
-  if (typeof window === "undefined") {
+function getServerCartSnapshot() {
+  return EMPTY_CART;
+}
+
+function parseStoredItems(stored: string | null) {
+  if (!stored) {
     return EMPTY_CART;
   }
 
   try {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    const newString = stored ?? "";
-    
-    // Return cached value if nothing changed
-    if (cachedString !== undefined && cachedString === newString) {
-      return cachedItems as CartItem[];
+    const parsed = JSON.parse(stored) as unknown;
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      return EMPTY_CART;
     }
-    
-    // Update cache and return new value
-    cachedString = newString;
-    cachedItems = stored ? (JSON.parse(stored) as CartItem[]) : EMPTY_CART;
-    return cachedItems as CartItem[];
+
+    const items = parsed.filter(
+      (item): item is CartItem =>
+        Boolean(item) &&
+        typeof item === "object" &&
+        typeof (item as CartItem).productId === "number" &&
+        typeof (item as CartItem).quantity === "number" &&
+        (item as CartItem).quantity > 0,
+    );
+
+    return items.length > 0 ? items : EMPTY_CART;
   } catch {
     return EMPTY_CART;
   }
+}
+
+function readStoredItems(): CartItem[] {
+  if (typeof window === "undefined") {
+    return getServerCartSnapshot();
+  }
+
+  const stored = window.localStorage.getItem(STORAGE_KEY) ?? "";
+  if (cachedString === stored) {
+    return cachedItems;
+  }
+
+  cachedString = stored;
+  cachedItems = parseStoredItems(stored);
+  return cachedItems;
 }
 
 function writeStoredItems(items: CartItem[]) {
@@ -70,11 +90,17 @@ function writeStoredItems(items: CartItem[]) {
     return;
   }
 
-  // Invalidate cache before writing
-  cachedString = undefined;
-  cachedItems = undefined;
-  
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  const nextItems = items.length > 0 ? items : EMPTY_CART;
+  const serialized = nextItems === EMPTY_CART ? "" : JSON.stringify(nextItems);
+
+  cachedItems = nextItems;
+  cachedString = serialized;
+
+  if (serialized) {
+    window.localStorage.setItem(STORAGE_KEY, serialized);
+  } else {
+    window.localStorage.removeItem(STORAGE_KEY);
+  }
   window.dispatchEvent(new Event(STORAGE_EVENT));
 }
 
@@ -89,9 +115,8 @@ function subscribeToStoredItems(onStoreChange: () => void) {
   }
 
   const handleChange = () => {
-    // Invalidate cache when storage changes
-    cachedString = undefined;
-    cachedItems = undefined;
+    cachedString = "";
+    cachedItems = getServerCartSnapshot();
     onStoreChange();
   };
   window.addEventListener("storage", handleChange);
@@ -107,7 +132,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const items = useSyncExternalStore(
     subscribeToStoredItems,
     readStoredItems,
-    () => EMPTY_CART,
+    getServerCartSnapshot,
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
 

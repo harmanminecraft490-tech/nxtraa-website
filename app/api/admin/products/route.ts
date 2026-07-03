@@ -2,10 +2,15 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
 
+import { getSessionUser, isAdminEmail } from "@/lib/auth/session";
+
 const PRODUCTS_DATA_PATH = path.join(process.cwd(), "app/components/lib/products-data.json");
 
 export async function GET() {
-  // Authentication is temporarily disabled.
+  const user = await getSessionUser();
+  if (!user || !isAdminEmail(user.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   try {
     const data = fs.readFileSync(PRODUCTS_DATA_PATH, "utf-8");
@@ -17,7 +22,10 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  // Authentication is temporarily disabled.
+  const user = await getSessionUser();
+  if (!user || !isAdminEmail(user.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   try {
     const body = await request.json();
