@@ -1,7 +1,5 @@
 "use client";
 
-import { SessionProvider } from "next-auth/react";
-
 import { CartProvider } from "./components/lib/cartcontext";
 
 type ProvidersProps = {
@@ -9,9 +7,5 @@ type ProvidersProps = {
 };
 
 export default function Providers({ children }: ProvidersProps) {
-  return (
-    <SessionProvider>
-      <CartProvider>{children}</CartProvider>
-    </SessionProvider>
-  );
+  return <CartProvider>{children}</CartProvider>;
 }

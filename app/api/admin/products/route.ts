@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import fs from "fs";
 import path from "path";
 
 const PRODUCTS_DATA_PATH = path.join(process.cwd(), "app/components/lib/products-data.json");
 
 export async function GET() {
-  const session = await auth();
-  if (!session?.user?.email || session.user.email !== process.env.ADMIN_EMAIL) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  // Authentication is temporarily disabled.
 
   try {
     const data = fs.readFileSync(PRODUCTS_DATA_PATH, "utf-8");
@@ -21,10 +17,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user?.email || session.user.email !== process.env.ADMIN_EMAIL) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  // Authentication is temporarily disabled.
 
   try {
     const body = await request.json();

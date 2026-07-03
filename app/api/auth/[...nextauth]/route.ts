@@ -1,7 +1,14 @@
-import NextAuth from "next-auth/next";
+import { NextResponse } from "next/server";
 
-import { authOptions } from "@/auth";
+const response = NextResponse.json(
+  { error: "Authentication is temporarily disabled." },
+  { status: 404 },
+);
 
-const handler = NextAuth(authOptions);
+export function GET() {
+  return response;
+}
 
-export { handler as GET, handler as POST };
+export function POST() {
+  return response;
+}

@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { LogIn, LogOut, ChevronDown, RefreshCcw, User } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { ChevronDown } from "lucide-react";
+
+import { DEMO_ACCOUNT_EMAIL, DEMO_ACCOUNT_NAME } from "@/lib/demo-account";
 
 type ProfileMenuProps = {
   mobile?: boolean;
@@ -15,15 +15,9 @@ export default function ProfileMenu({
   mobile = false,
   onAction,
 }: ProfileMenuProps) {
-  const { data: session } = useSession();
-  const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const query =
-    typeof window === "undefined" ? "" : window.location.search;
-  const currentPath = query ? `${pathname}?${query}` : pathname;
-
-  const accountLabel = session?.user?.name ?? session?.user?.email ?? "Sign in";
-  const accountSubLabel = session?.user?.email ?? "Access your account";
+  const accountLabel = DEMO_ACCOUNT_NAME;
+  const accountSubLabel = DEMO_ACCOUNT_EMAIL;
   const accountInitial = accountLabel.charAt(0).toUpperCase();
 
   if (mobile) {
@@ -31,7 +25,7 @@ export default function ProfileMenu({
       <div className="space-y-3 rounded-3xl bg-canvas p-4">
         <div className="flex items-center gap-3">
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-accent-soft text-sm font-bold text-accent">
-            {session?.user ? accountInitial : <User size={18} />}
+            {accountInitial}
           </span>
           <div className="min-w-0">
             <p className="truncate text-sm font-bold text-ink-950">{accountLabel}</p>
@@ -39,48 +33,22 @@ export default function ProfileMenu({
           </div>
         </div>
 
-        {session?.user ? (
-          <div className="grid gap-2">
-            <Link
-              href="/account"
-              onClick={onAction}
-              className="rounded-2xl bg-white px-4 py-3 text-sm font-bold text-ink-900"
-            >
-              Profile account
-            </Link>
-            <button
-              type="button"
-              onClick={() => {
-                onAction?.();
-                void signOut({ callbackUrl: "/account?switch=1" });
-              }}
-              className="flex items-center justify-center gap-2 rounded-2xl border border-line bg-white px-4 py-3 text-sm font-bold text-ink-900"
-            >
-              <RefreshCcw size={16} />
-              Switch account
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                onAction?.();
-                void signOut({ callbackUrl: "/account" });
-              }}
-              className="flex items-center justify-center gap-2 rounded-2xl bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-deep transition-all duration-300 active:scale-[0.97]"
-            >
-              <LogOut size={16} />
-              Logout
-            </button>
-          </div>
-        ) : (
+        <div className="grid gap-2">
           <Link
-            href={`/account?next=${encodeURIComponent(currentPath)}`}
+            href="/account"
             onClick={onAction}
-            className="flex items-center justify-center gap-2 rounded-2xl bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-deep transition-all duration-300 active:scale-[0.97]"
+            className="rounded-2xl bg-white px-4 py-3 text-sm font-bold text-ink-900"
           >
-            <LogIn size={16} />
-            Login
+            Profile account
           </Link>
-        )}
+          <Link
+            href="/track-order"
+            onClick={onAction}
+            className="rounded-2xl border border-line bg-white px-4 py-3 text-sm font-bold text-ink-900"
+          >
+            Track order
+          </Link>
+        </div>
       </div>
     );
   }
@@ -94,7 +62,7 @@ export default function ProfileMenu({
         aria-label="Account menu"
       >
         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-soft text-sm font-bold text-accent">
-          {session?.user ? accountInitial : <User size={16} />}
+          {accountInitial}
         </span>
         <span className="max-w-28 truncate text-sm font-semibold text-ink-700">
           {accountLabel}
@@ -117,48 +85,20 @@ export default function ProfileMenu({
             </div>
 
             <div className="mt-3 grid gap-2">
-              {session?.user ? (
-                <>
-                  <Link
-                    href="/account"
-                    onClick={() => setOpen(false)}
-                    className="rounded-2xl px-4 py-3 text-sm font-bold text-ink-900 transition hover:bg-canvas"
-                  >
-                    Profile account
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOpen(false);
-                      void signOut({ callbackUrl: "/account?switch=1" });
-                    }}
-                    className="flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-bold text-ink-900 transition hover:bg-canvas"
-                  >
-                    <RefreshCcw size={16} />
-                    Switch account
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOpen(false);
-                      void signOut({ callbackUrl: "/account" });
-                    }}
-                    className="flex items-center gap-2 rounded-2xl bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-deep transition-all duration-300 active:scale-[0.97]"
-                  >
-                    <LogOut size={16} />
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <Link
-                  href={`/account?next=${encodeURIComponent(currentPath)}`}
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-2 rounded-2xl bg-accent px-4 py-3 text-sm font-bold text-white hover:bg-accent-deep transition-all duration-300 active:scale-[0.97]"
-                >
-                  <LogIn size={16} />
-                  Login
-                </Link>
-              )}
+              <Link
+                href="/account"
+                onClick={() => setOpen(false)}
+                className="rounded-2xl px-4 py-3 text-sm font-bold text-ink-900 transition hover:bg-canvas"
+              >
+                Profile account
+              </Link>
+              <Link
+                href="/track-order"
+                onClick={() => setOpen(false)}
+                className="rounded-2xl px-4 py-3 text-sm font-bold text-ink-900 transition hover:bg-canvas"
+              >
+                Track order
+              </Link>
             </div>
           </div>
         </>

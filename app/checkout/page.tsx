@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
 import {
   ArrowRight,
   CreditCard,
@@ -17,6 +16,7 @@ import Footer from "../components/layout/footer";
 import ProductVisual from "../components/ui/productvisual";
 import { useCart } from "../components/lib/cartcontext";
 import { getProductById } from "../components/lib/products";
+import { DEMO_ACCOUNT_EMAIL } from "@/lib/demo-account";
 
 import { Suspense } from "react";
 
@@ -80,7 +80,6 @@ export default function CheckoutPage() {
 
 function CheckoutPageContent() {
   const router = useRouter();
-  const { data: session, status } = useSession();
   const { items, subtotal, deliveryFee, total, clearCart } = useCart();
   const [payment, setPayment] = useState("UPI");
   const [step, setStep] = useState<"address" | "payment">("address");
@@ -132,11 +131,7 @@ function CheckoutPageContent() {
   }
 
   const handleRazorpayPayment = async () => {
-    if (!session?.user?.id) {
-      router.push("/account?next=/checkout");
-      return;
-    }
-
+    // Authentication is temporarily disabled. Proceed with demo user.
     setPlacingOrder(true);
 
     try {
@@ -199,7 +194,7 @@ function CheckoutPageContent() {
         },
         prefill: {
           name: form.name,
-          email: session.user.email,
+          email: DEMO_ACCOUNT_EMAIL,
           contact: form.phone,
         },
         theme: {
@@ -218,10 +213,7 @@ function CheckoutPageContent() {
   };
 
   const handlePlaceOrder = async () => {
-    if (!session?.user?.id) {
-      router.push("/account?next=/checkout");
-      return;
-    }
+    // Authentication is temporarily disabled. Proceed with demo user.
 
     // For online payments, use Razorpay
     if (payment === "UPI" || payment === "Card") {
@@ -256,11 +248,6 @@ function CheckoutPageContent() {
 
       if (!response.ok || !data.order) {
         alert(data.error ?? "We could not place your order. Please try again.");
-
-        if (response.status === 401) {
-          router.push("/account?next=/checkout");
-        }
-
         return;
       }
 
@@ -284,20 +271,12 @@ function CheckoutPageContent() {
 
           <div className="grid gap-8 lg:grid-cols-[1fr_380px] lg:gap-12">
             <div className="space-y-6">
-              {status !== "authenticated" && (
-                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
-                  <p className="font-bold">Sign in required to place this order.</p>
-                  <p className="mt-1">
-                    Your order will be saved to your account so you can track it later.
-                  </p>
-                  <Link
-                    href="/account?next=/checkout"
-                    className="mt-3 inline-flex font-bold text-amber-950 underline"
-                  >
-                    Sign in or create account
-                  </Link>
-                </div>
-              )}
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
+                <p className="font-bold">Demo mode</p>
+                <p className="mt-1">
+                  Authentication is temporarily disabled. Your order will be saved to the local demo account.
+                </p>
+              </div>
 
               {/* Step tabs */}
               <div className="flex gap-4 border-b border-line pb-4">
@@ -464,7 +443,6 @@ function CheckoutPageContent() {
                   step !== "payment" ||
                   !form.name ||
                   !form.phone ||
-                  status !== "authenticated" ||
                   placingOrder
                 }
                 className="btn-primary w-full disabled:opacity-40 disabled:scale-100 disabled:cursor-not-allowed"

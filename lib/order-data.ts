@@ -1,6 +1,7 @@
 import { Prisma, OrderStatus } from "@prisma/client";
 
 import { getProductById } from "@/app/components/lib/products";
+import { DEMO_ACCOUNT_EMAIL, DEMO_ACCOUNT_NAME } from "@/lib/demo-account";
 import prisma from "@/lib/prisma";
 import type { CartItem } from "@/app/components/lib/cartcontext";
 import type { Order, OrderAddress } from "@/app/components/lib/orders";
@@ -41,6 +42,17 @@ export function mapOrder(order: OrderWithItems): Order {
     status: mapStatus(order.status),
     createdAt: order.createdAt.toISOString(),
   };
+}
+
+export async function ensureDemoUser() {
+  return prisma.user.upsert({
+    where: { email: DEMO_ACCOUNT_EMAIL },
+    update: { name: DEMO_ACCOUNT_NAME },
+    create: {
+      name: DEMO_ACCOUNT_NAME,
+      email: DEMO_ACCOUNT_EMAIL,
+    },
+  });
 }
 
 export async function createOrderForUser({
