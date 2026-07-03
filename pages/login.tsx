@@ -24,10 +24,7 @@ export default function Login() {
         throw new Error(data.error || 'Login failed');
       }
 
-      // Save token to localStorage or cookies
       localStorage.setItem('token', data.token);
-
-      // Redirect to account page
       router.push('/account');
     } catch (err: any) {
       setError(err.message);
@@ -45,6 +42,7 @@ export default function Login() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="input"
+          required
         />
         <input
           type="password"
@@ -52,6 +50,7 @@ export default function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="input"
+          required
         />
         <button type="submit" className="btn btn-primary">
           Login
@@ -59,4 +58,4 @@ export default function Login() {
       </form>
     </div>
   );
-}
+} 
