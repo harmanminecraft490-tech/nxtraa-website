@@ -1,0 +1,2174 @@
+[
+  {
+    "id": 1,
+    "page": 2,
+    "title": "NENB-54",
+    "model": "NENB-54",
+    "price": 983,
+    "oldPrice": 1199,
+    "rating": 4.5,
+    "badge": "Neckbands",
+    "category": "Neckbands",
+    "color": "White",
+    "description": "Nxteraa neckbands — model NENB-54..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 2,
+    "page": 3,
+    "title": "NENB-75",
+    "model": "NENB-75",
+    "price": 983,
+    "oldPrice": 1199,
+    "rating": 4.6,
+    "badge": "Neckbands",
+    "category": "Neckbands",
+    "color": "Blue",
+    "description": "Nxteraa neckbands — model NENB-75..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 3,
+    "page": 4,
+    "title": "NENB-76",
+    "model": "NENB-76",
+    "price": 983,
+    "oldPrice": 1199,
+    "rating": 4.7,
+    "badge": "Neckbands",
+    "category": "Neckbands",
+    "color": "Graphite",
+    "description": "Nxteraa neckbands — model NENB-76..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 4,
+    "page": 5,
+    "title": "NENB-91",
+    "model": "NENB-91",
+    "price": 983,
+    "oldPrice": 1199,
+    "rating": 4.8,
+    "badge": "Neckbands",
+    "category": "Neckbands",
+    "color": "Black",
+    "description": "Nxteraa neckbands — model NENB-91..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 5,
+    "page": 6,
+    "title": "NENB-92",
+    "model": "NENB-92",
+    "price": 983,
+    "oldPrice": 1199,
+    "rating": 4.9,
+    "badge": "Neckbands",
+    "category": "Neckbands",
+    "color": "White",
+    "description": "Nxteraa neckbands — model NENB-92..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 6,
+    "page": 7,
+    "title": "NENB-100",
+    "model": "NENB-100",
+    "price": 983,
+    "oldPrice": 1199,
+    "rating": 4.4,
+    "badge": "Neckbands",
+    "category": "Neckbands",
+    "color": "Blue",
+    "description": "Nxteraa neckbands — model NENB-100..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 7,
+    "page": 8,
+    "title": "NENB-102",
+    "model": "NENB-102",
+    "price": 983,
+    "oldPrice": 1199,
+    "rating": 4.5,
+    "badge": "Neckbands",
+    "category": "Neckbands",
+    "color": "Graphite",
+    "description": "Nxteraa neckbands — model NENB-102..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 8,
+    "page": 9,
+    "title": "NENB-104",
+    "model": "NENB-104",
+    "price": 983,
+    "oldPrice": 1199,
+    "rating": 4.6,
+    "badge": "Neckbands",
+    "category": "Neckbands",
+    "color": "Black",
+    "description": "Nxteraa neckbands — model NENB-104..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 10,
+    "page": 11,
+    "title": "Nxteraa NENB-112",
+    "model": "NENB-112",
+    "price": 1065,
+    "oldPrice": 1299,
+    "rating": 4.8,
+    "badge": "9 MONTHS",
+    "category": "Neckbands",
+    "color": "Blue",
+    "description": "9 MONTHS.",
+    "highlights": [
+      "9 MONTHS",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 11,
+    "page": 12,
+    "title": "FUNdh",
+    "model": "NENB-114",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.9,
+    "badge": "FUNdh",
+    "category": "Neckbands",
+    "color": "Graphite",
+    "description": "FUNdh.",
+    "highlights": [
+      "FUNdh",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 13,
+    "page": 14,
+    "title": "Swappable Extra Battery",
+    "model": "NENB-116",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.5,
+    "badge": "Swappable Extra Battery",
+    "category": "Neckbands",
+    "color": "White",
+    "description": "Swappable Extra Battery.",
+    "highlights": [
+      "Swappable Extra Battery",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 14,
+    "page": 15,
+    "title": "DUAL BATTERY",
+    "model": "NENB-118",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.6,
+    "badge": "DUAL BATTERY",
+    "category": "Neckbands",
+    "color": "Blue",
+    "description": "DUAL BATTERY. Clip.",
+    "highlights": [
+      "DUAL BATTERY",
+      "Clip",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 15,
+    "page": 16,
+    "title": "NENB-120",
+    "model": "NENB-120",
+    "price": 819,
+    "oldPrice": 999,
+    "rating": 4.7,
+    "badge": "Neckbands",
+    "category": "Neckbands",
+    "color": "Graphite",
+    "description": "Nxteraa neckbands — model NENB-120..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 16,
+    "page": 17,
+    "title": "NENB-122",
+    "model": "NENB-122",
+    "price": 983,
+    "oldPrice": 1199,
+    "rating": 4.8,
+    "badge": "Neckbands",
+    "category": "Neckbands",
+    "color": "Black",
+    "description": "Nxteraa neckbands — model NENB-122..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 17,
+    "page": 18,
+    "title": "NX-P018",
+    "model": "NX-P018",
+    "price": 491,
+    "oldPrice": 599,
+    "rating": 4.9,
+    "badge": "Accessories",
+    "category": "Accessories",
+    "color": "White",
+    "description": "Nxteraa accessories — model NX-P018..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 18,
+    "page": 19,
+    "title": "NX-P019",
+    "model": "NX-P019",
+    "price": 491,
+    "oldPrice": 599,
+    "rating": 4.4,
+    "badge": "Accessories",
+    "category": "Accessories",
+    "color": "Blue",
+    "description": "Nxteraa accessories — model NX-P019..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 20,
+    "page": 21,
+    "title": "Premium Sound with Deep Bass",
+    "model": "NE AP-200",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.6,
+    "badge": "Premium Sound with Deep ",
+    "category": "Earbuds",
+    "color": "Black",
+    "description": "Premium Sound with Deep Bass.",
+    "highlights": [
+      "Premium Sound with Deep Bass",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 21,
+    "page": 22,
+    "title": "Premium Sound with Deep Bass",
+    "model": "NE AP-222",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.7,
+    "badge": "Premium Sound with Deep ",
+    "category": "Earbuds",
+    "color": "White",
+    "description": "Premium Sound with Deep Bass. Vibro.",
+    "highlights": [
+      "Premium Sound with Deep Bass",
+      "Vibro",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 22,
+    "page": 23,
+    "title": "Premium Sound with Deep Bass",
+    "model": "NE AP-444",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.8,
+    "badge": "Premium Sound with Deep ",
+    "category": "Earbuds",
+    "color": "Blue",
+    "description": "Premium Sound with Deep Bass.",
+    "highlights": [
+      "Premium Sound with Deep Bass",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 24,
+    "page": 25,
+    "title": "Premium Sound with Deep Bass",
+    "model": "NE AP-666",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.4,
+    "badge": "Premium Sound with Deep ",
+    "category": "Earbuds",
+    "color": "Black",
+    "description": "Premium Sound with Deep Bass.",
+    "highlights": [
+      "Premium Sound with Deep Bass",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 25,
+    "page": 26,
+    "title": "Premium Sound with Deep Bass",
+    "model": "NE AP-999",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.5,
+    "badge": "Premium Sound with Deep ",
+    "category": "Earbuds",
+    "color": "White",
+    "description": "Premium Sound with Deep Bass.",
+    "highlights": [
+      "Premium Sound with Deep Bass",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 26,
+    "page": 27,
+    "title": "Premium Sound with Deep Bass",
+    "model": "NE AP-1000",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.6,
+    "badge": "Premium Sound with Deep ",
+    "category": "Earbuds",
+    "color": "Blue",
+    "description": "Premium Sound with Deep Bass.",
+    "highlights": [
+      "Premium Sound with Deep Bass",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 28,
+    "page": 29,
+    "title": "Premium Sound with Deep Bass",
+    "model": "NE AP-1002",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.8,
+    "badge": "Premium Sound with Deep ",
+    "category": "Earbuds",
+    "color": "Black",
+    "description": "Premium Sound with Deep Bass.",
+    "highlights": [
+      "Premium Sound with Deep Bass",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 29,
+    "page": 30,
+    "title": "Premium Sound with Deep Bass",
+    "model": "NE AP-1004",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.9,
+    "badge": "Premium Sound with Deep ",
+    "category": "Earbuds",
+    "color": "White",
+    "description": "Premium Sound with Deep Bass.",
+    "highlights": [
+      "Premium Sound with Deep Bass",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 30,
+    "page": 31,
+    "title": "Premium Sound with Deep Bass",
+    "model": "NE AP-1005",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.4,
+    "badge": "Premium Sound with Deep ",
+    "category": "Earbuds",
+    "color": "Blue",
+    "description": "Premium Sound with Deep Bass. Noo¾.",
+    "highlights": [
+      "Premium Sound with Deep Bass",
+      "Noo¾",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 31,
+    "page": 32,
+    "title": "Premium Sound with Deep Bass",
+    "model": "NE AP-1006",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.5,
+    "badge": "Premium Sound with Deep ",
+    "category": "Earbuds",
+    "color": "Graphite",
+    "description": "Premium Sound with Deep Bass.",
+    "highlights": [
+      "Premium Sound with Deep Bass",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 33,
+    "page": 34,
+    "title": "Comfortable Ear Buds",
+    "model": "NE-50",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.7,
+    "badge": "Comfortable Ear Buds",
+    "category": "Earbuds",
+    "color": "White",
+    "description": "Comfortable Ear Buds. Calling Function. Crystel  Clear Sound.",
+    "highlights": [
+      "Comfortable Ear Buds",
+      "Calling Function",
+      "Crystel  Clear Sound",
+      "Sporty Design",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 34,
+    "page": 35,
+    "title": "Comfortable Ear Buds",
+    "model": "NE-60",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.8,
+    "badge": "Comfortable Ear Buds",
+    "category": "Earbuds",
+    "color": "Blue",
+    "description": "Comfortable Ear Buds. Calling Function. Crystel  Clear Sound.",
+    "highlights": [
+      "Comfortable Ear Buds",
+      "Calling Function",
+      "Crystel  Clear Sound",
+      "Sporty Design",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 35,
+    "page": 36,
+    "title": "Comfortable Ear Buds",
+    "model": "NE HF-01",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.9,
+    "badge": "Comfortable Ear Buds",
+    "category": "Earbuds",
+    "color": "Graphite",
+    "description": "Comfortable Ear Buds. Calling Function. Crystel  Clear Sound.",
+    "highlights": [
+      "Comfortable Ear Buds",
+      "Calling Function",
+      "Crystel  Clear Sound",
+      "Sporty Design",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 36,
+    "page": 37,
+    "title": "Comfortable Ear Buds",
+    "model": "NE HF-02",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.4,
+    "badge": "Comfortable Ear Buds",
+    "category": "Earbuds",
+    "color": "Black",
+    "description": "Comfortable Ear Buds. Calling Function. Crystel  Clear Sound.",
+    "highlights": [
+      "Comfortable Ear Buds",
+      "Calling Function",
+      "Crystel  Clear Sound",
+      "Sporty Design",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 37,
+    "page": 38,
+    "title": "Comfortable Ear Buds",
+    "model": "NE HF-305",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.5,
+    "badge": "Comfortable Ear Buds",
+    "category": "Earbuds",
+    "color": "White",
+    "description": "Comfortable Ear Buds. Calling Function. Crystel  Clear Sound.",
+    "highlights": [
+      "Comfortable Ear Buds",
+      "Calling Function",
+      "Crystel  Clear Sound",
+      "Sporty Design",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 38,
+    "page": 39,
+    "title": "Comfortable Ear Buds",
+    "model": "NE HF-325",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.6,
+    "badge": "Comfortable Ear Buds",
+    "category": "Earbuds",
+    "color": "Blue",
+    "description": "Comfortable Ear Buds. Calling Function. Crystel  Clear Sound.",
+    "highlights": [
+      "Comfortable Ear Buds",
+      "Calling Function",
+      "Crystel  Clear Sound",
+      "Sporty Design",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 39,
+    "page": 40,
+    "title": "Comfortable Ear Buds",
+    "model": "NEEP-05",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.7,
+    "badge": "Comfortable Ear Buds",
+    "category": "Earbuds",
+    "color": "Graphite",
+    "description": "Comfortable Ear Buds. Calling Function. Crystel  Clear Sound.",
+    "highlights": [
+      "Comfortable Ear Buds",
+      "Calling Function",
+      "Crystel  Clear Sound",
+      "Sporty Design",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 40,
+    "page": 41,
+    "title": "Comfortable Ear Buds",
+    "model": "NEEP-06",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.8,
+    "badge": "Comfortable Ear Buds",
+    "category": "Earbuds",
+    "color": "Black",
+    "description": "Comfortable Ear Buds. Calling Function. Crystel  Clear Sound.",
+    "highlights": [
+      "Comfortable Ear Buds",
+      "Calling Function",
+      "Crystel  Clear Sound",
+      "Sporty Design",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 41,
+    "page": 42,
+    "title": "Comfortable Ear Buds",
+    "model": "NEEP-08",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.9,
+    "badge": "Comfortable Ear Buds",
+    "category": "Earbuds",
+    "color": "White",
+    "description": "Comfortable Ear Buds. Calling Function. Crystel  Clear Sound.",
+    "highlights": [
+      "Comfortable Ear Buds",
+      "Calling Function",
+      "Crystel  Clear Sound",
+      "Sporty Design",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 42,
+    "page": 43,
+    "title": "NECH-002",
+    "model": "NECH-002",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.4,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Blue",
+    "description": "Nxteraa chargers — model NECH-002..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 45,
+    "page": 46,
+    "title": "NECH-10",
+    "model": "NECH-10",
+    "price": 327,
+    "oldPrice": 399,
+    "rating": 4.7,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "White",
+    "description": "Nxteraa chargers — model NECH-10..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 46,
+    "page": 47,
+    "title": "NECH-92",
+    "model": "NECH-92",
+    "price": 1065,
+    "oldPrice": 1299,
+    "rating": 4.8,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Blue",
+    "description": "Nxteraa chargers — model NECH-92..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 47,
+    "page": 48,
+    "title": "NECH-95",
+    "model": "NECH-95",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.9,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Graphite",
+    "description": "Nxteraa chargers — model NECH-95..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 48,
+    "page": 49,
+    "title": "NECH-100",
+    "model": "NECH-100",
+    "price": 1065,
+    "oldPrice": 1299,
+    "rating": 4.4,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Black",
+    "description": "Nxteraa chargers — model NECH-100..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 50,
+    "page": 51,
+    "title": "NECH-140",
+    "model": "NECH-140",
+    "price": 163,
+    "oldPrice": 199,
+    "rating": 4.6,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Blue",
+    "description": "Nxteraa chargers — model NECH-140..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 51,
+    "page": 52,
+    "title": "NECH-150",
+    "model": "NECH-150",
+    "price": 409,
+    "oldPrice": 499,
+    "rating": 4.7,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Graphite",
+    "description": "Nxteraa chargers — model NECH-150..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 52,
+    "page": 53,
+    "title": "DUAL USB",
+    "model": "NECH-180",
+    "price": 327,
+    "oldPrice": 399,
+    "rating": 4.8,
+    "badge": "DUAL USB",
+    "category": "Cables",
+    "color": "Black",
+    "description": "DUAL USB.",
+    "highlights": [
+      "DUAL USB",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 53,
+    "page": 54,
+    "title": "NECH-210",
+    "model": "NECH-210",
+    "price": 819,
+    "oldPrice": 999,
+    "rating": 4.9,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "White",
+    "description": "Nxteraa chargers — model NECH-210..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 54,
+    "page": 55,
+    "title": "NECH-216",
+    "model": "NECH-216",
+    "price": 573,
+    "oldPrice": 699,
+    "rating": 4.4,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Blue",
+    "description": "Nxteraa chargers — model NECH-216..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 55,
+    "page": 56,
+    "title": "NECH-217",
+    "model": "NECH-217",
+    "price": 573,
+    "oldPrice": 699,
+    "rating": 4.5,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Graphite",
+    "description": "Nxteraa chargers — model NECH-217..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 56,
+    "page": 57,
+    "title": "Nxteraa NECH-218",
+    "model": "NECH-218",
+    "price": 409,
+    "oldPrice": 499,
+    "rating": 4.6,
+    "badge": "18 w",
+    "category": "Chargers",
+    "color": "Black",
+    "description": "18 w.",
+    "highlights": [
+      "18 w"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 57,
+    "page": 58,
+    "title": "NECH-220",
+    "model": "NECH-220",
+    "price": 983,
+    "oldPrice": 1199,
+    "rating": 4.7,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "White",
+    "description": "Nxteraa chargers — model NECH-220..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 58,
+    "page": 59,
+    "title": "Nxteraa NECH-225",
+    "model": "NECH-225",
+    "price": 245,
+    "oldPrice": 299,
+    "rating": 4.8,
+    "badge": "25W",
+    "category": "Chargers",
+    "color": "Blue",
+    "description": "25W.",
+    "highlights": [
+      "25W"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 59,
+    "page": 60,
+    "title": "NE\u0001CH-240",
+    "model": "NECH-240",
+    "price": 409,
+    "oldPrice": 499,
+    "rating": 4.9,
+    "badge": "17w",
+    "category": "Chargers",
+    "color": "Graphite",
+    "description": "17w. NE\u0001CH-240.",
+    "highlights": [
+      "17w",
+      "NE\u0001CH-240"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 61,
+    "page": 62,
+    "title": "NECH-415",
+    "model": "NECH-415",
+    "price": 901,
+    "oldPrice": 1099,
+    "rating": 4.5,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "White",
+    "description": "Nxteraa chargers — model NECH-415..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 62,
+    "page": 63,
+    "title": "NECH-430",
+    "model": "NECH-430",
+    "price": 1631,
+    "oldPrice": 1990,
+    "rating": 4.6,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Blue",
+    "description": "Nxteraa chargers — model NECH-430..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 64,
+    "page": 65,
+    "title": "Charging for Tablets Series",
+    "model": "NEDC-158",
+    "price": 491,
+    "oldPrice": 599,
+    "rating": 4.8,
+    "badge": "Charging for Tablets Ser",
+    "category": "Chargers",
+    "color": "Black",
+    "description": "Charging for Tablets Series. GPS Series, smart phones. DC-.",
+    "highlights": [
+      "Charging for Tablets Series",
+      "GPS Series, smart phones",
+      "DC-",
+      "25W"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 65,
+    "page": 66,
+    "title": "NEDC-504",
+    "model": "NEDC-504",
+    "price": 245,
+    "oldPrice": 299,
+    "rating": 4.9,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "White",
+    "description": "Nxteraa chargers — model NEDC-504..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 66,
+    "page": 67,
+    "title": "Nxteraa NEDC-505",
+    "model": "NEDC-505",
+    "price": 819,
+    "oldPrice": 999,
+    "rating": 4.4,
+    "badge": "15W",
+    "category": "Chargers",
+    "color": "Blue",
+    "description": "15W.",
+    "highlights": [
+      "15W"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 67,
+    "page": 68,
+    "title": "NEDC-540",
+    "model": "NEDC-540",
+    "price": 204,
+    "oldPrice": 249,
+    "rating": 4.5,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Graphite",
+    "description": "Nxteraa chargers — model NEDC-540..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 68,
+    "page": 69,
+    "title": "NEDC-542",
+    "model": "NEDC-542",
+    "price": 819,
+    "oldPrice": 999,
+    "rating": 4.6,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Black",
+    "description": "Nxteraa chargers — model NEDC-542..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 69,
+    "page": 70,
+    "title": "NEDC-545",
+    "model": "NEDC-545",
+    "price": 245,
+    "oldPrice": 299,
+    "rating": 4.7,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "White",
+    "description": "Nxteraa chargers — model NEDC-545..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 70,
+    "page": 71,
+    "title": "NEDC-550",
+    "model": "NEDC-550",
+    "price": 819,
+    "oldPrice": 999,
+    "rating": 4.8,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Blue",
+    "description": "Nxteraa chargers — model NEDC-550..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 71,
+    "page": 72,
+    "title": "Nxteraa NEDC-602",
+    "model": "NEDC-602",
+    "price": 819,
+    "oldPrice": 999,
+    "rating": 4.9,
+    "badge": "25W",
+    "category": "Chargers",
+    "color": "Graphite",
+    "description": "25W.",
+    "highlights": [
+      "25W"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 72,
+    "page": 73,
+    "title": "LENGTH",
+    "model": "NEDC-605",
+    "price": 819,
+    "oldPrice": 999,
+    "rating": 4.4,
+    "badge": "65W",
+    "category": "Chargers",
+    "color": "Black",
+    "description": "65W. LENGTH. POWER EDGE.",
+    "highlights": [
+      "65W",
+      "LENGTH",
+      "POWER EDGE"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 73,
+    "page": 74,
+    "title": "NEDC-760",
+    "model": "NEDC-760",
+    "price": 819,
+    "oldPrice": 999,
+    "rating": 4.5,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "White",
+    "description": "Nxteraa chargers — model NEDC-760..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 74,
+    "page": 75,
+    "title": "FASTER",
+    "model": "NEDC-790",
+    "price": 327,
+    "oldPrice": 399,
+    "rating": 4.6,
+    "badge": "FASTER",
+    "category": "Chargers",
+    "color": "Blue",
+    "description": "FASTER. CHARGING.",
+    "highlights": [
+      "FASTER",
+      "CHARGING"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 75,
+    "page": 76,
+    "title": "O U T P U T",
+    "model": "NEDC-817",
+    "price": 245,
+    "oldPrice": 299,
+    "rating": 4.7,
+    "badge": "O U T P U T",
+    "category": "Chargers",
+    "color": "Graphite",
+    "description": "O U T P U T.",
+    "highlights": [
+      "O U T P U T"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 76,
+    "page": 77,
+    "title": "NEDC-818",
+    "model": "NEDC-818",
+    "price": 245,
+    "oldPrice": 299,
+    "rating": 4.8,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Black",
+    "description": "Nxteraa chargers — model NEDC-818..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 78,
+    "page": 79,
+    "title": "Super Soft",
+    "model": "NEDC-880",
+    "price": 327,
+    "oldPrice": 399,
+    "rating": 4.4,
+    "badge": "Super Soft",
+    "category": "Cables",
+    "color": "Blue",
+    "description": "Super Soft. Silicone Cable...",
+    "highlights": [
+      "Super Soft",
+      "Silicone Cable..",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 79,
+    "page": 80,
+    "title": "USB Cable",
+    "model": "NEDC-890",
+    "price": 409,
+    "oldPrice": 499,
+    "rating": 4.5,
+    "badge": "USB Cable",
+    "category": "Cables",
+    "color": "Graphite",
+    "description": "USB Cable. USB-C to USB-C (5A).",
+    "highlights": [
+      "USB Cable",
+      "USB-C to USB-C (5A)",
+      "Type-C compatible"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 80,
+    "page": 81,
+    "title": "NEDC-910",
+    "model": "NEDC-910",
+    "price": 409,
+    "oldPrice": 499,
+    "rating": 4.6,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Black",
+    "description": "Nxteraa chargers — model NEDC-910..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 81,
+    "page": 82,
+    "title": "NEDC-950",
+    "model": "NEDC-950",
+    "price": 819,
+    "oldPrice": 999,
+    "rating": 4.7,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "White",
+    "description": "Nxteraa chargers — model NEDC-950..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 82,
+    "page": 83,
+    "title": "NEDC-952",
+    "model": "NEDC-952",
+    "price": 819,
+    "oldPrice": 999,
+    "rating": 4.8,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Blue",
+    "description": "Nxteraa chargers — model NEDC-952..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 83,
+    "page": 84,
+    "title": "NEDC-955",
+    "model": "NEDC-955",
+    "price": 819,
+    "oldPrice": 999,
+    "rating": 4.9,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Graphite",
+    "description": "Nxteraa chargers — model NEDC-955..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 84,
+    "page": 85,
+    "title": "NEDC-956",
+    "model": "NEDC-956",
+    "price": 819,
+    "oldPrice": 999,
+    "rating": 4.4,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Black",
+    "description": "Nxteraa chargers — model NEDC-956..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 85,
+    "page": 86,
+    "title": "NEDC-961",
+    "model": "NEDC-961",
+    "price": 819,
+    "oldPrice": 999,
+    "rating": 4.5,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "White",
+    "description": "Nxteraa chargers — model NEDC-961..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 86,
+    "page": 87,
+    "title": "HIGH SPEED",
+    "model": "NEDC-962",
+    "price": 819,
+    "oldPrice": 999,
+    "rating": 4.6,
+    "badge": "HIGH SPEED",
+    "category": "Chargers",
+    "color": "Blue",
+    "description": "HIGH SPEED. 60 w. Braided.",
+    "highlights": [
+      "HIGH SPEED",
+      "60 w",
+      "Braided"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 87,
+    "page": 88,
+    "title": "NECC-110",
+    "model": "NECC-110",
+    "price": 491,
+    "oldPrice": 599,
+    "rating": 4.7,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Graphite",
+    "description": "Nxteraa chargers — model NECC-110..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 88,
+    "page": 89,
+    "title": "NECC-116",
+    "model": "NECC-116",
+    "price": 409,
+    "oldPrice": 499,
+    "rating": 4.8,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Black",
+    "description": "Nxteraa chargers — model NECC-116..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 90,
+    "page": 91,
+    "title": "NECC-130",
+    "model": "NECC-130",
+    "price": 409,
+    "oldPrice": 499,
+    "rating": 4.4,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Blue",
+    "description": "Nxteraa chargers — model NECC-130..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 91,
+    "page": 92,
+    "title": "NECC-135",
+    "model": "NECC-135",
+    "price": 819,
+    "oldPrice": 999,
+    "rating": 4.5,
+    "badge": "Chargers",
+    "category": "Chargers",
+    "color": "Graphite",
+    "description": "Nxteraa chargers — model NECC-135..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 92,
+    "page": 93,
+    "title": "SPEEDUP",
+    "model": "NECC-140",
+    "price": 819,
+    "oldPrice": 999,
+    "rating": 4.6,
+    "badge": "SPEEDUP",
+    "category": "Chargers",
+    "color": "Black",
+    "description": "SPEEDUP.",
+    "highlights": [
+      "SPEEDUP"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 93,
+    "page": 94,
+    "title": "AUTOMATIC LOCK",
+    "model": "CMH-920",
+    "price": 532,
+    "oldPrice": 649,
+    "rating": 4.7,
+    "badge": "AUTOMATIC LOCK",
+    "category": "Car Holders",
+    "color": "White",
+    "description": "AUTOMATIC LOCK. SUCKER.",
+    "highlights": [
+      "AUTOMATIC LOCK",
+      "SUCKER"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 94,
+    "page": 95,
+    "title": "CMH-922",
+    "model": "CMH-922",
+    "price": 532,
+    "oldPrice": 649,
+    "rating": 4.8,
+    "badge": "Car Holders",
+    "category": "Car Holders",
+    "color": "Blue",
+    "description": "Nxteraa car holders — model CMH-922..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 95,
+    "page": 96,
+    "title": "CAR MOBILE",
+    "model": "CMH-924",
+    "price": 532,
+    "oldPrice": 649,
+    "rating": 4.9,
+    "badge": "CAR MOBILE",
+    "category": "Car Holders",
+    "color": "Graphite",
+    "description": "CAR MOBILE. HOLDER.",
+    "highlights": [
+      "CAR MOBILE",
+      "HOLDER"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 97,
+    "page": 98,
+    "title": "SAFETY",
+    "model": "NEPB-4012",
+    "price": 1639,
+    "oldPrice": 1999,
+    "rating": 4.5,
+    "badge": "SAFETY",
+    "category": "Power Banks",
+    "color": "White",
+    "description": "SAFETY. QUICK. CHARGE.",
+    "highlights": [
+      "SAFETY",
+      "QUICK",
+      "CHARGE",
+      "mAh"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 98,
+    "page": 99,
+    "title": "NEPB-4015",
+    "model": "NEPB-4015",
+    "price": 1639,
+    "oldPrice": 1999,
+    "rating": 4.6,
+    "badge": "Power Banks",
+    "category": "Power Banks",
+    "color": "Blue",
+    "description": "Nxteraa power banks — model NEPB-4015..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 100,
+    "page": 101,
+    "title": "POWERHUB",
+    "model": "NEPB-4022",
+    "price": 2049,
+    "oldPrice": 2499,
+    "rating": 4.8,
+    "badge": "POWERHUB",
+    "category": "Power Banks",
+    "color": "Black",
+    "description": "POWERHUB. 5 1.",
+    "highlights": [
+      "POWERHUB",
+      "5 1"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 101,
+    "page": 102,
+    "title": "PowerHouse",
+    "model": "NEPB-4024",
+    "price": 1631,
+    "oldPrice": 1990,
+    "rating": 4.9,
+    "badge": "PowerHouse",
+    "category": "Power Banks",
+    "color": "White",
+    "description": "PowerHouse. 5 1. mAh.",
+    "highlights": [
+      "PowerHouse",
+      "5 1",
+      "mAh"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 102,
+    "page": 103,
+    "title": "NEPB-4026",
+    "model": "NEPB-4026",
+    "price": 2049,
+    "oldPrice": 2499,
+    "rating": 4.4,
+    "badge": "Power Banks",
+    "category": "Power Banks",
+    "color": "Blue",
+    "description": "Nxteraa power banks — model NEPB-4026..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 103,
+    "page": 104,
+    "title": "WATT",
+    "model": "NEPB-4028",
+    "price": 1229,
+    "oldPrice": 1499,
+    "rating": 4.5,
+    "badge": "WATT",
+    "category": "Power Banks",
+    "color": "Graphite",
+    "description": "WATT.",
+    "highlights": [
+      "WATT"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 105,
+    "page": 106,
+    "title": "Anti-ultravoilet",
+    "model": "NX-P106",
+    "price": 327,
+    "oldPrice": 399,
+    "rating": 4.7,
+    "badge": "Anti-ultravoilet",
+    "category": "Screen Guards",
+    "color": "White",
+    "description": "Anti-ultravoilet. Air-bubble-proof. Assuring Transparency.",
+    "highlights": [
+      "Anti-ultravoilet",
+      "Air-bubble-proof",
+      "Assuring Transparency",
+      "Strong and Durable"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 106,
+    "page": 107,
+    "title": "Anti-ultravoilet",
+    "model": "NX-P107",
+    "price": 327,
+    "oldPrice": 399,
+    "rating": 4.8,
+    "badge": "Anti-ultravoilet",
+    "category": "Screen Guards",
+    "color": "Blue",
+    "description": "Anti-ultravoilet. Air-bubble-proof. Assuring Transparency.",
+    "highlights": [
+      "Anti-ultravoilet",
+      "Air-bubble-proof",
+      "Assuring Transparency",
+      "Strong and Durable"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 108,
+    "page": 109,
+    "title": "NBS-311",
+    "model": "NBS-311",
+    "price": 1065,
+    "oldPrice": 1299,
+    "rating": 4.4,
+    "badge": "Speakers",
+    "category": "Speakers",
+    "color": "Black",
+    "description": "Nxteraa speakers — model NBS-311..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 109,
+    "page": 110,
+    "title": "NX-P110",
+    "model": "NX-P110",
+    "price": 491,
+    "oldPrice": 599,
+    "rating": 4.5,
+    "badge": "Accessories",
+    "category": "Accessories",
+    "color": "White",
+    "description": "Nxteraa accessories — model NX-P110..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 110,
+    "page": 111,
+    "title": "NX-P111",
+    "model": "NX-P111",
+    "price": 491,
+    "oldPrice": 599,
+    "rating": 4.6,
+    "badge": "Accessories",
+    "category": "Accessories",
+    "color": "Blue",
+    "description": "Nxteraa accessories — model NX-P111..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 111,
+    "page": 112,
+    "title": "NX-P112",
+    "model": "NX-P112",
+    "price": 491,
+    "oldPrice": 599,
+    "rating": 4.7,
+    "badge": "Accessories",
+    "category": "Accessories",
+    "color": "Graphite",
+    "description": "Nxteraa accessories — model NX-P112..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 112,
+    "page": 113,
+    "title": "NX-P113",
+    "model": "NX-P113",
+    "price": 491,
+    "oldPrice": 599,
+    "rating": 4.8,
+    "badge": "Accessories",
+    "category": "Accessories",
+    "color": "Black",
+    "description": "Nxteraa accessories — model NX-P113..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 114,
+    "page": 115,
+    "title": "NX-P115",
+    "model": "NX-P115",
+    "price": 491,
+    "oldPrice": 599,
+    "rating": 4.4,
+    "badge": "Accessories",
+    "category": "Accessories",
+    "color": "Blue",
+    "description": "Nxteraa accessories — model NX-P115..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 115,
+    "page": 116,
+    "title": "NX-P116",
+    "model": "NX-P116",
+    "price": 491,
+    "oldPrice": 599,
+    "rating": 4.5,
+    "badge": "Accessories",
+    "category": "Accessories",
+    "color": "Graphite",
+    "description": "Nxteraa accessories — model NX-P116..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 116,
+    "page": 117,
+    "title": "NX-P117",
+    "model": "NX-P117",
+    "price": 491,
+    "oldPrice": 599,
+    "rating": 4.6,
+    "badge": "Accessories",
+    "category": "Accessories",
+    "color": "Black",
+    "description": "Nxteraa accessories — model NX-P117..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 117,
+    "page": 118,
+    "title": "NX-P118",
+    "model": "NX-P118",
+    "price": 491,
+    "oldPrice": 599,
+    "rating": 4.7,
+    "badge": "Accessories",
+    "category": "Accessories",
+    "color": "White",
+    "description": "Nxteraa accessories — model NX-P118..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 118,
+    "page": 119,
+    "title": "NETS-206",
+    "model": "NETS-206",
+    "price": 1065,
+    "oldPrice": 1299,
+    "rating": 4.8,
+    "badge": "Speakers",
+    "category": "Speakers",
+    "color": "Blue",
+    "description": "Nxteraa speakers — model NETS-206..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 120,
+    "page": 121,
+    "title": "Nxteraa NETS-4001",
+    "model": "NETS-4001",
+    "price": 1065,
+    "oldPrice": 1299,
+    "rating": 4.4,
+    "badge": "10000W",
+    "category": "Speakers",
+    "color": "Black",
+    "description": "10000W.",
+    "highlights": [
+      "10000W"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 121,
+    "page": 122,
+    "title": "Nxteraa NETS-4002",
+    "model": "NETS-4002",
+    "price": 1065,
+    "oldPrice": 1299,
+    "rating": 4.5,
+    "badge": "10000W",
+    "category": "Speakers",
+    "color": "White",
+    "description": "10000W.",
+    "highlights": [
+      "10000W"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 122,
+    "page": 123,
+    "title": "Nxteraa NETS-4003",
+    "model": "NETS-4003",
+    "price": 1065,
+    "oldPrice": 1299,
+    "rating": 4.6,
+    "badge": "10000W",
+    "category": "Speakers",
+    "color": "Blue",
+    "description": "10000W.",
+    "highlights": [
+      "10000W"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 123,
+    "page": 124,
+    "title": "Nxteraa NETS-4004",
+    "model": "NETS-4004",
+    "price": 1065,
+    "oldPrice": 1299,
+    "rating": 4.7,
+    "badge": "10000W",
+    "category": "Speakers",
+    "color": "Graphite",
+    "description": "10000W.",
+    "highlights": [
+      "10000W"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 124,
+    "page": 125,
+    "title": "CAR USB",
+    "model": "NE CD-902",
+    "price": 245,
+    "oldPrice": 299,
+    "rating": 4.8,
+    "badge": "CAR USB",
+    "category": "Adapters",
+    "color": "Black",
+    "description": "CAR USB. WIRELESS DONGLE. Bluetooth.",
+    "highlights": [
+      "CAR USB",
+      "WIRELESS DONGLE",
+      "Bluetooth"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 126,
+    "page": 127,
+    "title": "Smart Phone",
+    "model": "NE OTG-942",
+    "price": 245,
+    "oldPrice": 299,
+    "rating": 4.4,
+    "badge": "V-8",
+    "category": "Adapters",
+    "color": "Blue",
+    "description": "V-8. Smart Phone. ADAPTER.",
+    "highlights": [
+      "V-8",
+      "Smart Phone",
+      "ADAPTER"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 127,
+    "page": 128,
+    "title": "NE OTG-943",
+    "model": "NE OTG-943",
+    "price": 245,
+    "oldPrice": 299,
+    "rating": 4.5,
+    "badge": "Adapters",
+    "category": "Adapters",
+    "color": "Graphite",
+    "description": "Nxteraa adapters — model NE OTG-943..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 128,
+    "page": 129,
+    "title": "NE OTG-944",
+    "model": "NE OTG-944",
+    "price": 245,
+    "oldPrice": 299,
+    "rating": 4.6,
+    "badge": "Adapters",
+    "category": "Adapters",
+    "color": "Black",
+    "description": "Nxteraa adapters — model NE OTG-944..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 129,
+    "page": 130,
+    "title": "Plug And Play Direct Read",
+    "model": "NE OTG-947",
+    "price": 245,
+    "oldPrice": 299,
+    "rating": 4.7,
+    "badge": "Plug And Play Direct Rea",
+    "category": "Adapters",
+    "color": "White",
+    "description": "Plug And Play Direct Read.",
+    "highlights": [
+      "Plug And Play Direct Read"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 130,
+    "page": 131,
+    "title": "Plug And Play Direct Read",
+    "model": "NE OTG-949",
+    "price": 245,
+    "oldPrice": 299,
+    "rating": 4.8,
+    "badge": "Plug And Play Direct Rea",
+    "category": "Adapters",
+    "color": "Blue",
+    "description": "Plug And Play Direct Read. TYPE-C - USB. MINI ADPTER.",
+    "highlights": [
+      "Plug And Play Direct Read",
+      "TYPE-C - USB",
+      "MINI ADPTER"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 131,
+    "page": 132,
+    "title": "AJ-950",
+    "model": "AJ-950",
+    "price": 245,
+    "oldPrice": 299,
+    "rating": 4.9,
+    "badge": "Adapters",
+    "category": "Adapters",
+    "color": "Graphite",
+    "description": "Nxteraa adapters — model AJ-950..",
+    "highlights": [
+      "1 year brand warranty",
+      "Made for India",
+      "Nxteraa catalogue 2026"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 132,
+    "page": 133,
+    "title": "TYPE-C",
+    "model": "AJ-952",
+    "price": 245,
+    "oldPrice": 299,
+    "rating": 4.4,
+    "badge": "TYPE-C",
+    "category": "Adapters",
+    "color": "Black",
+    "description": "TYPE-C.",
+    "highlights": [
+      "TYPE-C"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 134,
+    "page": 135,
+    "title": "ADPTER",
+    "model": "NE OTG-951",
+    "price": 245,
+    "oldPrice": 299,
+    "rating": 4.6,
+    "badge": "ADPTER",
+    "category": "Adapters",
+    "color": "Blue",
+    "description": "ADPTER.",
+    "highlights": [
+      "ADPTER"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 135,
+    "page": 136,
+    "title": "High Quality Aluminum Alloy frosted shell",
+    "model": "NE CN-945",
+    "price": 245,
+    "oldPrice": 299,
+    "rating": 4.7,
+    "badge": "High Quality Aluminum Al",
+    "category": "Adapters",
+    "color": "Graphite",
+    "description": "High Quality Aluminum Alloy frosted shell. Scratch resistant and abrasion resistant. not easy to rust.",
+    "highlights": [
+      "High Quality Aluminum Alloy frosted shell",
+      "Scratch resistant and abrasion resistant",
+      "not easy to rust"
+    ],
+    "imageUrls": []
+  },
+  {
+    "id": 136,
+    "page": 137,
+    "title": "High Quality Aluminum Alloy frosted shell",
+    "model": "NE CN-946",
+    "price": 245,
+    "oldPrice": 299,
+    "rating": 4.8,
+    "badge": "High Quality Aluminum Al",
+    "category": "Adapters",
+    "color": "Black",
+    "description": "High Quality Aluminum Alloy frosted shell. Scratch resistant and abrasion resistant. not easy to rust.",
+    "highlights": [
+      "High Quality Aluminum Alloy frosted shell",
+      "Scratch resistant and abrasion resistant",
+      "not easy to rust"
+    ],
+    "imageUrls": []
+  }
+]

@@ -1,0 +1,62 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+
+const messages = [
+  "Free shipping on orders Rs. 999+",
+  "1 year warranty - Made for India",
+  "7-day replacement - Easy returns",
+  "Brand assured quality",
+];
+
+export default function AnnouncementBar() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setIndex((current) => (current + 1) % messages.length);
+    }, 4000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return (
+    <div className="relative isolate w-full overflow-hidden border-b border-line-soft bg-ink-950 text-white">
+      <div className="page-wrap flex h-10 items-center justify-between text-xs font-medium uppercase tracking-[0.18em]">
+        <Link
+          href="/shop"
+          className="hidden items-center gap-2 text-white/70 transition hover:text-white sm:flex"
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-accent-400" />
+          New collection 2026
+        </Link>
+
+        <div className="relative flex flex-1 items-center justify-center overflow-hidden text-center sm:flex-none sm:justify-end sm:text-right">
+          {messages.map((message, i) => (
+            <span
+              key={message}
+              aria-hidden={i !== index}
+              className={`absolute inset-y-0 flex items-center justify-center transition-all duration-500 ${
+                i === index
+                  ? "opacity-100 translate-y-0"
+                  : "pointer-events-none opacity-0 translate-y-2"
+              }`}
+              style={{ right: 0 }}
+            >
+              {message}
+            </span>
+          ))}
+        </div>
+
+        <div className="hidden items-center gap-5 text-white/70 sm:flex">
+          <Link href="/track-order" className="transition hover:text-white">
+            Track order
+          </Link>
+          <Link href="/support" className="transition hover:text-white">
+            Support
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
