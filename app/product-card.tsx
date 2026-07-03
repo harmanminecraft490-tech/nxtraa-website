@@ -4,8 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { Heart, ShoppingCart, Check } from "lucide-react";
-import { useCart } from "../lib/cartcontext";
-import { getProductById } from "../lib/products";
+import { useCart } from "@/app/components/lib/cartcontext";
+import { getProductById } from "@/app/components/lib/products";
 
 type ProductCardProps = {
   productId: number;
