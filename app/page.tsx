@@ -1,37 +1,46 @@
-import Link from "next/link";
-import AnnouncementBar from "./components/layout/announcementbar";
-import Navbar from "./components/layout/navbar";
-import Footer from "./components/layout/footer";
-import FeaturedProducts from "./components/home/featured-products";
+"use client";
 
-function Hero() {
-  return (
-    <section className="w-full bg-gray-100">
-      <div className="mx-auto max-w-7xl px-5 py-16 text-center sm:px-8 md:py-24 lg:py-32">
-        <h1 className="text-4xl font-extrabold tracking-tight text-ink-950 sm:text-5xl md:text-6xl">
-          Engineered for India
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-lg text-ink-600 md:text-xl">
-          Premium mobile accessories with free express delivery, 1-year warranty, and 7-day replacement.
-        </p>
-        <div className="mt-8">
-          <Link href="/shop" className="btn btn-primary btn-lg">
-            Shop Now
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
+import { useState } from "react";
+import { useAuth } from "./authcontext";
 
-export default function HomePage() {
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const { login } = useAuth();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Login failed");
+      }
+
+      login(data.token);
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
   return (
-    <main>
-      <AnnouncementBar />
-      <Navbar />
-      <Hero />
-      <FeaturedProducts />
-      <Footer />
-    </main>
+    <div className="page-wrap">
+      <h1 className="h-section">Login</h1>
+      <form onSubmit={handleLogin} className="form">
+        {error && <p className="text-error">{error}</p>}
+        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="input" required />
+        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="input" required />
+        <button type="submit" className="btn btn-primary">Login</button>
+      </form>
+    </div>
   );
 }

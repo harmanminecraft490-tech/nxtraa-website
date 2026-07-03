@@ -1,10 +1,10 @@
-import { getProducts } from "@/app/components/lib/products";
-import ProductCard from "@/app/components/product/product-card";
+import { products } from "./components/lib/products";
+import ProductCard from "./product-card";
 
 export default function FeaturedProducts() {
   // Fetch a selection of products to feature.
   // Here we take the first 8 products as an example.
-  const featuredProducts = getProducts().slice(0, 8);
+  const featuredProducts = products.slice(0, 8);
 
   return (
     <section className="w-full bg-white py-16 sm:py-24">

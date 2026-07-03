@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     localStorage.removeItem('token');
     setIsAuthenticated(false);
-    router.push('/login');
+    router.push('/login'); // This will now route to app/login/page.tsx
   };
 
   return <AuthContext.Provider value={{ isAuthenticated, login, logout, loading }}>{children}</AuthContext.Provider>;
