@@ -24,10 +24,6 @@ import Footer from "../components/layout/footer";
 import { useCart } from "../components/lib/cartcontext";
 import { getProductById, getRecommendedProducts } from "../components/lib/products";
 import ProductVisual from "../components/ui/productvisual";
-import { CartLineItem } from "../shop/productcard"; // Preserving the export/import so it's not broken
-
-// Dummy usage of CartLineItem to preserve the import and avoid unused import lint errors
-const _dummyCartLineItem = CartLineItem;
 
 export default function CartPageClient() {
   const { 
@@ -179,7 +175,7 @@ export default function CartPageClient() {
                 Your Shopping Cart is Empty
               </h1>
               <p className="text-sm font-semibold text-ink-500 mt-4 max-w-md leading-relaxed">
-                Explore Nxteraa's premium collection of super-fast chargers, premium earbuds, high-capacity power banks, and other high-end accessories.
+                Explore Nxteraa&apos;s premium collection of super-fast chargers, premium earbuds, high-capacity power banks, and other high-end accessories.
               </p>
               <Link
                 href="/shop"

@@ -15,8 +15,6 @@ type ProductRowProps = {
 };
 
 export function ProductRow({ eyebrow, title, href, items }: ProductRowProps) {
-  if (items.length === 0) return null;
-
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
@@ -28,6 +26,8 @@ export function ProductRow({ eyebrow, title, href, items }: ProductRowProps) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  if (items.length === 0) return null;
 
   return (
     <section className="section-space border-b border-line-soft last:border-0">

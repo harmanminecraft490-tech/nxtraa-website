@@ -4,8 +4,8 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
+  useSyncExternalStore,
   useState,
 } from "react";
 
@@ -33,33 +33,64 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "nxteraa-cart";
+const STORAGE_EVENT = "nxteraa-cart-change";
+
+function readStoredItems(): CartItem[] {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    return stored ? (JSON.parse(stored) as CartItem[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeStoredItems(items: CartItem[]) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  window.dispatchEvent(new Event(STORAGE_EVENT));
+}
+
+function updateStoredItems(updater: (current: CartItem[]) => CartItem[]) {
+  const nextItems = updater(readStoredItems());
+  writeStoredItems(nextItems);
+}
+
+function subscribeToStoredItems(onStoreChange: () => void) {
+  if (typeof window === "undefined") {
+    return () => {};
+  }
+
+  const handleChange = () => onStoreChange();
+  window.addEventListener("storage", handleChange);
+  window.addEventListener(STORAGE_EVENT, handleChange);
+
+  return () => {
+    window.removeEventListener("storage", handleChange);
+    window.removeEventListener(STORAGE_EVENT, handleChange);
+  };
+}
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const items = useSyncExternalStore(
+    subscribeToStoredItems,
+    readStoredItems,
+    () => [],
+  );
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setItems(JSON.parse(stored) as CartItem[]);
-    } catch {
-      setItems([]);
-    }
-    setHydrated(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }, [items, hydrated]);
 
   const openDrawer = useCallback(() => setDrawerOpen(true), []);
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
   const addItem = useCallback(
     (productId: number, quantity = 1, shouldOpenDrawer = true) => {
-      setItems((current) => {
+      updateStoredItems((current) => {
         const existing = current.find((item) => item.productId === productId);
         if (existing) {
           return current.map((item) =>
@@ -76,15 +107,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   );
 
   const removeItem = useCallback((productId: number) => {
-    setItems((current) => current.filter((item) => item.productId !== productId));
+    updateStoredItems((current) =>
+      current.filter((item) => item.productId !== productId),
+    );
   }, []);
 
   const updateQuantity = useCallback((productId: number, quantity: number) => {
     if (quantity < 1) {
-      setItems((current) => current.filter((item) => item.productId !== productId));
+      updateStoredItems((current) =>
+        current.filter((item) => item.productId !== productId),
+      );
       return;
     }
-    setItems((current) =>
+    updateStoredItems((current) =>
       current.map((item) =>
         item.productId === productId
           ? { ...item, quantity: Math.min(9, quantity) }
@@ -93,7 +128,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     );
   }, []);
 
-  const clearCart = useCallback(() => setItems([]), []);
+  const clearCart = useCallback(() => writeStoredItems([]), []);
 
   const count = useMemo(
     () => items.reduce((sum, item) => sum + item.quantity, 0),

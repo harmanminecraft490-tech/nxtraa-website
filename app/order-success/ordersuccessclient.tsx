@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { CheckCircle2, Package, Truck, Calendar, CreditCard } from "lucide-react";
+import { CheckCircle2, Package, Calendar, CreditCard } from "lucide-react";
 
 import AnnouncementBar from "../components/layout/announcementbar";
 import Navbar from "../components/layout/navbar";

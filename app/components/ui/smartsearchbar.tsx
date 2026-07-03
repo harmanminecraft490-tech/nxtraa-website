@@ -24,16 +24,34 @@ export default function SmartSearchBar({
   initialQuery = "",
   onSearch,
 }: SmartSearchBarProps) {
+  return (
+    <SmartSearchBarInner
+      key={initialQuery}
+      className={className}
+      inputClassName={inputClassName}
+      size={size}
+      autoFocus={autoFocus}
+      initialQuery={initialQuery}
+      onSearch={onSearch}
+    />
+  );
+}
+
+function SmartSearchBarInner({
+  className,
+  inputClassName,
+  size,
+  autoFocus,
+  initialQuery,
+  onSearch,
+}: Required<Pick<SmartSearchBarProps, "size" | "autoFocus" | "initialQuery">> &
+  Pick<SmartSearchBarProps, "className" | "inputClassName" | "onSearch">) {
   const router = useRouter();
   const [query, setQuery] = useState(initialQuery);
   const [focused, setFocused] = useState(false);
   const [hintIndex, setHintIndex] = useState(0);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setQuery(initialQuery);
-  }, [initialQuery]);
 
   useEffect(() => {
     const timer = setInterval(() => {

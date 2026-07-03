@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Save, X, Image as ImageIcon, Search, Upload, Trash2 } from "lucide-react";
 
@@ -28,23 +29,32 @@ export default function AdminClient() {
   const [searchQuery, setSearchQuery] = useState("");
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  const fetchProducts = async () => {
-    try {
-      const res = await fetch("/api/admin/products");
-      if (res.ok) {
-        const data = await res.json();
-        setProducts(data);
-      }
-    } catch (err) {
-      console.error("Failed to fetch products:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchProducts();
+    let cancelled = false;
+
+    fetch("/api/admin/products")
+      .then(async (res) => {
+        if (!res.ok || cancelled) {
+          return;
+        }
+
+        const data = (await res.json()) as Product[];
+        if (!cancelled) {
+          setProducts(data);
+        }
+      })
+      .catch((err: unknown) => {
+        console.error("Failed to fetch products:", err);
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const updateProduct = async (id: number, updates: Partial<Product>) => {
@@ -102,10 +112,6 @@ export default function AdminClient() {
 
   const deleteImage = async (productId: number, imageUrl: string) => {
     try {
-      // Delete the file from public/products
-      const filePath = imageUrl.replace("/products/", "");
-      const fullPath = `/public/products/${filePath}`;
-      
       // We can't easily delete from client, so we'll just update the JSON
       const res = await fetch("/api/admin/products", {
         method: "POST",
@@ -271,12 +277,6 @@ function ProductCard({
     e.target.value = "";
   };
 
-  const getImageSrc = (url: string) => {
-    // Add cache-busting parameter to ensure fresh images
-    const separator = url.includes("?") ? "&" : "?";
-    return `${url}${separator}t=${Date.now()}`;
-  };
-
   return (
     <div className="card-premium overflow-hidden">
       <div className="flex flex-col gap-6 lg:flex-row">
@@ -285,11 +285,13 @@ function ProductCard({
           {/* Main Image */}
           <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-mist">
             {product.imageUrls.length > 0 ? (
-              <img
-                src={getImageSrc(product.imageUrls[0])}
-                alt={product.title}
-                className="h-full w-full object-cover"
-              />
+                <Image
+                  src={product.imageUrls[0]}
+                  alt={product.title}
+                  fill
+                  sizes="320px"
+                  className="object-cover"
+                />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
                 <ImageIcon size={48} className="text-ink-300" />
@@ -305,10 +307,12 @@ function ProductCard({
                   key={index}
                   className="relative aspect-square overflow-hidden rounded-xl bg-mist"
                 >
-                  <img
-                    src={getImageSrc(url)}
+                  <Image
+                    src={url}
                     alt={`${product.title} - ${index + 1}`}
-                    className="h-full w-full object-cover"
+                    fill
+                    sizes="96px"
+                    className="object-cover"
                   />
                   <button
                     onClick={() => onDeleteImage(product.id, url)}

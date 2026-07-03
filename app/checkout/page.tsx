@@ -20,9 +20,49 @@ import { getProductById } from "../components/lib/products";
 
 import { Suspense } from "react";
 
+type RazorpayPaymentSuccess = {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+};
+
+type RazorpayOrder = {
+  id: string;
+  amount: number;
+  currency: string;
+};
+
+type RazorpayOrderResponse = {
+  error?: string;
+  order?: RazorpayOrder;
+};
+
+type OrderResponse = {
+  error?: string;
+  order?: { id: string };
+};
+
+type RazorpayOptions = {
+  key: string | undefined;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  handler: (response: RazorpayPaymentSuccess) => Promise<void>;
+  prefill: {
+    name: string;
+    email?: string | null;
+    contact: string;
+  };
+  theme: {
+    color: string;
+  };
+};
+
 declare global {
   interface Window {
-    Razorpay: any;
+    Razorpay: new (options: RazorpayOptions) => { open: () => void };
   }
 }
 
@@ -113,7 +153,7 @@ function CheckoutPageContent() {
         }),
       });
 
-      const orderData = await orderResponse.json();
+      const orderData = (await orderResponse.json()) as RazorpayOrderResponse;
 
       if (!orderResponse.ok || !orderData.order) {
         alert("Failed to initialize payment. Please try again.");
@@ -128,7 +168,7 @@ function CheckoutPageContent() {
         name: "Nxteraa",
         description: "Premium Mobile Accessories",
         order_id: orderData.order.id,
-        handler: async function (response: any) {
+        handler: async (response: RazorpayPaymentSuccess) => {
           // Verify payment and place order
           const verifyResponse = await fetch("/api/orders", {
             method: "POST",
@@ -148,7 +188,7 @@ function CheckoutPageContent() {
             }),
           });
 
-          const data = await verifyResponse.json();
+          const data = (await verifyResponse.json()) as OrderResponse;
 
           if (verifyResponse.ok && data.order) {
             clearCart();
@@ -212,10 +252,7 @@ function CheckoutPageContent() {
         }),
       });
 
-      const data = (await response.json()) as {
-        error?: string;
-        order?: { id: string };
-      };
+      const data = (await response.json()) as OrderResponse;
 
       if (!response.ok || !data.order) {
         alert(data.error ?? "We could not place your order. Please try again.");

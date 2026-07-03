@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { ChevronRight, X } from "lucide-react";
 
-import { useCart } from "../lib/cartcontext";
 import { cn } from "../lib/utils";
 import ProfileMenu from "../account/profilemenu";
 
@@ -128,6 +127,3 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
     </>
   );
 }
-
-// useCart is intentionally not used here; keep import to avoid tree-shake regressions.
-useCart;

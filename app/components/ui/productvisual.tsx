@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 import {
@@ -98,7 +99,6 @@ export default function ProductVisual({
   className,
   hover = false,
   imageUrls = [],
-  productId: _productId,
 }: ProductVisualProps) {
   const meta = CATEGORY_META[category] ?? CATEGORY_META.Accessories;
   const Icon = meta.icon;
@@ -111,16 +111,22 @@ export default function ProductVisual({
   // Show actual image if imageUrl is provided and image loaded successfully
   if (imageUrl && !imgError) {
     return (
-      <img
-        src={imageUrl}
-        alt={title || model}
-        onError={() => setImgError(true)}
+      <div
         className={cn(
-          "h-full w-full object-cover",
+          "relative h-full w-full",
           hover && "transition-transform duration-[1600ms] ease-out hover:scale-[1.03]",
           className,
         )}
-      />
+      >
+        <Image
+          src={imageUrl}
+          alt={title || model}
+          fill
+          sizes={size === "sm" ? "64px" : size === "md" ? "320px" : "640px"}
+          onError={() => setImgError(true)}
+          className="object-cover"
+        />
+      </div>
     );
   }
 

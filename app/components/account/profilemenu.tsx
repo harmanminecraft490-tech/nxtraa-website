@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { LogIn, LogOut, ChevronDown, RefreshCcw, User } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 
@@ -17,15 +17,10 @@ export default function ProfileMenu({
 }: ProfileMenuProps) {
   const { data: session } = useSession();
   const pathname = usePathname();
-  const [currentPath, setCurrentPath] = useState(pathname);
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const query = window.location.search;
-      setCurrentPath(query ? `${pathname}${query}` : pathname);
-    }
-  }, [pathname]);
+  const query =
+    typeof window === "undefined" ? "" : window.location.search;
+  const currentPath = query ? `${pathname}?${query}` : pathname;
 
   const accountLabel = session?.user?.name ?? session?.user?.email ?? "Sign in";
   const accountSubLabel = session?.user?.email ?? "Access your account";

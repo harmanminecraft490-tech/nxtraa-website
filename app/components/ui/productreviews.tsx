@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Star } from "lucide-react";
 
 import {
@@ -18,15 +18,8 @@ export default function ProductReviews({
   productId,
   catalogRating,
 }: ProductReviewsProps) {
-  const [tick, setTick] = useState(0);
-  const reviews = useMemo(
-    () => getReviewsForProduct(productId),
-    [productId, tick],
-  );
-  const average = useMemo(
-    () => getAverageRating(productId, catalogRating),
-    [productId, catalogRating, tick],
-  );
+  const reviews = getReviewsForProduct(productId);
+  const average = getAverageRating(productId, catalogRating);
 
   const [form, setForm] = useState({
     author: "",
@@ -40,7 +33,6 @@ export default function ProductReviews({
     if (!form.comment.trim()) return;
     addReview(productId, form);
     setForm({ author: "", rating: 5, title: "", comment: "" });
-    setTick((t) => t + 1);
   };
 
   return (

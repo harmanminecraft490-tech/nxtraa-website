@@ -128,9 +128,6 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
 
               <BuyActions
                 productId={product.id}
-                productTitle={product.title}
-                price={product.price}
-                oldPrice={product.oldPrice}
                 startInCart={startInCart}
               />
             </div>

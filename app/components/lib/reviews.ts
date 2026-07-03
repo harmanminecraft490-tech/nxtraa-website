@@ -2,39 +2,6 @@ import type { Review } from "./products";
 
 const STORAGE_KEY = "nxteraa-reviews";
 
-const AUTHORS = [
-  "Rahul K.",
-  "Priya M.",
-  "Amit S.",
-  "Neha R.",
-  "Vikram P.",
-  "Sneha T.",
-  "Arjun D.",
-  "Kavya L.",
-];
-
-const COMMENTS = [
-  "Solid build quality and works exactly as described in the catalogue.",
-  "Good value for money. Delivery was quick and packaging was neat.",
-  "Battery backup is impressive. Using it daily without issues.",
-  "Clear sound and comfortable fit. Recommended for everyday use.",
-  "Charging speed is fast. Happy with this Nxteraa product.",
-  "Worth the MRP. Feels premium and durable.",
-];
-
-function seededReviews(productId: number): Review[] {
-  const base = productId * 7;
-  return [0, 1, 2].map((i) => ({
-    id: `seed-${productId}-${i}`,
-    productId,
-    author: AUTHORS[(base + i) % AUTHORS.length],
-    rating: 4 + ((base + i) % 2),
-    title: i === 0 ? "Great product" : i === 1 ? "Value for money" : "Works well",
-    comment: COMMENTS[(base + i) % COMMENTS.length],
-    date: new Date(2025, (base + i) % 12, 1 + ((base + i) % 28)).toISOString(),
-  }));
-}
-
 function readAll(): Review[] {
   if (typeof window === "undefined") return [];
   try {

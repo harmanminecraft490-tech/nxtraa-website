@@ -6,13 +6,9 @@ import { useEffect } from "react";
 import { ShoppingCart, ShoppingBag } from "lucide-react";
 
 import { useCart } from "../components/lib/cartcontext";
-import { cn } from "../components/lib/utils";
 
 type BuyActionsProps = {
   productId: number;
-  productTitle: string;
-  price: number;
-  oldPrice: number;
   startInCart?: boolean;
 };
 
@@ -21,7 +17,7 @@ export default function BuyActions({
   startInCart = false,
 }: BuyActionsProps) {
   const router = useRouter();
-  const { addItem, openDrawer } = useCart();
+  const { addItem } = useCart();
 
   useEffect(() => {
     if (startInCart) {
