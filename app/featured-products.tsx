@@ -1,5 +1,5 @@
-import { getProducts } from "../lib/products";
-import ProductCard from "../product/product-card";
+import { getProducts } from "@/app/components/lib/products";
+import ProductCard from "@/app/components/product/product-card";
 
 export default function FeaturedProducts() {
   // Fetch a selection of products to feature.
