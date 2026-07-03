@@ -13,17 +13,15 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return !!localStorage.getItem('token');
+  });
+  const [loading, setLoading] = useState(() => typeof window === "undefined");
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      // For now, we'll assume if a token exists, the user is authenticated
-      setIsAuthenticated(true);
-    }
-    setLoading(false);
+    setLoading(false); // This effect now only runs on the client to set loading to false after the initial server render.
   }, []);
 
   const login = (token: string) => {

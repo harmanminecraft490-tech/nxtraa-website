@@ -14,7 +14,7 @@ import { RECOMMENDED_SEARCHES, searchProducts } from "../components/lib/search";
 function SearchResults() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const q = searchParams.get("q") ?? "";
+  const q = searchParams ? searchParams?.get("q") ?? "" : "";
 
   const results = useMemo(() => searchProducts(q), [q]);
   const hasQuery = q.trim().length > 0;

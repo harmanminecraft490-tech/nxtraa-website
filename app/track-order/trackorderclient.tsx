@@ -16,7 +16,7 @@ import { getProductById } from "../components/lib/products";
 
 export default function TrackOrderClient() {
   const searchParams = useSearchParams();
-  const initialOrderId = searchParams.get("id") ?? "";
+  const initialOrderId = searchParams?.get("id") ?? "";
   const [orderId, setOrderId] = useState(initialOrderId);
   const [order, setOrder] = useState<Order | undefined>(undefined);
   const [searched, setSearched] = useState(false);

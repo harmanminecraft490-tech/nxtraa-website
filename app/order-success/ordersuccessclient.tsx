@@ -12,7 +12,7 @@ import type { Order } from "../components/lib/orders";
 
 export default function OrderSuccessClient() {
   const searchParams = useSearchParams();
-  const orderId = searchParams.get("id") ?? "";
+  const orderId = searchParams ? searchParams.get("id") ?? "" : "";
   const [order, setOrder] = useState<Order | null>(null);
 
   useEffect(() => {

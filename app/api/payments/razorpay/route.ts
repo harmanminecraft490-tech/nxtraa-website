@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
   }
 
   const searchParams = request.nextUrl.searchParams;
-  const paymentId = searchParams.get("payment_id");
+  const paymentId = searchParams?.get("payment_id");
 
   if (!paymentId) {
     return NextResponse.json(
