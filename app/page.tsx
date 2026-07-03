@@ -2,7 +2,7 @@ import Link from "next/link";
 import AnnouncementBar from "./components/layout/announcementbar";
 import Navbar from "./components/layout/navbar";
 import Footer from "./components/layout/footer";
-import FeaturedProducts from "./featured-products";
+import FeaturedProducts from "./components/home/featured-products";
 
 function Hero() {
   return (
