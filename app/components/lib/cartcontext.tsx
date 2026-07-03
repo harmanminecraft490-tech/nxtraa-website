@@ -35,16 +35,33 @@ const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "nxteraa-cart";
 const STORAGE_EVENT = "nxteraa-cart-change";
 
+// Cached server snapshot to avoid infinite loop in useSyncExternalStore
+const EMPTY_CART: CartItem[] = [];
+
+// Cache for the last read value to ensure stable references
+let cachedItems: CartItem[] | undefined = undefined;
+let cachedString: string | undefined = undefined;
+
 function readStoredItems(): CartItem[] {
   if (typeof window === "undefined") {
-    return [];
+    return EMPTY_CART;
   }
 
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
-    return stored ? (JSON.parse(stored) as CartItem[]) : [];
+    const newString = stored ?? "";
+    
+    // Return cached value if nothing changed
+    if (cachedString !== undefined && cachedString === newString) {
+      return cachedItems as CartItem[];
+    }
+    
+    // Update cache and return new value
+    cachedString = newString;
+    cachedItems = stored ? (JSON.parse(stored) as CartItem[]) : EMPTY_CART;
+    return cachedItems as CartItem[];
   } catch {
-    return [];
+    return EMPTY_CART;
   }
 }
 
@@ -53,6 +70,10 @@ function writeStoredItems(items: CartItem[]) {
     return;
   }
 
+  // Invalidate cache before writing
+  cachedString = undefined;
+  cachedItems = undefined;
+  
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   window.dispatchEvent(new Event(STORAGE_EVENT));
 }
@@ -67,7 +88,12 @@ function subscribeToStoredItems(onStoreChange: () => void) {
     return () => {};
   }
 
-  const handleChange = () => onStoreChange();
+  const handleChange = () => {
+    // Invalidate cache when storage changes
+    cachedString = undefined;
+    cachedItems = undefined;
+    onStoreChange();
+  };
   window.addEventListener("storage", handleChange);
   window.addEventListener(STORAGE_EVENT, handleChange);
 
@@ -81,7 +107,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const items = useSyncExternalStore(
     subscribeToStoredItems,
     readStoredItems,
-    () => [],
+    () => EMPTY_CART,
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
 
