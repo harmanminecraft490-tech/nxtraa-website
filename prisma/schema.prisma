@@ -95,3 +95,21 @@ enum OrderStatus {
   shipped
   delivered
 }
+
+model Product {
+  id Int @id
+
+  title       String
+  model       String
+  price       Int
+  oldPrice    Int
+  rating      Int
+  badge       String
+  category    String
+  color       String
+  description String
+
+  highlights String[]
+  imageUrls  String[]
+}
+
