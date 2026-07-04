@@ -5,14 +5,23 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  // Override default ignores of eslint-config-next.
+  // Restrict scanning to the real Next project (this repo root),
+  // and avoid accidental duplicate project scanning.
   globalIgnores([
-    // Default ignores of eslint-config-next:
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
+    "**/.next/**",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.vercel/**",
+    "**/out/**",
+    "**/uploads/**",
+    "**/next-env.d.ts",
+    // Nested duplicate Next project (ignore to prevent ESLint hangs / duplicate scanning)
+    "nxteraa-website/**",
+    // Common generated folders
+    "**/generated/**",
   ]),
 ]);
 
 export default eslintConfig;
+

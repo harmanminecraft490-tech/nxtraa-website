@@ -1,15 +1,20 @@
-export const formatDate = (date: Date, locale: string = 'en-US'): string => {
+export const formatDate = (
+    date: Date,
+    locale: string = "en-US"
+  ): string => {
     return new Intl.DateTimeFormat(locale).format(date);
-};
-
-export const capitalizeFirstLetter = (string: string): string => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-};
-
-export const fetchJson = async (url: string): Promise<any> => {
+  };
+  
+  export const capitalizeFirstLetter = (text: string): string => {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  };
+  
+  export async function fetchJson<T>(url: string): Promise<T> {
     const response = await fetch(url);
+  
     if (!response.ok) {
-        throw new Error('Network response was not ok');
+      throw new Error("Network response was not ok");
     }
-    return response.json();
-};
+  
+    return (await response.json()) as T;
+  }

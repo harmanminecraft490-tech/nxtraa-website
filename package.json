@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint \"app/**/*.{ts,tsx}\" \"lib/**/*.{ts,tsx}\"",
+
+
+
+
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push"
   },
