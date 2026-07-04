@@ -48,7 +48,16 @@ export async function POST(request: Request) {
     fs.writeFileSync(PRODUCTS_DATA_PATH, JSON.stringify(products, null, 2));
 
     return NextResponse.json({ success: true, product: products[productIndex] });
-  } catch {
-    return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
+  } catch (error) {
+    console.error("Product update failed:", error);
+
+    return NextResponse.json(
+      {
+        error: "Failed to update product",
+        details:
+          error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 },
+    );
   }
 }

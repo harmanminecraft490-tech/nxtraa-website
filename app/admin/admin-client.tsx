@@ -60,21 +60,36 @@ export default function AdminClient() {
   const updateProduct = async (id: number, updates: Partial<Product>) => {
     setSaving(id);
     try {
-      const res = await fetch("/api/admin/products", {
+      const response = await fetch("/api/admin/products", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, ...updates }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id,
+          ...updates,
+        }),
       });
 
-      if (res.ok) {
-        setProducts((prev) =>
-          prev.map((p) => (p.id === id ? { ...p, ...updates } : p))
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        console.error("POST /api/admin/products failed:", data);
+        showMessage(
+          "error",
+          data.details || data.error || JSON.stringify(data) || "Unknown server error"
         );
-        showMessage("success", "Product updated successfully");
-      } else {
-        showMessage("error", "Failed to update product");
+        return;
       }
-    } catch {
+
+      setProducts((products) =>
+        products.map((product) =>
+          product.id === id ? { ...product, ...updates } : product
+        )
+      );
+      showMessage("success", "Product updated successfully");
+    } catch (error) {
+      console.error("POST /api/admin/products threw:", error);
       showMessage("error", "Error updating product");
     } finally {
       setSaving(null);
