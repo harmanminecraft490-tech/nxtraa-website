@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
+
 import fs from "fs";
 import path from "path";
 
 import { getSessionUser, isAdminEmail } from "@/lib/auth/session";
+import prisma from "@/lib/prisma";
 
-const PRODUCTS_DATA_PATH = path.join(process.cwd(), "app/components/lib/products-data.json");
 const UPLOAD_DIR = path.join(process.cwd(), "public/products");
 const MAX_IMAGES = 3;
 
@@ -23,6 +24,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "File and productId are required" }, { status: 400 });
     }
 
+    const productIdNumber = Number(productId);
+    if (!Number.isFinite(productIdNumber)) {
+      return NextResponse.json({ error: "Invalid productId" }, { status: 400 });
+    }
+
+    const product = await prisma.product.findUnique({
+      where: { id: productIdNumber },
+      select: { id: true, imageUrls: true },
+    });
+
+    if (!product) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    const currentImages = product.imageUrls ?? [];
+    if (currentImages.length >= MAX_IMAGES) {
+      return NextResponse.json(
+        { error: `Maximum ${MAX_IMAGES} images allowed per product` },
+        { status: 400 },
+      );
+    }
+
     if (!fs.existsSync(UPLOAD_DIR)) {
       fs.mkdirSync(UPLOAD_DIR, { recursive: true });
     }
@@ -30,37 +53,22 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     const ext = path.extname(file.name) || ".png";
-    
-    // Read current products data
-    const data = fs.readFileSync(PRODUCTS_DATA_PATH, "utf-8");
-    const products = JSON.parse(data);
 
-    const productIndex = products.findIndex((p: { id: number; imageUrls: string[] }) => p.id === Number(productId));
-    if (productIndex === -1) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
-    }
-
-    const currentImages = products[productIndex].imageUrls || [];
-    
-    // Check if we've reached the max number of images
-    if (currentImages.length >= MAX_IMAGES) {
-      return NextResponse.json({ error: `Maximum ${MAX_IMAGES} images allowed per product` }, { status: 400 });
-    }
-
-    // Generate unique filename with timestamp to avoid conflicts
+    // Unique filename
     const timestamp = Date.now();
-    const fileName = `product-${productId}-${timestamp}${ext}`;
+    const fileName = `product-${productIdNumber}-${timestamp}${ext}`;
     const filePath = path.join(UPLOAD_DIR, fileName);
 
+    // Upload image bytes
     fs.writeFileSync(filePath, buffer);
 
     const imageUrl = `/products/${fileName}`;
-    
-    // Add new image to the array
     const updatedImages = [...currentImages, imageUrl];
-    products[productIndex].imageUrls = updatedImages;
 
-    fs.writeFileSync(PRODUCTS_DATA_PATH, JSON.stringify(products, null, 2));
+    await prisma.product.update({
+      where: { id: productIdNumber },
+      data: { imageUrls: updatedImages },
+    });
 
     return NextResponse.json({ success: true, imageUrl, imageUrls: updatedImages });
   } catch (error) {
@@ -68,3 +76,4 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to upload file" }, { status: 500 });
   }
 }
+
