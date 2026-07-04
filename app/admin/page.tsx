@@ -12,8 +12,8 @@ export default async function AdminPage() {
   // Admin configuration must exist; otherwise show a clear configuration error.
   const adminEmail = process.env.ADMIN_EMAIL;
   if (!adminEmail) {
-    return (
 
+    return (
       <div className="page-wrap flex flex-col items-center justify-center py-20">
         <h1 className="h-section text-center">Admin configuration error</h1>
         <p className="mt-4 text-center text-gray-600">
@@ -22,6 +22,7 @@ export default async function AdminPage() {
       </div>
     );
   }
+
 
   if (!isAdminEmail(user.email)) {
 
