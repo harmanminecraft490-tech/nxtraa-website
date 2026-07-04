@@ -11,7 +11,7 @@ export default function AccountPage() {
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
-      router.push("/login");
+      router.push("/account/signin");
     }
   }, [isAuthenticated, loading, router]);
 
@@ -33,7 +33,7 @@ export default function AccountPage() {
 
       <div className="flex flex-col sm:flex-row gap-4">
         <Link
-          href="/"
+          href="/shop"
           className="btn btn-primary"
         >
           🛍️ Continue Shopping

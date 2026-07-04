@@ -21,19 +21,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isBrowser ? !!localStorage.getItem("token") : false
   );
 
-  // No loading state needed anymore
   const loading = false;
 
   const login = (token: string) => {
     localStorage.setItem("token", token);
     setIsAuthenticated(true);
-    router.push("/account");
+    router.push("/account"); // or "/shop" if you prefer
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     setIsAuthenticated(false);
-    router.push("/login");
+    router.push("/account/signin");
   };
 
   return (
