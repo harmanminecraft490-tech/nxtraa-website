@@ -1,13 +1,11 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 import { getSessionUser } from "@/lib/auth/session";
 
-import Link from "next/link";
-
-import SignOutButton from "./components/account/signoutbutton";
-
 export default async function AccountPage() {
   const user = await getSessionUser();
+
   if (!user) {
     redirect("/account/signin?next=/account");
   }
@@ -17,20 +15,21 @@ export default async function AccountPage() {
       <h1 className="h-section text-center">My Account</h1>
 
       <p className="mb-8 text-center text-gray-600">
-        Welcome! You are successfully logged in.
+        Welcome, {user.name ?? user.email ?? "User"}!
       </p>
 
-      <div className="flex flex-col sm:flex-row gap-4">
-        <Link
-          href="/shop"
-          className="btn btn-primary"
-        >
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <Link href="/shop" className="btn btn-primary">
           🛍️ Continue Shopping
         </Link>
 
-        <SignOutButton />
+        <Link
+          href="/api/auth/logout"
+          className="btn btn-secondary"
+        >
+          Logout
+        </Link>
       </div>
     </div>
   );
 }
-
