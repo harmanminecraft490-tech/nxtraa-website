@@ -1,60 +1,36 @@
 "use client";
 
-import React, { createContext, useState, useContext, ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import React, { createContext, useContext } from "react";
 
-interface AuthContextType {
+import type { SessionUser } from "@/lib/auth/session";
+
+export type AuthContextType = {
+  user: SessionUser | null;
   isAuthenticated: boolean;
-  login: (token: string) => void;
-  logout: () => void;
   loading: boolean;
-}
+  logout: () => Promise<void> | void;
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const router = useRouter();
-
-  const isBrowser = typeof window !== "undefined";
-
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    isBrowser ? !!localStorage.getItem("token") : false
-  );
-
-  const loading = false;
-
-  const login = (token: string) => {
-    localStorage.setItem("token", token);
-    setIsAuthenticated(true);
-    router.push("/account"); // or "/shop" if you prefer
+// Minimal client provider to keep existing components working.
+// Auth state is derived from server session endpoints (no localStorage).
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const value: AuthContextType = {
+    user: null,
+    isAuthenticated: false,
+    loading: true,
+    logout: () => {},
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    setIsAuthenticated(false);
-    router.push("/account/signin");
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        isAuthenticated,
-        login,
-        logout,
-        loading,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
-
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
-
   return context;
 }
+

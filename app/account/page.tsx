@@ -1,26 +1,15 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import { useEffect } from "react";
+import { getSessionUser } from "@/lib/auth/session";
+
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useAuth } from "../authcontext";
 
-export default function AccountPage() {
-  const { isAuthenticated, logout, loading } = useAuth();
-  const router = useRouter();
+import SignOutButton from "./components/account/signoutbutton";
 
-  useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      router.push("/account/signin");
-    }
-  }, [isAuthenticated, loading, router]);
-
-  if (loading || !isAuthenticated) {
-    return (
-      <div className="page-wrap flex items-center justify-center py-20">
-        <p className="text-lg font-medium">Loading...</p>
-      </div>
-    );
+export default async function AccountPage() {
+  const user = await getSessionUser();
+  if (!user) {
+    redirect("/account/signin?next=/account");
   }
 
   return (
@@ -39,13 +28,9 @@ export default function AccountPage() {
           🛍️ Continue Shopping
         </Link>
 
-        <button
-          onClick={logout}
-          className="btn btn-secondary"
-        >
-          Logout
-        </button>
+        <SignOutButton />
       </div>
     </div>
   );
 }
+
