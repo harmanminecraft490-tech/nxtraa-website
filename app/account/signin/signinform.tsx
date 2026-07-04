@@ -66,7 +66,7 @@ export default function SignInForm({ next, initialMode }: SignInFormProps) {
         }
 
         // Hard navigate so the server re-renders with the new session cookie.
-        window.location.href = next || "/account";
+        window.location.href = next || "/shop";
       } catch (error) {
         console.error("Auth request failed:", error);
         setFormError("Network error. Please check your connection and try again.");
