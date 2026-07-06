@@ -88,18 +88,18 @@ export function useCatalog(): { products: Product[]; loading: boolean } {
   const [loading, setLoading] = useState(!loaded);
 
   useEffect(() => {
-    if (loaded) {
-      setLoading(false);
-      return;
-    }
+    // If the catalog is already loaded, initial state is already false.
+    if (loaded) return;
     let active = true;
+    // loadProducts() resolves immediately when already loaded, and on error too,
+    // so loading always settles — no infinite skeleton.
     void loadProducts().finally(() => {
       if (active) setLoading(false);
     });
     return () => {
       active = false;
     };
-  }, [products]);
+  }, []);
 
   return { products, loading };
 }
