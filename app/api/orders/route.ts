@@ -1,10 +1,15 @@
+import { createHmac, timingSafeEqual } from "crypto";
+
 import { NextResponse } from "next/server";
 
-import type { CartItem } from "@/app/components/lib/cartcontext";
 import type { OrderAddress } from "@/app/components/lib/orders";
-import { getProductById } from "@/app/components/lib/products";
 import { getSessionUser } from "@/lib/auth/session";
-import { createOrderForUser, getOrdersForUser } from "@/lib/order-data";
+import {
+  computeCartPricing,
+  createOrderForUser,
+  getOrdersForUser,
+  isValidCartItems,
+} from "@/lib/order-data";
 
 function isValidAddress(address: unknown): address is OrderAddress {
   if (!address || typeof address !== "object") {
@@ -21,19 +26,35 @@ function isValidAddress(address: unknown): address is OrderAddress {
   );
 }
 
-function isValidItems(items: unknown): items is CartItem[] {
-  if (!Array.isArray(items) || items.length === 0) {
+/**
+ * Verifies a Razorpay payment signature: HMAC_SHA256(order_id|payment_id, secret).
+ * Returns false on any mismatch so a forged success handler cannot create a paid
+ * order without an actual captured payment.
+ */
+function isValidRazorpaySignature(
+  orderId: unknown,
+  paymentId: unknown,
+  signature: unknown,
+): boolean {
+  const secret = process.env.RAZORPAY_KEY_SECRET;
+  if (!secret) return false;
+  if (
+    typeof orderId !== "string" ||
+    typeof paymentId !== "string" ||
+    typeof signature !== "string"
+  ) {
     return false;
   }
-
-  return items.every(
-    (item) =>
-      item &&
-      typeof item === "object" &&
-      typeof item.productId === "number" &&
-      typeof item.quantity === "number" &&
-      item.quantity > 0,
-  );
+  const expected = createHmac("sha256", secret)
+    .update(`${orderId}|${paymentId}`)
+    .digest("hex");
+  try {
+    const a = Buffer.from(expected);
+    const b = Buffer.from(signature);
+    return a.length === b.length && timingSafeEqual(a, b);
+  } catch {
+    return false;
+  }
 }
 
 export async function GET() {
@@ -57,11 +78,8 @@ export async function POST(request: Request) {
   const items = body.items;
   const address = body.address;
   const payment = String(body.payment ?? "");
-  const subtotal = Number(body.subtotal ?? 0);
-  const deliveryFee = Number(body.deliveryFee ?? 0);
-  const total = Number(body.total ?? 0);
 
-  if (!isValidItems(items) || !isValidAddress(address)) {
+  if (!isValidCartItems(items) || !isValidAddress(address)) {
     return NextResponse.json({ error: "Order details are invalid." }, { status: 400 });
   }
 
@@ -69,27 +87,34 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Select a payment method." }, { status: 400 });
   }
 
-  const computedSubtotal = items.reduce(
-    (sum, item) => sum + getProductById(item.productId).price * item.quantity,
-    0,
-  );
-  const computedDeliveryFee = computedSubtotal >= 999 ? 0 : 99;
-  const computedTotal = computedSubtotal + computedDeliveryFee;
+  // Online payments must carry a valid Razorpay signature that we verify against
+  // our secret — otherwise the paid amount cannot be trusted.
+  if (payment === "Razorpay") {
+    const ok = isValidRazorpaySignature(
+      body.razorpayOrderId,
+      body.razorpayPaymentId,
+      body.razorpaySignature,
+    );
+    if (!ok) {
+      return NextResponse.json(
+        { error: "Payment could not be verified." },
+        { status: 400 },
+      );
+    }
+  }
 
-  if (
-    subtotal !== computedSubtotal ||
-    deliveryFee !== computedDeliveryFee ||
-    total !== computedTotal
-  ) {
-    return NextResponse.json({ error: "Order pricing is out of date." }, { status: 400 });
+  // Prices always come from the catalog, never the client.
+  const { subtotal, deliveryFee, total } = await computeCartPricing(items);
+  if (total <= 0) {
+    return NextResponse.json({ error: "Order total must be greater than zero." }, { status: 400 });
   }
 
   const order = await createOrderForUser({
     userId: user.id,
     items,
-    subtotal: computedSubtotal,
-    deliveryFee: computedDeliveryFee,
-    total: computedTotal,
+    subtotal,
+    deliveryFee,
+    total,
     payment,
     address,
   });

@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Nxteraa",
     short_name: "Nxteraa",
-    description: "Premium mobile accessories",
+    description: "Premium mobile accessories.",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

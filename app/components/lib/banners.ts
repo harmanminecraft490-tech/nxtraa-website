@@ -8,11 +8,11 @@ export const siteBanners: SiteBanner[] = [
   {
     src: "/home-banners/home1.jpeg",
     href: "/shop",
-    alt: "Nxteraa — A Premium Audio Experience",
+    alt: "Nxteraa: Premium Audio",
   },
   {
     src: "/home-banners/banner3.png",
     href: "/shop",
-    alt: "Nxteraa — Audio Excellence",
+    alt: "Nxteraa: Audio Excellence",
   },
 ];

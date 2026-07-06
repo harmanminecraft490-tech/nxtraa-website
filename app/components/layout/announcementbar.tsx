@@ -22,7 +22,7 @@ export default function AnnouncementBar() {
 
   return (
     <div className="relative isolate w-full overflow-hidden border-b border-line-soft bg-ink-950 text-white">
-      <div className="page-wrap flex h-10 items-center justify-between text-xs font-medium uppercase tracking-[0.18em]">
+      <div className="page-wrap flex h-8 items-center justify-between text-[10px] font-medium uppercase tracking-[0.18em] sm:h-10 sm:text-xs">
         <Link
           href="/shop"
           className="hidden items-center gap-2 text-white/70 transition hover:text-white sm:flex"
@@ -48,7 +48,7 @@ export default function AnnouncementBar() {
           ))}
         </div>
 
-        <div className="hidden items-center gap-5 text-white/70 sm:flex">
+        <div className="hidden items-center gap-4 text-white/70 sm:flex sm:gap-5">
           <Link href="/track-order" className="transition hover:text-white">
             Track order
           </Link>

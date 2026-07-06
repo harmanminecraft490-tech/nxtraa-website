@@ -17,26 +17,25 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
-  sessions      Session[]
   orders        Order[]
+  sessions      Session[]
 }
 
 model Account {
-  id                        String @id @default(cuid())
-  userId                    String
-  type                      String
-  provider                  String
-  providerAccountId         String
-  refresh_token             String?
-  access_token              String?
-  expires_at                Int?
-  token_type                String?
-  scope                     String?
-  id_token                  String?
-  session_state             String?
-  refresh_token_expires_in  Int?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String?
+  access_token             String?
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?
+  session_state            String?
+  refresh_token_expires_in Int?
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -46,8 +45,7 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
@@ -74,9 +72,8 @@ model Order {
   pincode       String
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
-
-  items OrderItem[]
-  user  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items         OrderItem[]
 }
 
 model OrderItem {
@@ -85,8 +82,7 @@ model OrderItem {
   productId Int
   quantity  Int
   unitPrice Int
-
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 enum OrderStatus {
@@ -97,7 +93,7 @@ enum OrderStatus {
 }
 
 model Product {
-  id Int @id
+  id Int @id @default(autoincrement())
 
   title       String
   model       String

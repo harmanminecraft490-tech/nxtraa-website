@@ -48,15 +48,15 @@ export default function Navbar() {
             : "border-b border-transparent bg-white/70 backdrop-blur-md",
         )}
       >
-        <div className="page-wrap flex h-[68px] items-center justify-between gap-6">
+        <div className="page-wrap flex h-[56px] items-center justify-between gap-4 sm:h-[64px]">
           <Link href="/" aria-label="Nxteraa home" className="shrink-0">
             <Image
               src="/logo.svg"
               alt="Nxteraa"
-              width={180}
-              height={36}
+              width={140}
+              height={28}
               priority
-              className="h-9 w-auto object-contain md:h-11"
+              className="h-7 w-auto object-contain sm:h-9 md:h-11"
               style={{ width: "auto" }}
             />
           </Link>
@@ -66,34 +66,34 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="group relative rounded-full px-4 py-2 text-sm font-medium text-ink-700 transition hover:text-ink-950"
+                className="group relative rounded-full px-3 py-1.5 text-sm font-medium text-ink-700 transition hover:text-ink-950 sm:px-4 sm:py-2"
               >
                 <span>{link.label}</span>
-                <span className="absolute inset-x-4 bottom-1 h-px scale-x-0 bg-ink-950 transition-transform duration-500 group-hover:scale-x-100" />
+                <span className="absolute inset-x-3 bottom-1 h-px scale-x-0 bg-ink-950 transition-transform duration-500 group-hover:scale-x-100 sm:inset-x-4" />
               </Link>
             ))}
           </nav>
 
-          <div className="flex flex-1 items-center justify-end gap-2">
-            <div className="hidden w-full max-w-[360px] lg:block">
+          <div className="flex flex-1 items-center justify-end gap-1 sm:gap-2">
+            <div className="hidden w-full max-w-[280px] lg:block xl:max-w-[360px]">
               <SmartSearchBar />
             </div>
 
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="icon-btn lg:hidden"
+              className="icon-btn lg:hidden p-2"
               aria-label="Search"
             >
-              <Search size={18} strokeWidth={1.75} />
+              <Search size={16} strokeWidth={1.75} />
             </button>
 
             <Link
               href="/wishlist"
-              className="icon-btn hidden sm:inline-flex"
+              className="icon-btn hidden sm:inline-flex p-2"
               aria-label="Wishlist"
             >
-              <Heart size={18} strokeWidth={1.75} />
+              <Heart size={16} strokeWidth={1.75} />
             </Link>
 
             <ProfileMenu />
@@ -101,12 +101,12 @@ export default function Navbar() {
             <button
               type="button"
               onClick={openDrawer}
-              className="icon-btn relative"
+              className="icon-btn relative p-2"
               aria-label="Open cart"
             >
-              <ShoppingBag size={18} strokeWidth={1.75} />
+              <ShoppingBag size={16} strokeWidth={1.75} />
               {count > 0 && (
-                <span className="absolute -right-1 -top-1 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-ink-950 px-1 text-xs font-semibold tabular-nums text-white">
+                <span className="absolute -right-1 -top-1 grid h-[16px] min-w-[16px] place-items-center rounded-full bg-ink-950 px-1 text-[10px] font-semibold tabular-nums text-white">
                   {count > 9 ? "9+" : count}
                 </span>
               )}
@@ -114,7 +114,7 @@ export default function Navbar() {
 
             <Link
               href="/shop"
-              className="btn btn-primary btn-sm inline-flex"
+              className="btn btn-primary btn-sm inline-flex text-xs sm:text-sm px-3 py-2 sm:px-4 sm:py-2.5"
             >
               Shop now
             </Link>
@@ -122,27 +122,27 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setMenuOpen(true)}
-              className="icon-btn lg:hidden"
+              className="icon-btn lg:hidden p-2"
               aria-label="Open menu"
             >
-              <Menu size={18} strokeWidth={1.75} />
+              <Menu size={16} strokeWidth={1.75} />
             </button>
           </div>
         </div>
 
         {searchOpen && (
-          <div className="border-t border-line-soft bg-white px-6 py-4 lg:hidden">
-            <div className="flex items-center gap-3">
+          <div className="border-t border-line-soft bg-white px-4 py-3 lg:hidden">
+            <div className="flex items-center gap-2">
               <div className="flex-1">
                 <SmartSearchBar autoFocus />
               </div>
               <button
                 type="button"
                 onClick={() => setSearchOpen(false)}
-                className="icon-btn"
+                className="icon-btn p-2"
                 aria-label="Close search"
               >
-                <X size={18} strokeWidth={1.75} />
+                <X size={16} strokeWidth={1.75} />
               </button>
             </div>
           </div>

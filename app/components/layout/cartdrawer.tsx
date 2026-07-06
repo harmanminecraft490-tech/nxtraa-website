@@ -6,7 +6,7 @@ import { Minus, Plus, Trash2, X } from "lucide-react";
 import ProductVisual from "../ui/productvisual";
 
 import { useCart } from "../lib/cartcontext";
-import { getProductById } from "../lib/products";
+import { getProductById } from "../lib/products-store";
 import { cn } from "../lib/utils";
 
 export default function CartDrawer() {

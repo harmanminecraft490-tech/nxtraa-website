@@ -5,9 +5,12 @@ import AnnouncementBar from "../components/layout/announcementbar";
 import Navbar from "../components/layout/navbar";
 import Footer from "../components/layout/footer";
 import ProductCard from "../shop/productcard";
-import { categories, products } from "../components/lib/products";
+import { categories } from "../components/lib/product-types";
+import { getAllProductsCached } from "../components/lib/products-cache";
 
-export default function CollectionsPage() {
+export default async function CollectionsPage() {
+  const products = await getAllProductsCached();
+
   return (
     <>
       <AnnouncementBar />

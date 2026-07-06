@@ -22,7 +22,8 @@ import AnnouncementBar from "../components/layout/announcementbar";
 import Navbar from "../components/layout/navbar";
 import Footer from "../components/layout/footer";
 import { useCart } from "../components/lib/cartcontext";
-import { getProductById, getRecommendedProducts } from "../components/lib/products";
+import type { Product } from "../components/lib/product-types";
+import { getProductById, useProducts } from "../components/lib/products-store";
 import ProductVisual from "../components/ui/productvisual";
 
 export default function CartPageClient() {
@@ -32,8 +33,9 @@ export default function CartPageClient() {
     updateQuantity, 
     removeItem, 
     clearCart,
-    addItem 
+    addItem
   } = useCart();
+  const products = useProducts();
 
   // Local interactive states for premium feel
   const [couponCode, setCouponCode] = useState("");
@@ -74,12 +76,13 @@ export default function CartPageClient() {
   // Calculate sum of original differences (savings from original list price) plus coupon discount
   const totalSavings = useMemo(() => {
     const baseSavings = items.reduce((sum, item) => {
-      const p = getProductById(item.productId);
+      const p = products.find((candidate) => candidate.id === item.productId);
+      if (!p) return sum;
       const diff = Math.max(0, p.oldPrice - p.price);
       return sum + diff * item.quantity;
     }, 0);
     return baseSavings + couponDiscount;
-  }, [items, couponDiscount]);
+  }, [items, couponDiscount, products]);
 
   // Handler for coupon codes
   const applyCode = (code: string) => {
@@ -123,8 +126,27 @@ export default function CartPageClient() {
   const recommendedProducts = useMemo(() => {
     if (items.length === 0) return [];
     const primaryProductId = items[0].productId;
-    return getRecommendedProducts(primaryProductId, 4);
-  }, [items]);
+    const primaryProduct = products.find((p) => p.id === primaryProductId);
+    if (!primaryProduct) return [];
+    
+    const sameCategoryProducts = products
+      .filter((p) => p.category === primaryProduct.category && p.id !== primaryProductId)
+      .slice(0, 4);
+    
+    if (sameCategoryProducts.length >= 4) {
+      return sameCategoryProducts;
+    }
+    
+    const bestsellers = products
+      .filter((p) => [9, 13, 20, 33, 44, 97, 100, 126].includes(p.id))
+      .filter((p) => p.id !== primaryProductId)
+      .slice(0, 8);
+    
+    const combined = [...sameCategoryProducts, ...bestsellers];
+    const unique = Array.from(new Map(combined.map((p) => [p.id, p])).values());
+
+    return unique.slice(0, 4);
+  }, [items, products]);
 
   // Free shipping calculations
   const freeShippingThreshold = 999;
@@ -639,7 +661,7 @@ export default function CartPageClient() {
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-8">
-                {recommendedProducts.map((recProduct) => {
+                {recommendedProducts.map((recProduct: Product) => {
                   return (
                     <div 
                       key={recProduct.id}

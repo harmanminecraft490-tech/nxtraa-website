@@ -9,7 +9,8 @@ import {
   useState,
 } from "react";
 
-import { getProductById } from "./products";
+import { getDeliveryFee } from "./product-types";
+import { useProducts } from "./products-store";
 
 export type CartItem = {
   productId: number;
@@ -134,6 +135,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     readStoredItems,
     getServerCartSnapshot,
   );
+  // Loads the catalog once and re-renders (recomputing totals) when it arrives.
+  const products = useProducts();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const openDrawer = useCallback(() => setDrawerOpen(true), []);
@@ -186,16 +189,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     [items],
   );
 
-  const subtotal = useMemo(
-    () =>
-      items.reduce((sum, item) => {
-        const product = getProductById(item.productId);
-        return sum + product.price * item.quantity;
-      }, 0),
-    [items],
-  );
+  const subtotal = useMemo(() => {
+    const priceById = new Map(products.map((p) => [p.id, p.price]));
+    return items.reduce(
+      (sum, item) => sum + (priceById.get(item.productId) ?? 0) * item.quantity,
+      0,
+    );
+  }, [items, products]);
 
-  const deliveryFee = subtotal >= 999 || subtotal === 0 ? 0 : 79;
+  const deliveryFee = getDeliveryFee(subtotal);
   const total = subtotal + deliveryFee;
 
   const value = useMemo(

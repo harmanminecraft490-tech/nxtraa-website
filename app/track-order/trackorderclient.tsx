@@ -12,9 +12,11 @@ import {
   ORDER_STEPS,
   type Order,
 } from "../components/lib/orders";
-import { getProductById } from "../components/lib/products";
+import { getProductById, useProducts } from "../components/lib/products-store";
 
 export default function TrackOrderClient() {
+  // Loads the catalog and re-renders when it arrives so item names/prices resolve.
+  useProducts();
   const searchParams = useSearchParams();
   const initialOrderId = searchParams?.get("id") ?? "";
   const [orderId, setOrderId] = useState(initialOrderId);

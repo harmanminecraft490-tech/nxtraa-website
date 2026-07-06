@@ -15,11 +15,11 @@ export default function TrustStrip() {
           {perks.map(({ icon: Icon, label, sub }) => (
             <div
               key={label}
-              className="flex flex-col items-center bg-white px-5 py-7 text-center sm:py-8"
+              className="flex flex-col items-center bg-white px-4 py-5 text-center sm:px-5 sm:py-8"
             >
-              <Icon className="text-accent" size={28} strokeWidth={2} />
-              <p className="mt-3 text-sm font-bold leading-snug text-ink-950">{label}</p>
-              <p className="mt-1.5 text-xs font-medium leading-relaxed text-ink-500">{sub}</p>
+              <Icon className="text-accent" size={24} strokeWidth={2} />
+              <p className="mt-2 text-xs font-bold leading-snug text-ink-950 sm:mt-3 sm:text-sm">{label}</p>
+              <p className="mt-1 text-[10px] font-medium leading-relaxed text-ink-500 sm:mt-1.5 sm:text-xs">{sub}</p>
             </div>
           ))}
         </div>

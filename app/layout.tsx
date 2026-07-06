@@ -19,7 +19,8 @@ export const metadata: Metadata = {
   description: "Nxteraa offers premium mobile accessories including neckbands, earbuds, chargers, data cables, speakers, power banks and more.",
   metadataBase: new URL("https://nxtraa.online"),
   icons: {
-    icon: "/NE-NXTERAA-logo.ico",
+    icon: "/favicon.ico",
+    apple: "/favicon.ico",
   },
   openGraph: {
     title: "Nxteraa | Premium Mobile Accessories",
@@ -28,9 +29,10 @@ export const metadata: Metadata = {
     siteName: "Nxteraa",
     images: [
       {
-        url: "https://nxtraa.online/og-image.png", // Assuming you will add an OG image
+        url: "/logo.svg",
         width: 1200,
         height: 630,
+        alt: "Nxteraa Logo",
       },
     ],
     type: "website",
@@ -39,8 +41,14 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Nxteraa | Premium Mobile Accessories",
     description: "Nxteraa offers premium mobile accessories including neckbands, earbuds, chargers, data cables, speakers, power banks and more.",
-    // creator: "@yourtwitterhandle", // Add your Twitter handle
-    images: ["https://nxtraa.online/og-image.png"], // Assuming you will add an OG image
+    images: [
+      {
+        url: "/logo.svg",
+        width: 1200,
+        height: 630,
+        alt: "Nxteraa Logo",
+      },
+    ],
   },
 };
 
@@ -54,12 +62,7 @@ export default function RootLayout({
     "@type": "Organization",
     "name": "Nxteraa",
     "url": "https://nxtraa.online",
-    "logo": "https://nxtraa.online/NE-NXTERAA-logo.png", // Assuming you have a logo at this URL
-    "sameAs": [
-      // Add your social media profile URLs here
-      // "https://www.facebook.com/your-profile",
-      // "https://www.instagram.com/your-profile"
-    ]
+    "logo": "https://nxtraa.online/logo.svg",
   };
 
   const websiteSchema = {

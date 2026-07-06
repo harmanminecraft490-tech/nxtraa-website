@@ -34,7 +34,7 @@ export default function BannerCarousel() {
     >
       <div className="relative w-full">
         {/* Full-bleed banner — no black box, image fills edge to edge */}
-        <div className="relative aspect-[2.4/1] w-full min-h-[200px] sm:aspect-[2.6/1] sm:min-h-[280px] md:min-h-[340px] lg:aspect-[2.8/1] lg:min-h-[420px] xl:min-h-[480px]">
+        <div className="relative aspect-[2.4/1] w-full min-h-[160px] sm:aspect-[2.6/1] sm:min-h-[240px] md:min-h-[300px] lg:aspect-[2.8/1] lg:min-h-[380px] xl:min-h-[440px]">
           {siteBanners.map((banner, index) => (
             <Link
               key={banner.src}
@@ -64,31 +64,31 @@ export default function BannerCarousel() {
             <button
               type="button"
               onClick={() => goTo(active - 1)}
-              className="absolute left-4 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-lg transition hover:bg-white sm:left-6 sm:h-11 sm:w-11"
+              className="absolute left-3 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-lg transition hover:bg-white sm:left-6 sm:h-11 sm:w-11"
               aria-label="Previous banner"
             >
-              <ChevronLeft size={22} />
+              <ChevronLeft className="h-[18px] w-[18px] sm:h-[22px] sm:w-[22px]" />
             </button>
             <button
               type="button"
               onClick={() => goTo(active + 1)}
-              className="absolute right-4 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-lg transition hover:bg-white sm:right-6 sm:h-11 sm:w-11"
+              className="absolute right-3 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-lg transition hover:bg-white sm:right-6 sm:h-11 sm:w-11"
               aria-label="Next banner"
             >
-              <ChevronRight size={22} />
+              <ChevronRight className="h-[18px] w-[18px] sm:h-[22px] sm:w-[22px]" />
             </button>
 
-            <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 gap-2 sm:bottom-5">
+            <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 gap-1.5 sm:bottom-4 sm:gap-2">
               {siteBanners.map((banner, index) => (
                 <button
                   key={banner.src}
                   type="button"
                   onClick={() => goTo(index)}
                   aria-label={`Banner ${index + 1}`}
-                  className={`h-2 rounded-full transition-all duration-300 ${
+                  className={`h-1.5 rounded-full transition-all duration-300 sm:h-2 ${
                     index === active
-                      ? "w-7 bg-white shadow-md"
-                      : "w-2 bg-white/50 hover:bg-white/80"
+                      ? "w-5 bg-white shadow-md sm:w-7"
+                      : "w-1.5 bg-white/50 hover:bg-white/80 sm:w-2"
                   }`}
                 />
               ))}

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
 
 import { getSearchSuggestions, RECOMMENDED_SEARCHES } from "../lib/search";
+import { useProducts } from "../lib/products-store";
 import { cn } from "../lib/utils";
 
 type SmartSearchBarProps = {
@@ -47,6 +48,8 @@ function SmartSearchBarInner({
 }: Required<Pick<SmartSearchBarProps, "size" | "autoFocus" | "initialQuery">> &
   Pick<SmartSearchBarProps, "className" | "inputClassName" | "onSearch">) {
   const router = useRouter();
+  // Keeps the catalog loaded so suggestions include real product names/models.
+  useProducts();
   const [query, setQuery] = useState(initialQuery);
   const [focused, setFocused] = useState(false);
   const [hintIndex, setHintIndex] = useState(0);

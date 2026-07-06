@@ -1,4 +1,7 @@
-import { products, type Product } from "./products";
+// Client-side product search over the shared products store.
+
+import type { Product } from "./product-types";
+import { getProductsSnapshot } from "./products-store";
 
 export const RECOMMENDED_SEARCHES = [
   "Earbuds",
@@ -13,7 +16,7 @@ export const RECOMMENDED_SEARCHES = [
   "NEPB-4021",
 ];
 
-export function searchProducts(query: string): Product[] {
+export function performSearch(products: Product[], query: string): Product[] {
   const q = query.trim().toLowerCase();
   if (!q) return [];
 
@@ -32,14 +35,14 @@ export function searchProducts(query: string): Product[] {
         .join(" ")
         .toLowerCase();
 
-      let score = 0;
-      for (const term of terms) {
-        if (product.model.toLowerCase() === term) score += 100;
-        else if (product.model.toLowerCase().includes(term)) score += 50;
-        else if (product.title.toLowerCase().includes(term)) score += 40;
-        else if (product.category.toLowerCase().includes(term)) score += 30;
-        else if (haystack.includes(term)) score += 10;
-      }
+      const score = terms.reduce((acc, term) => {
+        if (product.model.toLowerCase() === term) return acc + 100;
+        if (product.model.toLowerCase().includes(term)) return acc + 50;
+        if (product.title.toLowerCase().includes(term)) return acc + 40;
+        if (product.category.toLowerCase().includes(term)) return acc + 30;
+        if (haystack.includes(term)) return acc + 10;
+        return acc;
+      }, 0);
 
       return { product, score };
     })
@@ -48,10 +51,16 @@ export function searchProducts(query: string): Product[] {
     .map((entry) => entry.product);
 }
 
+/** Searches the client-side catalog snapshot (load it via useProducts/loadProducts). */
+export function searchProducts(query: string): Product[] {
+  return performSearch(getProductsSnapshot(), query);
+}
+
 export function getSearchSuggestions(query: string, limit = 6): string[] {
   const q = query.trim().toLowerCase();
   if (!q) return RECOMMENDED_SEARCHES.slice(0, limit);
 
+  const products = getProductsSnapshot();
   const fromProducts = products
     .flatMap((p) => [p.model, p.title, p.category])
     .filter((s, i, arr) => arr.indexOf(s) === i && s.toLowerCase().includes(q));
@@ -60,7 +69,7 @@ export function getSearchSuggestions(query: string, limit = 6): string[] {
     s.toLowerCase().includes(q),
   );
 
-  return [...fromProducts, ...fromRecommended]
-    .filter((s, i, arr) => arr.indexOf(s) === i)
-    .slice(0, limit);
+  const combined = [...fromProducts, ...fromRecommended];
+  const unique = Array.from(new Set(combined));
+  return unique.slice(0, limit);
 }

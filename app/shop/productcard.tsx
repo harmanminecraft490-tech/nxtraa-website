@@ -28,26 +28,27 @@ export default function ProductCard({
   badge,
   imageUrls = [],
 }: ProductCardProps) {
-  const discount = Math.round(((oldPrice - price) / oldPrice) * 100);
+  const hasDiscount = oldPrice > price && oldPrice > 0;
+  const discount = hasDiscount ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
   const buyHref = `/buy?product=${id}`;
   const cartHref = `/buy?product=${id}&action=cart`;
 
   return (
     <article className="card-premium !p-0 flex flex-col h-full">
-      <div className="relative aspect-[4/3] overflow-hidden rounded-t-[24px] border-b border-line-soft">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-t-[20px] sm:rounded-t-[24px] border-b border-line-soft">
         {badge && (
-          <span className="absolute left-4 top-4 z-10 max-w-[calc(100%-6rem)] truncate rounded-full bg-white/95 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-ink-950 shadow-sm backdrop-blur-sm">
+          <span className="absolute left-3 top-3 z-10 max-w-[calc(100%-5rem)] truncate rounded-full bg-white/95 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-ink-950 shadow-sm backdrop-blur-sm sm:left-4 sm:top-4 sm:px-3 sm:py-1.5 sm:text-[10px]">
             {badge}
           </span>
         )}
 
         <Link
           href="/wishlist"
-          className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-ink-900 shadow-md transition-all duration-300 hover:bg-accent hover:text-white hover:scale-110"
+          className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-ink-900 shadow-md transition-all duration-300 hover:bg-accent hover:text-white hover:scale-110 sm:right-4 sm:top-4 sm:h-10 sm:w-10"
           aria-label={`Add ${title} to wishlist`}
           onClick={(e) => e.stopPropagation()}
         >
-          <Heart size={16} />
+          <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         </Link>
 
         <Link href={buyHref} className="block h-full">
@@ -55,50 +56,55 @@ export default function ProductCard({
         </Link>
       </div>
 
-      <div className="flex flex-1 flex-col gap-4 p-6">
-        <div className="flex items-center justify-between gap-3">
-          <p className="truncate text-[10px] font-extrabold uppercase tracking-[0.2em] text-accent">
+      <div className="flex flex-1 flex-col gap-3 p-4 sm:gap-4 sm:p-6">
+        <div className="flex items-center justify-between gap-2">
+          <p className="truncate text-[9px] font-extrabold uppercase tracking-[0.2em] text-accent sm:text-[10px]">
             {category}
           </p>
-          <div className="flex shrink-0 items-center gap-1.5 text-sm font-bold text-amber-500">
-            <Star size={14} fill="currentColor" />
+          <div className="flex shrink-0 items-center gap-1 text-xs font-bold text-amber-500 sm:gap-1.5 sm:text-sm">
+            <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5" fill="currentColor" />
             <span>{rating}</span>
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-1.5 sm:space-y-2">
           <Link href={buyHref} className="block">
-            <h3 className="line-clamp-2 text-base font-black leading-snug text-ink-950 transition-colors duration-300 hover:text-accent sm:text-lg">
+            <h3 className="line-clamp-2 text-sm font-black leading-snug text-ink-950 transition-colors duration-300 hover:text-accent sm:text-lg">
               {title}
             </h3>
           </Link>
-          <p className="text-sm font-medium text-ink-500">{model}</p>
+          <p className="text-xs font-medium text-ink-500 sm:text-sm">{model}</p>
         </div>
 
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
-          <span className="text-2xl font-black tracking-tight text-ink-950">
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1.5 sm:gap-x-3 sm:gap-y-2">
+          <span className="text-xl font-black tracking-tight text-ink-950 sm:text-2xl">
             Rs. {price}
           </span>
-          <span className="text-xs font-semibold text-ink-400 line-through sm:text-sm">
-            Rs. {oldPrice}
-          </span>
-          <span className="rounded-full bg-accent-soft px-2 py-1 text-[10px] font-bold text-accent-deep">
-            {discount}% OFF
-          </span>
+          {hasDiscount && (
+            <>
+              <span className="text-[10px] font-semibold text-ink-400 line-through sm:text-xs">
+                Rs. {oldPrice}
+              </span>
+              <span className="rounded-full bg-accent-soft px-1.5 py-0.5 text-[9px] font-bold text-accent-deep sm:px-2 sm:py-1 sm:text-[10px]">
+                {discount}% OFF
+              </span>
+            </>
+          )}
         </div>
 
-        <div className="mt-auto flex items-center gap-3 pt-2">
+        <div className="mt-auto flex items-center gap-2 pt-1.5 sm:gap-3 sm:pt-2">
           <Link
             href={cartHref}
-            className="h-10 flex-1 rounded-full flex items-center justify-center gap-2 text-sm font-bold border-2 border-accent bg-white text-accent hover:bg-accent hover:text-white transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 active:scale-[0.97] hover:shadow-[0_8px_20px_-6px_rgba(6,182,212,0.45)]"
+            className="h-9 flex-1 rounded-full flex items-center justify-center gap-1.5 text-xs font-bold border-2 border-accent bg-white text-accent hover:bg-accent hover:text-white transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 active:scale-[0.97] hover:shadow-[0_8px_20px_-6px_rgba(6,182,212,0.45)] sm:h-10 sm:gap-2 sm:text-sm"
             aria-label="Add to Cart"
           >
-            <ShoppingCart size={16} />
-            Add to Cart
+            <ShoppingCart className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Add to Cart</span>
+            <span className="sm:hidden">Add</span>
           </Link>
           <Link
             href={buyHref}
-            className="h-10 flex-1 rounded-full flex items-center justify-center text-sm font-bold bg-accent text-white hover:bg-accent-deep transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 active:scale-[0.97] hover:shadow-[0_8px_20px_-6px_rgba(6,182,212,0.45)]"
+            className="h-9 flex-1 rounded-full flex items-center justify-center text-xs font-bold bg-accent text-white hover:bg-accent-deep transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 active:scale-[0.97] hover:shadow-[0_8px_20px_-6px_rgba(6,182,212,0.45)] sm:h-10 sm:text-sm"
           >
             Buy Now
           </Link>

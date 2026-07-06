@@ -1,6 +1,7 @@
 import { Prisma, OrderStatus } from "@prisma/client";
 
-import { getProductById } from "@/app/components/lib/products";
+import { getDeliveryFee } from "@/app/components/lib/product-types";
+import { getAllProductsCached } from "@/app/components/lib/products-cache";
 import prisma from "@/lib/prisma";
 import type { CartItem } from "@/app/components/lib/cartcontext";
 import type { Order, OrderAddress } from "@/app/components/lib/orders";
@@ -10,6 +11,35 @@ type OrderWithItems = Prisma.OrderGetPayload<{
     items: true;
   };
 }>;
+
+/** True when `items` is a non-empty list of { productId:number, quantity:number>0 }. */
+export function isValidCartItems(items: unknown): items is CartItem[] {
+  if (!Array.isArray(items) || items.length === 0) return false;
+  return items.every(
+    (item) =>
+      item &&
+      typeof item === "object" &&
+      typeof (item as CartItem).productId === "number" &&
+      typeof (item as CartItem).quantity === "number" &&
+      (item as CartItem).quantity > 0,
+  );
+}
+
+/**
+ * Authoritative, server-side order pricing. Prices come from the catalog — never
+ * from the client — so a tampered request cannot change what is charged. Shared
+ * by /api/orders and /api/payments/razorpay so both always agree.
+ */
+export async function computeCartPricing(items: CartItem[]) {
+  const products = await getAllProductsCached();
+  const priceMap = new Map(products.map((p) => [p.id, p.price]));
+  const subtotal = items.reduce(
+    (sum, item) => sum + (priceMap.get(item.productId) ?? 0) * item.quantity,
+    0,
+  );
+  const deliveryFee = getDeliveryFee(subtotal);
+  return { subtotal, deliveryFee, total: subtotal + deliveryFee };
+}
 
 function mapStatus(status: OrderStatus): Order["status"] {
   return status;
@@ -60,10 +90,14 @@ export async function createOrderForUser({
   payment: string;
   address: OrderAddress;
 }) {
+  // Fetch all products to get their prices for the order items.
+  const products = await getAllProductsCached();
+  const productPriceMap = new Map(products.map((p) => [p.id, p.price]));
+
   let orderNumber = generateOrderNumber();
   const pricedItems = items.map((item) => ({
     ...item,
-    unitPrice: getProductById(item.productId).price,
+    unitPrice: productPriceMap.get(item.productId) ?? 0,
   }));
 
   while (await prisma.order.findUnique({ where: { orderNumber } })) {
@@ -99,7 +133,7 @@ export async function createOrderForUser({
   return mapOrder(order);
 }
 
-export async function getOrderByNumber(orderNumber: string) {
+export async function getOrderByNumberForUser(orderNumber: string, userId: string) {
   const order = await prisma.order.findUnique({
     where: { orderNumber },
     include: {
@@ -107,7 +141,9 @@ export async function getOrderByNumber(orderNumber: string) {
     },
   });
 
-  return order ? mapOrder(order) : null;
+  if (!order || order.userId !== userId) return null;
+
+  return mapOrder(order);
 }
 
 export async function getOrdersForUser(userId: string) {

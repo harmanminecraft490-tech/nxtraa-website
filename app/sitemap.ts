@@ -1,20 +1,27 @@
-import { MetadataRoute } from 'next';
+import type { MetadataRoute } from "next";
+import { getAllProductsCached } from "./components/lib/products-cache";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://nxtraa.online';
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = "https://nxtraa.online";
+  const products = await getAllProductsCached();
 
-  // In the future, you can fetch dynamic routes (e.g., products, collections)
-  // from a database or API here and add them to the sitemap.
+  // Product pages live at /buy?product=<id> (there is no /product/[id] route).
+  const productUrls: MetadataRoute.Sitemap = products.map((product) => ({
+    url: `${baseUrl}/buy?product=${product.id}`,
+    lastModified: new Date(),
+  }));
 
-  return [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/shop`,
-      lastModified: new Date(),
-    },
-    // Add other static pages here
-  ];
+  const staticUrls: MetadataRoute.Sitemap = [
+    "",
+    "/shop",
+    "/collections",
+    "/search",
+    "/support",
+    "/track-order",
+  ].map((path) => ({
+    url: `${baseUrl}${path}`,
+    lastModified: new Date(),
+  }));
+
+  return [...staticUrls, ...productUrls];
 }

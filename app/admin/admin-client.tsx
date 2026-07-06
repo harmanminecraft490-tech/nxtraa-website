@@ -1,61 +1,114 @@
-"use client";
+  "use client";
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Save, X, Image as ImageIcon, Search, Upload, Trash2 } from "lucide-react";
 
-type Product = {
-  id: number;
-  title: string;
-  model: string;
-  price: number;
-  oldPrice: number;
-  rating: number;
-  badge: string;
-  category: string;
-  color: string;
-  description: string;
-  highlights: string[];
-  imageUrls: string[];
+import { categories, type Product } from "@/app/components/lib/product-types";
+
+// Selectable categories for product forms — the shared list minus the "All" filter.
+const PRODUCT_CATEGORIES = categories.filter((c) => c !== "All");
+
+const formatINR = (rupees: number) => `₹${rupees.toLocaleString("en-IN")}`;
+
+type AdminStats = {
+  productCount: number;
+  orderCount: number;
+  userCount: number;
+  totalRevenue: number;
+  recentOrders: Array<{
+    id: string;
+    orderNumber: string;
+    total: number;
+    status: string;
+    createdAt: string;
+    user: {
+      name: string | null;
+      email: string | null;
+    };
+  }>;
 };
 
 const MAX_IMAGES = 3;
 
 export default function AdminClient() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<number | null>(null);
   const [uploading, setUploading] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [deletingImage, setDeletingImage] = useState<{ productId: number; url: string } | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [newProduct, setNewProduct] = useState({
+    title: "",
+    model: "",
+    price: 0,
+    oldPrice: 0,
+    category: "Neckbands",
+    color: "",
+    description: "",
+    badge: "",
+  });
+
+  const showMessage = (type: "success" | "error", text: string) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage(null), 3000);
+  };
 
   useEffect(() => {
+
     let cancelled = false;
 
-    fetch("/api/admin/products")
-      .then(async (res) => {
-        if (!res.ok || cancelled) {
-          return;
+    async function load() {
+      try {
+        const [productsRes, statsRes] = await Promise.all([
+          fetch("/api/admin/products"),
+          fetch("/api/admin/stats"),
+        ]);
+
+        const productsBody = await productsRes.json().catch(() => ({}));
+        const statsBody = await statsRes.json().catch(() => ({}));
+
+        if (cancelled) return;
+
+        if (!productsRes.ok) {
+          showMessage(
+            "error",
+            productsBody?.error
+              ? `Failed to load products: ${productsBody.error}`
+              : `Failed to load products (HTTP ${productsRes.status})`
+          );
+          setProducts([]);
+        } else {
+          setProducts((productsBody as Product[]) ?? []);
         }
 
-        const data = (await res.json()) as Product[];
-        if (!cancelled) {
-          setProducts(data);
+        if (!statsRes.ok) {
+          showMessage("error", "Failed to load statistics");
+        } else {
+          setStats(statsBody as AdminStats);
         }
-      })
-      .catch((err: unknown) => {
-        console.error("Failed to fetch products:", err);
-      })
-      .finally(() => {
+      } catch {
+        if (!cancelled) {
+          showMessage("error", "Failed to load admin data");
+        }
+      } finally {
         if (!cancelled) {
           setLoading(false);
         }
-      });
+      }
+    }
+
+    load();
 
     return () => {
       cancelled = true;
     };
   }, []);
+
 
   const updateProduct = async (id: number, updates: Partial<Product>) => {
     setSaving(id);
@@ -74,7 +127,6 @@ export default function AdminClient() {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        console.error("POST /api/admin/products failed:", data);
         showMessage(
           "error",
           data.details || data.error || JSON.stringify(data) || "Unknown server error"
@@ -88,8 +140,7 @@ export default function AdminClient() {
         )
       );
       showMessage("success", "Product updated successfully");
-    } catch (error) {
-      console.error("POST /api/admin/products threw:", error);
+    } catch {
       showMessage("error", "Error updating product");
     } finally {
       setSaving(null);
@@ -97,27 +148,57 @@ export default function AdminClient() {
   };
 
   const uploadImage = async (productId: number, file: File) => {
+    const current = products.find((p) => p.id === productId);
+    if (current && current.imageUrls.length >= MAX_IMAGES) {
+      showMessage("error", `You can upload up to ${MAX_IMAGES} images per product.`);
+      return;
+    }
+
     setUploading(productId);
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("productId", String(productId));
 
       const res = await fetch("/api/admin/upload", {
         method: "POST",
         body: formData,
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        setProducts((prev) =>
-          prev.map((p) => (p.id === productId ? { ...p, imageUrls: data.imageUrls } : p))
-        );
-        showMessage("success", "Image uploaded successfully");
-      } else {
-        const errorData = await res.json();
-        showMessage("error", errorData.error || "Failed to upload image");
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data?.url) {
+        showMessage("error", data?.error || "Failed to upload image");
+        return;
       }
+
+      // The upload endpoint only stores the file and returns its URL. Persist
+      // that URL onto the product record so it survives a refresh.
+      const nextImages = [...(current?.imageUrls ?? []), data.url as string].slice(
+        0,
+        MAX_IMAGES,
+      );
+
+      const saveRes = await fetch("/api/admin/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: productId, imageUrls: nextImages }),
+      });
+
+      const saveData = await saveRes.json().catch(() => ({}));
+
+      if (!saveRes.ok) {
+        showMessage("error", saveData?.details || saveData?.error || "Failed to save image");
+        return;
+      }
+
+      const persisted =
+        (saveData?.product?.imageUrls as string[] | undefined) ?? nextImages;
+
+      setProducts((prev) =>
+        prev.map((p) => (p.id === productId ? { ...p, imageUrls: persisted } : p)),
+      );
+
+      showMessage("success", "Image uploaded successfully");
     } catch {
       showMessage("error", "Error uploading image");
     } finally {
@@ -125,36 +206,73 @@ export default function AdminClient() {
     }
   };
 
+
   const deleteImage = async (productId: number, imageUrl: string) => {
+    setDeletingImage({ productId, url: imageUrl });
     try {
-      // We can't easily delete from client, so we'll just update the JSON
       const res = await fetch("/api/admin/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          id: productId, 
-          imageUrls: products.find(p => p.id === productId)?.imageUrls.filter(url => url !== imageUrl) || []
+        body: JSON.stringify({
+          id: productId,
+          imageUrls:
+            products.find((p) => p.id === productId)?.imageUrls.filter((url) => url !== imageUrl) || [],
         }),
       });
 
-      if (res.ok) {
-        setProducts((prev) =>
-          prev.map((p) => (p.id === productId ? { ...p, imageUrls: p.imageUrls.filter(url => url !== imageUrl) } : p))
-        );
-        showMessage("success", "Image deleted successfully");
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        showMessage("error", data?.details || data?.error || "Failed to delete image");
+        return;
       }
+
+      // Keep UI in sync with server response (in case server normalizes)
+      const updatedImages = (data?.product?.imageUrls as string[] | undefined) ||
+        products.find((p) => p.id === productId)?.imageUrls.filter((url) => url !== imageUrl) ||
+        [];
+
+      setProducts((prev) =>
+        prev.map((p) => (p.id === productId ? { ...p, imageUrls: updatedImages } : p)),
+      );
+      showMessage("success", "Image deleted successfully");
     } catch {
       showMessage("error", "Error deleting image");
+    } finally {
+      setDeletingImage(null);
     }
   };
 
-  const showMessage = (type: "success" | "error", text: string) => {
-    setMessage({ type, text });
-    setTimeout(() => setMessage(null), 3000);
+  const deleteProduct = async (productId: number) => {
+    if (!confirm("Are you sure you want to delete this product? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/admin/products", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: productId }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        showMessage("error", data?.details || data?.error || "Failed to delete product");
+        return;
+      }
+
+      setProducts((prev) => prev.filter((p) => p.id !== productId));
+      showMessage("success", "Product deleted successfully");
+    } catch {
+      showMessage("error", "Error deleting product");
+    }
   };
 
+  const query = searchQuery.trim().toLowerCase();
+
   const filteredProducts = products.filter((product) => {
-    const query = searchQuery.toLowerCase();
+    if (!query) return true;
     return (
       product.title.toLowerCase().includes(query) ||
       product.model.toLowerCase().includes(query) ||
@@ -162,6 +280,7 @@ export default function AdminClient() {
       product.color.toLowerCase().includes(query)
     );
   });
+
 
   if (loading) {
     return (
@@ -173,13 +292,237 @@ export default function AdminClient() {
 
   return (
     <div className="min-h-screen bg-canvas">
-      <div className="mx-auto max-w-7xl px-5 py-12 sm:px-8">
-        <div className="mb-10">
-          <h1 className="text-4xl font-black text-ink-950">Product Management</h1>
-          <p className="mt-2 text-ink-500">
-            Manage your products, update prices, and change images
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+        <div className="mb-8">
+          <h1 className="text-3xl font-black text-ink-950">Dashboard</h1>
+          <p className="mt-1 text-ink-500 text-sm">
+            Manage your products, view statistics, and monitor orders
           </p>
         </div>
+
+        {/* Dashboard Statistics */}
+        {stats && (
+          <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="rounded-2xl border border-line bg-white p-6">
+              <p className="text-sm font-medium text-ink-500">Products</p>
+              <p className="mt-2 text-3xl font-black text-ink-950">{stats.productCount}</p>
+            </div>
+            <div className="rounded-2xl border border-line bg-white p-6">
+              <p className="text-sm font-medium text-ink-500">Orders</p>
+              <p className="mt-2 text-3xl font-black text-ink-950">{stats.orderCount}</p>
+            </div>
+            <div className="rounded-2xl border border-line bg-white p-6">
+              <p className="text-sm font-medium text-ink-500">Users</p>
+              <p className="mt-2 text-3xl font-black text-ink-950">{stats.userCount}</p>
+            </div>
+            <div className="rounded-2xl border border-line bg-white p-6">
+              <p className="text-sm font-medium text-ink-500">Revenue</p>
+              <p className="mt-2 text-3xl font-black text-ink-950">{formatINR(stats.totalRevenue)}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Recent Orders */}
+        {stats && stats.recentOrders.length > 0 && (
+          <div className="mb-8 rounded-2xl border border-line bg-white p-6">
+            <h2 className="text-xl font-bold text-ink-950">Recent Orders</h2>
+            <div className="mt-4 space-y-3">
+              {stats.recentOrders.map((order) => (
+                <div
+                  key={order.id}
+                  className="flex items-center justify-between rounded-xl border border-line bg-canvas p-4"
+                >
+                  <div>
+                    <p className="font-medium text-ink-950">{order.orderNumber}</p>
+                    <p className="text-sm text-ink-500">
+                      {order.user.name || order.user.email || "Unknown"}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium text-ink-950">{formatINR(order.total)}</p>
+                    <p className="text-sm text-ink-500">{order.status}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Products Section */}
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-ink-950">Products</h2>
+            <p className="mt-1 text-sm text-ink-500">
+              Manage your product catalog
+            </p>
+          </div>
+          <button
+            onClick={() => setShowAddForm(true)}
+            className="btn btn-primary flex items-center gap-2"
+          >
+            <span className="text-lg">+</span>
+            Add Product
+          </button>
+        </div>
+
+        {/* Add Product Form */}
+        {showAddForm && (
+          <div className="mb-6 rounded-2xl border border-line bg-white p-6">
+            <h3 className="text-lg font-bold text-ink-950 mb-4">Add New Product</h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">
+                  Product Title
+                </label>
+                <input
+                  type="text"
+                  value={newProduct.title}
+                  onChange={(e) => setNewProduct({ ...newProduct, title: e.target.value })}
+                  className="w-full rounded-xl border border-line bg-white px-4 py-3 text-sm focus:border-accent focus:outline-none"
+                  placeholder="Enter product title"
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">
+                  Model
+                </label>
+                <input
+                  type="text"
+                  value={newProduct.model}
+                  onChange={(e) => setNewProduct({ ...newProduct, model: e.target.value })}
+                  className="w-full rounded-xl border border-line bg-white px-4 py-3 text-sm focus:border-accent focus:outline-none"
+                  placeholder="Enter model number"
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">
+                  Price (Rs.)
+                </label>
+                <input
+                  type="number"
+                  value={newProduct.price}
+                  onChange={(e) => setNewProduct({ ...newProduct, price: Number(e.target.value) })}
+                  className="w-full rounded-xl border border-line bg-white px-4 py-3 text-sm focus:border-accent focus:outline-none"
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">
+                  Old Price (Rs.)
+                </label>
+                <input
+                  type="number"
+                  value={newProduct.oldPrice}
+                  onChange={(e) => setNewProduct({ ...newProduct, oldPrice: Number(e.target.value) })}
+                  className="w-full rounded-xl border border-line bg-white px-4 py-3 text-sm focus:border-accent focus:outline-none"
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">
+                  Category
+                </label>
+                <select
+                  value={newProduct.category}
+                  onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+                  className="w-full rounded-xl border border-line bg-white px-4 py-3 text-sm focus:border-accent focus:outline-none"
+                >
+                  {PRODUCT_CATEGORIES.map((c) => (
+                    <option key={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">
+                  Color
+                </label>
+                <input
+                  type="text"
+                  value={newProduct.color}
+                  onChange={(e) => setNewProduct({ ...newProduct, color: e.target.value })}
+                  className="w-full rounded-xl border border-line bg-white px-4 py-3 text-sm focus:border-accent focus:outline-none"
+                  placeholder="Enter color"
+                />
+              </div>
+            </div>
+            <div className="mt-4">
+              <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">
+                Description
+              </label>
+              <textarea
+                value={newProduct.description}
+                onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                rows={3}
+                className="w-full rounded-xl border border-line bg-white px-4 py-3 text-sm focus:border-accent focus:outline-none"
+                placeholder="Enter product description"
+              />
+            </div>
+            <div className="mt-4 flex gap-3">
+              <button
+                onClick={async () => {
+                  setAdding(true);
+                  try {
+                    const res = await fetch("/api/admin/products", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(newProduct),
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok) {
+                      showMessage("error", data?.details || data?.error || "Failed to add product");
+                    } else {
+                      setProducts((prev) => [...prev, data.product]);
+                      setShowAddForm(false);
+                      setNewProduct({
+                        title: "",
+                        model: "",
+                        price: 0,
+                        oldPrice: 0,
+                        category: "Neckbands",
+                        color: "",
+                        description: "",
+                        badge: "",
+                      });
+                      showMessage("success", "Product added successfully");
+                    }
+                  } catch {
+                    showMessage("error", "Error adding product");
+                  } finally {
+                    setAdding(false);
+                  }
+                }}
+                disabled={adding || !newProduct.title || !newProduct.model || !newProduct.price}
+                className="btn btn-primary flex items-center gap-2"
+              >
+                {adding ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                ) : (
+                  <Save size={16} />
+                )}
+                Add Product
+              </button>
+              <button
+                onClick={() => {
+                  setShowAddForm(false);
+                  setNewProduct({
+                    title: "",
+                    model: "",
+                    price: 0,
+                    oldPrice: 0,
+                    category: "Neckbands",
+                    color: "",
+                    description: "",
+                    badge: "",
+                  });
+                }}
+                className="btn btn-secondary flex items-center gap-2"
+              >
+                <X size={16} />
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Search Bar */}
         <div className="mb-8">
@@ -190,7 +533,7 @@ export default function AdminClient() {
             />
             <input
               type="text"
-              placeholder="Search products by name, model, category..."
+              placeholder="Search by name, model, category..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full rounded-2xl border border-line bg-white py-3 pl-11 pr-4 text-sm focus:border-accent focus:outline-none"
@@ -200,6 +543,7 @@ export default function AdminClient() {
             Showing {filteredProducts.length} of {products.length} products
           </p>
         </div>
+
 
         {message && (
           <div
@@ -221,8 +565,10 @@ export default function AdminClient() {
               onUpdate={updateProduct}
               onUpload={uploadImage}
               onDeleteImage={deleteImage}
+              onDelete={deleteProduct}
               saving={saving === product.id}
               uploading={uploading === product.id}
+              deletingImage={deletingImage}
             />
           ))}
         </div>
@@ -242,20 +588,27 @@ function ProductCard({
   onUpdate,
   onUpload,
   onDeleteImage,
+  onDelete,
   saving,
   uploading,
+  deletingImage,
 }: {
   product: Product;
   onUpdate: (id: number, updates: Partial<Product>) => void;
   onUpload: (id: number, file: File) => void;
   onDeleteImage: (productId: number, imageUrl: string) => void;
+  onDelete: (id: number) => void;
   saving: boolean;
   uploading: boolean;
+  deletingImage: { productId: number; url: string } | null;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
+
+
     price: product.price,
     oldPrice: product.oldPrice,
+
     title: product.title,
     model: product.model,
     category: product.category,
@@ -285,38 +638,49 @@ function ProductCard({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      onUpload(product.id, file);
+    if (!file) return;
+
+    // Client-side validation to avoid server errors
+    const isAllowed = ["image/png", "image/jpeg", "image/webp"].includes(file.type);
+    if (!isAllowed) {
+      alert("Please upload a valid image (png, jpg, jpeg, webp)");
+      e.target.value = "";
+      return;
     }
+
+    onUpload(product.id, file);
     // Reset input so the same file can be selected again
     e.target.value = "";
   };
+
 
   return (
     <div className="card-premium overflow-hidden">
       <div className="flex flex-col gap-6 lg:flex-row">
         {/* Image Preview */}
         <div className="shrink-0 lg:w-80">
-          {/* Main Image */}
-          <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-mist">
-            {product.imageUrls.length > 0 ? (
-                <Image
-                  src={product.imageUrls[0]}
-                  alt={product.title}
-                  fill
-                  sizes="320px"
-                  className="object-cover"
-                />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center">
-                <ImageIcon size={48} className="text-ink-300" />
-              </div>
-            )}
-          </div>
+                {/* Main Image */}
+                <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-mist">
+                  {product.imageUrls.length > 0 ? (
+                    <Image
+                      src={product.imageUrls[0]}
+                      alt={product.title}
+                      fill
+                      sizes="320px"
+                      className="object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <ImageIcon size={48} className="text-ink-300" />
+                    </div>
+                  )}
+                </div>
+
 
           {/* Image Gallery - Show all uploaded images */}
           {product.imageUrls.length > 0 && (
-            <div className="mt-3 grid grid-cols-3 gap-2">
+          <div className="mt-3 grid grid-cols-3 gap-2">
               {product.imageUrls.map((url, index) => (
                 <div
                   key={index}
@@ -328,17 +692,19 @@ function ProductCard({
                     fill
                     sizes="96px"
                     className="object-cover"
+                    unoptimized
                   />
                   <button
                     onClick={() => onDeleteImage(product.id, url)}
-                    className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600"
+                    disabled={!!deletingImage && deletingImage.productId === product.id && deletingImage.url === url}
+                    className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600 disabled:opacity-60 disabled:hover:bg-red-500"
                     title="Delete image"
                   >
                     <Trash2 size={12} />
                   </button>
                 </div>
               ))}
-              
+
               {/* Empty slots for remaining images */}
               {Array.from({ length: MAX_IMAGES - product.imageUrls.length }).map((_, index) => (
                 <div
@@ -460,16 +826,9 @@ function ProductCard({
                     }
                     className="w-full rounded-xl border border-line bg-white px-4 py-3 text-sm focus:border-accent focus:outline-none"
                   >
-                    <option>Neckbands</option>
-                    <option>Earbuds</option>
-                    <option>Chargers</option>
-                    <option>Cables</option>
-                    <option>Power Banks</option>
-                    <option>Speakers</option>
-                    <option>Car Holders</option>
-                    <option>Adapters</option>
-                    <option>Screen Guards</option>
-                    <option>Accessories</option>
+                    {PRODUCT_CATEGORIES.map((c) => (
+                      <option key={c}>{c}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
@@ -538,12 +897,20 @@ function ProductCard({
                   )}
                 </div>
               </div>
-              <button
-                onClick={() => setIsEditing(true)}
-                className="btn btn-primary mt-4"
-              >
-                Edit Product
-              </button>
+              <div className="mt-4 flex gap-3">
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="btn btn-primary"
+                >
+                  Edit Product
+                </button>
+                <button
+                  onClick={() => onDelete(product.id)}
+                  className="btn bg-red-500 text-white hover:bg-red-600 border-red-500"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           )}
         </div>

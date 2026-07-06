@@ -1,16 +1,11 @@
 import { NextResponse } from "next/server";
 
-import prisma from "@/lib/prisma";
+import { getAllProductsCached } from "@/app/components/lib/products-cache";
 
 export async function GET() {
-  try {
-    const products = await prisma.product.findMany({
-      orderBy: { id: "asc" },
-    });
-    return NextResponse.json(products);
-  } catch (error) {
-    console.error("Failed to load products", error);
-    return NextResponse.json({ error: "Failed to load products" }, { status: 500 });
-  }
+  // Shared, TTL-backed cache. getAllProductsCached already swallows database
+  // errors and returns [] so the storefront degrades gracefully.
+  const products = await getAllProductsCached();
+  return NextResponse.json(products);
 }
 

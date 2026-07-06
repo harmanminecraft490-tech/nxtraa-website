@@ -101,22 +101,30 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   const token = unpack(store.get(SESSION_COOKIE)?.value);
   if (!token) return null;
 
-  const session = await prisma.session.findUnique({
-    where: { sessionToken: token },
-    include: { user: true },
-  });
+  try {
+    const session = await prisma.session.findUnique({
+      where: { sessionToken: token },
+      include: { user: true },
+    });
 
-  if (!session) return null;
-  if (session.expires.getTime() < Date.now()) {
-    await prisma.session.delete({ where: { sessionToken: token } }).catch(() => {});
+    if (!session) return null;
+    if (session.expires.getTime() < Date.now()) {
+      await prisma.session.delete({ where: { sessionToken: token } }).catch(() => {});
+      return null;
+    }
+
+    return {
+      id: session.user.id,
+      name: session.user.name,
+      email: session.user.email,
+    };
+  } catch (error) {
+    // Fail closed: if the session store is unreachable (e.g. a transient
+    // database outage) treat the request as unauthenticated rather than
+    // throwing an unhandled error that crashes every authenticated page.
+    console.error("Failed to resolve session user", error);
     return null;
   }
-
-  return {
-    id: session.user.id,
-    name: session.user.name,
-    email: session.user.email,
-  };
 }
 
 export function isAdminEmail(email: string | null | undefined) {

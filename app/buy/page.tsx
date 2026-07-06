@@ -6,7 +6,7 @@ import Navbar from "../components/layout/navbar";
 import Footer from "../components/layout/footer";
 import ProductGallery from "../components/ui/productgallery";
 import ProductReviews from "../components/ui/productreviews";
-import { getProductById } from "../components/lib/products";
+import { getAllProductsCached } from "../components/lib/products-cache";
 import BuyActions from "./buyactions";
 
 type BuyPageProps = {
@@ -19,7 +19,33 @@ type BuyPageProps = {
 export default async function BuyPage({ searchParams }: BuyPageProps) {
   const params = await searchParams;
   const productId = Number(params.product ?? 1);
-  const product = getProductById(productId);
+  const products = await getAllProductsCached();
+  const product = products.find((p) => p.id === productId) ?? products[0];
+
+  if (!product) {
+    return (
+      <>
+        <AnnouncementBar />
+        <Navbar />
+        <main className="min-h-[60vh] bg-white">
+          <div className="page-wrap flex flex-col items-center py-20 text-center">
+            <h1 className="section-title text-ink-950">Product unavailable</h1>
+            <p className="body-copy mt-4">
+              We could not load this product right now. Please try again shortly.
+            </p>
+            <Link
+              href="/shop"
+              className="mt-8 rounded-full bg-accent px-8 py-3.5 text-sm font-bold text-white hover:bg-accent-deep"
+            >
+              Back to shop
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
   const discount = Math.round(
     ((product.oldPrice - product.price) / product.oldPrice) * 100,
   );

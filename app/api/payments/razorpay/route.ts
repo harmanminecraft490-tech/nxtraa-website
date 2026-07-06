@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import Razorpay from "razorpay";
 
+import { getSessionUser } from "@/lib/auth/session";
+import { computeCartPricing, isValidCartItems } from "@/lib/order-data";
+
 // Only initialize Razorpay if keys are available
 const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
 const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
@@ -20,22 +23,35 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Must be signed in — the order is tied to a real user.
+  const user = await getSessionUser();
+  if (!user) {
+    return NextResponse.json({ error: "Please sign in to pay." }, { status: 401 });
+  }
+
   try {
-    const { amount, currency = "INR", orderId } = await request.json();
+    const body = await request.json();
 
-    const options = {
-      amount: amount * 100, // Razorpay expects amount in paise
-      currency,
-      receipt: orderId,
+    // The amount is derived from the catalog, never trusted from the client.
+    // This prevents a caller from paying Rs.1 for a full-priced cart.
+    if (!isValidCartItems(body.items)) {
+      return NextResponse.json({ error: "Cart items are invalid." }, { status: 400 });
+    }
+
+    const { total } = await computeCartPricing(body.items);
+    if (total <= 0) {
+      return NextResponse.json({ error: "Order total must be greater than zero." }, { status: 400 });
+    }
+
+    const order = await razorpay.orders.create({
+      // Razorpay expects an integer number of paise.
+      amount: Math.round(total * 100),
+      currency: "INR",
+      receipt: typeof body.orderId === "string" ? body.orderId : `rcpt_${user.id}`,
       payment_capture: 1,
-    };
-
-    const order = await razorpay.orders.create(options);
-
-    return NextResponse.json({
-      success: true,
-      order,
     });
+
+    return NextResponse.json({ success: true, order });
   } catch (error) {
     console.error("Razorpay order creation error:", error);
     return NextResponse.json(

@@ -1,99 +1,72 @@
-import rawProducts from "./products-data.json";
+// Server-side product queries. Client components should use products-store.ts.
 
-export type Product = {
-  id: number;
-  title: string;
-  model: string;
-  price: number;
-  oldPrice: number;
-  rating: number;
-  badge: string;
-  category: string;
-  color: string;
-  description: string;
-  highlights: string[];
-  imageUrls: string[];
-};
+import type { Product } from "./product-types";
+import { categories } from "./product-types";
+import { getAllProductsCached } from "./products-cache";
 
-export type Review = {
-  id: string;
-  productId: number;
-  author: string;
-  rating: number;
-  title: string;
-  comment: string;
-  date: string;
-};
+export type { Product };
+export { categories };
 
-export const products: Product[] = rawProducts as Product[];
-
-export const categories = [
-  "All",
-  "Neckbands",
-  "Earbuds",
-  "Chargers",
-  "Cables",
-  "Power Banks",
-  "Speakers",
-  "Car Holders",
-  "Adapters",
-  "Screen Guards",
-  "Accessories",
-] as const;
-
-export function getProductById(id: number) {
-  return products.find((product) => product.id === id) ?? products[0];
+export async function getProductById_async(id: number): Promise<Product> {
+  const products = await getAllProductsCached();
+  return products.find((p) => p.id === id) ?? products[0];
 }
 
-export function getFeaturedProducts() {
-  return products.filter((p) =>
-    [9, 13, 20, 33, 44, 97, 100, 109].includes(p.id),
-  );
-}
-
-export function getBestsellers(limit = 4) {
-  return products
-    .filter((p) => [9, 13, 20, 33, 44, 97, 100, 126].includes(p.id))
-    .slice(0, limit);
-}
-
-export function getMustTry(limit = 4) {
-  return products
-    .filter((p) => [13, 15, 33, 100, 109, 114, 126, 134].includes(p.id))
-    .slice(0, limit);
-}
-
-export function getFastChargers(limit = 4) {
-  return products.filter((p) => p.category === "Chargers").slice(0, limit);
-}
-
-export function getPowerPicks(limit = 4) {
-  return products.filter((p) => p.category === "Power Banks").slice(0, limit);
-}
-
-export function getProductsByCategory(category: string) {
+export async function getProductsByCategory(category: string): Promise<Product[]> {
+  const products = await getAllProductsCached();
   if (category === "All") return products;
   return products.filter((p) => p.category === category);
 }
 
-export function getRecommendedProducts(currentProductId: number, limit = 4) {
-  const currentProduct = getProductById(currentProductId);
+export async function getRecommendedProducts(
+  currentProductId: number,
+  limit = 4,
+): Promise<Product[]> {
+  const products = await getAllProductsCached();
+  const currentProduct = products.find((p) => p.id === currentProductId) ?? products[0];
+  if (!currentProduct) return [];
+
   const sameCategoryProducts = products.filter(
-    (p) => p.category === currentProduct.category && p.id !== currentProductId
+    (p) => p.category === currentProduct.category && p.id !== currentProductId,
   );
 
   if (sameCategoryProducts.length >= limit) {
     return sameCategoryProducts.slice(0, limit);
   }
 
-  const bestsellers = getBestsellers(limit * 2).filter(
-    (p) => p.id !== currentProductId
-  );
-  const combined = [...sameCategoryProducts, ...bestsellers];
-  
-  const unique = Array.from(
-    new Map(combined.map((p) => [p.id, p])).values()
+  const otherProducts = products.filter(
+    (p) => p.category !== currentProduct.category && p.id !== currentProductId,
   );
 
-  return unique.slice(0, limit);
+  return [...sameCategoryProducts, ...otherProducts].slice(0, limit);
+}
+
+export async function getBestsellers(limit: number): Promise<Product[]> {
+  const products = await getAllProductsCached();
+  // Ratings are stored as integers (0–5), so rank by highest rating and fall
+  // back to catalog order rather than filtering on a fractional threshold that
+  // no integer rating can satisfy.
+  return [...products]
+    .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+    .slice(0, limit);
+}
+
+export async function getMustTry(limit: number): Promise<Product[]> {
+  const products = await getAllProductsCached();
+  const newArrivals = products.filter((p) => p.badge === "New");
+  if (newArrivals.length >= limit) return newArrivals.slice(0, limit);
+
+  // Not enough "New" products — fill with the highest-rated remaining ones.
+  const topRated = products
+    .filter((p) => p.badge !== "New")
+    .sort((a, b) => b.rating - a.rating);
+  return [...newArrivals, ...topRated].slice(0, limit);
+}
+
+export async function getFastChargers(limit: number): Promise<Product[]> {
+  const products = await getAllProductsCached();
+  const chargers = products.filter((p) => p.category === "Chargers");
+  const fast = chargers.filter((p) => /fast/i.test(p.title));
+  if (fast.length >= limit) return fast.slice(0, limit);
+  return [...fast, ...chargers.filter((p) => !/fast/i.test(p.title))].slice(0, limit);
 }

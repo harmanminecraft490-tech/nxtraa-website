@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 
+import { Prisma } from "@prisma/client";
 import { getSessionUser, isAdminEmail } from "@/lib/auth/session";
 import prisma from "@/lib/prisma";
+import { invalidateProductsCache } from "@/app/components/lib/products-cache";
 
 type ProductUpdatePayload = {
+  id?: number;
   title?: string;
   model?: string;
   price?: number;
@@ -17,11 +20,13 @@ type ProductUpdatePayload = {
   imageUrls?: string[];
 };
 
-const pickProductUpdates = (updates: unknown): ProductUpdatePayload => {
-  if (!updates || typeof updates !== "object") return {};
+const pickProductUpdates = <T extends ProductUpdatePayload>(
+  updates: unknown,
+): Partial<T> => {
+  if (!updates || typeof updates !== "object") return {} as Partial<T>;
 
   const u = updates as Record<string, unknown>;
-  const data: ProductUpdatePayload = {};
+  const data: Partial<T> = {};
 
   if (typeof u.title === "string") data.title = u.title;
   if (typeof u.model === "string") data.model = u.model;
@@ -39,7 +44,7 @@ const pickProductUpdates = (updates: unknown): ProductUpdatePayload => {
     data.imageUrls = u.imageUrls as string[];
   }
 
-  return data;
+  return data as Partial<T>;
 };
 
 export async function GET() {
@@ -53,7 +58,7 @@ export async function GET() {
       orderBy: { id: "asc" },
     });
 
-    return NextResponse.json(products);
+    return NextResponse.json(products as ProductUpdatePayload[]);
   } catch (error) {
     console.error("Failed to load products", error);
     return NextResponse.json({ error: "Failed to load products" }, { status: 500 });
@@ -70,6 +75,87 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { id, ...updates } = body;
 
+    // If id is provided, update existing product
+    if (id) {
+      const productId = Number(id);
+      if (!Number.isFinite(productId)) {
+        return NextResponse.json({ error: "Invalid product id" }, { status: 400 });
+      }
+
+      const data = pickProductUpdates(updates);
+
+      const updated = await prisma.product.update({
+        where: { id: productId },
+        data,
+      });
+
+      // Invalidate cache to reflect changes
+      invalidateProductsCache();
+
+      return NextResponse.json({ success: true, product: updated });
+    }
+
+    // Otherwise, create new product
+    const data = pickProductUpdates(updates);
+
+    // Validate required fields for creation
+    if (!data.title || !data.model || !data.price || !data.category) {
+      return NextResponse.json(
+        { error: "Title, model, price, and category are required for new products." },
+        { status: 400 },
+      );
+    }
+
+    const { title, model, price, category, ...rest } = data;
+
+    const created = await prisma.product.create({
+      data: {
+        title,
+        model,
+        price,
+        category,
+        oldPrice: rest.oldPrice ?? price,
+        rating: rest.rating ?? 0,
+        badge: rest.badge ?? "",
+        color: rest.color ?? "",
+        description: rest.description ?? "",
+        highlights: rest.highlights ?? [],
+        imageUrls: rest.imageUrls ?? [],
+      },
+    });
+
+    // Invalidate cache to reflect changes
+    invalidateProductsCache();
+
+    return NextResponse.json({ success: true, product: created });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      // P2025: Record to update not found
+      if (error.code === "P2025") {
+        return NextResponse.json({ error: "Product not found" }, { status: 404 });
+      }
+    }
+    console.error("Product save failed:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to save product",
+        details: error instanceof Error ? error.message : "An unknown error occurred",
+      },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  const user = await getSessionUser();
+  if (!user || !isAdminEmail(user.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const { id } = body;
+
     if (!id) {
       return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
     }
@@ -79,23 +165,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid product id" }, { status: 400 });
     }
 
-    const data = pickProductUpdates(updates);
-
-    const updated = await prisma.product.update({
+    await prisma.product.delete({
       where: { id: productId },
-      data,
     });
 
-    return NextResponse.json({ success: true, product: updated });
+    // Invalidate cache to reflect changes
+    invalidateProductsCache();
+
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Product update failed (admin products route):", error);
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      // P2025: Record to delete not found
+      if (error.code === "P2025") {
+        return NextResponse.json({ error: "Product not found" }, { status: 404 });
+      }
+    }
+    console.error("Product deletion failed:", error);
     return NextResponse.json(
       {
-        error: "Failed to update product",
-        details: error instanceof Error ? error.message : String(error),
+        error: "Failed to delete product",
+        details: error instanceof Error ? error.message : "An unknown error occurred",
       },
       { status: 500 },
     );
   }
 }
-

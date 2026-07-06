@@ -15,7 +15,7 @@ import Navbar from "../components/layout/navbar";
 import Footer from "../components/layout/footer";
 import ProductVisual from "../components/ui/productvisual";
 import { useCart } from "../components/lib/cartcontext";
-import { getProductById } from "../components/lib/products";
+import { getProductById } from "../components/lib/products-store";
 
 import { Suspense } from "react";
 
@@ -186,8 +186,8 @@ function CheckoutPageContent() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          amount: total,
-          currency: "INR",
+          // Server derives the amount from these items — do not send a price.
+          items,
           orderId: `order_${Date.now()}`,
         }),
       });
@@ -195,6 +195,10 @@ function CheckoutPageContent() {
       const orderData = (await orderResponse.json()) as RazorpayOrderResponse;
 
       if (!orderResponse.ok || !orderData.order) {
+        if (orderResponse.status === 401) {
+          router.push("/account/signin?next=/checkout");
+          return;
+        }
         alert("Failed to initialize payment. Please try again.");
         return;
       }
@@ -303,6 +307,9 @@ function CheckoutPageContent() {
 
       clearCart();
       router.push(`/order-success?id=${data.order.id}`);
+    } catch (error) {
+      console.error("Order placement failed:", error);
+      alert("We could not reach the server. Please check your connection and try again.");
     } finally {
       setPlacingOrder(false);
     }

@@ -9,14 +9,16 @@ import Navbar from "../components/layout/navbar";
 import Footer from "../components/layout/footer";
 import SmartSearchBar from "../components/ui/smartsearchbar";
 import ProductCard from "../shop/productcard";
-import { RECOMMENDED_SEARCHES, searchProducts } from "../components/lib/search";
+import { RECOMMENDED_SEARCHES, performSearch } from "../components/lib/search";
+import { useProducts } from "../components/lib/products-store";
 
 function SearchResults() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const q = searchParams ? searchParams?.get("q") ?? "" : "";
 
-  const results = useMemo(() => searchProducts(q), [q]);
+  const products = useProducts();
+  const results = useMemo(() => performSearch(products, q), [products, q]);
   const hasQuery = q.trim().length > 0;
 
   return (

@@ -1,5 +1,17 @@
 import Link from "next/link";
-import { Headphones } from "lucide-react";
+import {
+  AudioLines,
+  BatteryCharging,
+  Cable,
+  Car,
+  Headphones,
+  Package,
+  PlugZap,
+  ShieldCheck,
+  Speaker,
+  Zap,
+  type LucideIcon,
+} from "lucide-react";
 
 import AnnouncementBar from "./components/layout/announcementbar";
 import Navbar from "./components/layout/navbar";
@@ -12,13 +24,57 @@ import {
   getBestsellers,
   getFastChargers,
   getMustTry,
-  products,
 } from "./components/lib/products";
+import { getAllProductsCached } from "./components/lib/products-cache";
 
-export default function HomePage() {
-  const bestsellers = getBestsellers(4);
-  const mustTry = getMustTry(4);
-  const fastChargers = getFastChargers(4);
+// Distinct icon per category so the "Shop by need" grid reads at a glance.
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  Neckbands: AudioLines,
+  Earbuds: Headphones,
+  Chargers: Zap,
+  Cables: Cable,
+  "Power Banks": BatteryCharging,
+  Speakers: Speaker,
+  "Car Holders": Car,
+  Adapters: PlugZap,
+  "Screen Guards": ShieldCheck,
+  Accessories: Package,
+};
+
+export const metadata = {
+  title: "Nxteraa | Premium Mobile Accessories",
+  description:
+    "Nxteraa offers premium mobile accessories including neckbands, earbuds, chargers, data cables, speakers, power banks and more.",
+  alternates: {
+    canonical: "https://nxtraa.online/",
+  },
+  openGraph: {
+    images: [
+      {
+        url: "/logo.svg",
+        width: 1200,
+        height: 630,
+        alt: "Nxteraa Logo",
+      },
+    ],
+  },
+  twitter: {
+    images: [
+      {
+        url: "/logo.svg",
+        width: 1200,
+        height: 630,
+        alt: "Nxteraa Logo",
+      },
+    ],
+  },
+};
+
+export default async function HomePage() {
+  const bestsellers = await getBestsellers(4);
+  const mustTry = await getMustTry(4);
+  const fastChargers = await getFastChargers(4);
+  const allProducts = await getAllProductsCached();
 
   return (
     <>
@@ -54,31 +110,39 @@ export default function HomePage() {
           <div className="page-wrap">
             <div className="section-header max-w-2xl">
               <p className="eyebrow">Categories</p>
-              <h2 className="section-title mt-4 text-ink-950">Shop by need</h2>
-              <p className="body-copy mt-4">
-                Browse all 136 products by category.
+              <h2 className="section-title mt-3 text-ink-950">Shop by need</h2>
+              <p className="body-copy mt-3">
+                Browse all {allProducts.length} products by category.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">
               {categories
                 .filter((category) => category !== "All")
                 .slice(0, 8)
-                .map((category) => (
-                  <Link
-                    key={category}
-                    href={`/search?q=${encodeURIComponent(category)}`}
-                    className="group flex flex-col items-center rounded-2xl border border-line bg-white px-5 py-8 text-center transition hover:border-accent hover:shadow-lg sm:items-start sm:px-7 sm:py-9 sm:text-left"
-                  >
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-soft text-accent transition group-hover:bg-accent group-hover:text-white">
-                      <Headphones size={26} />
-                    </div>
-                    <h3 className="mt-5 text-lg font-extrabold text-ink-950">{category}</h3>
-                    <p className="mt-2 text-sm font-medium text-ink-500">
-                      {products.filter((p) => p.category === category).length} products
-                    </p>
-                  </Link>
-                ))}
+                .map((category) => {
+                  const Icon = CATEGORY_ICONS[category] ?? Package;
+                  const count = allProducts.filter(
+                    (p: { category: string }) => p.category === category,
+                  ).length;
+                  return (
+                    <Link
+                      key={category}
+                      href={`/search?q=${encodeURIComponent(category)}`}
+                      className="group flex flex-col items-center rounded-2xl border border-line bg-white px-4 py-6 text-center transition hover:border-accent hover:shadow-lg sm:items-start sm:px-7 sm:py-9 sm:text-left"
+                    >
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-soft text-accent transition group-hover:bg-accent group-hover:text-white sm:h-14 sm:w-14">
+                        <Icon className="h-[22px] w-[22px] sm:h-[26px] sm:w-[26px]" strokeWidth={2} />
+                      </div>
+                      <h3 className="mt-4 text-base font-extrabold text-ink-950 sm:mt-5 sm:text-lg">
+                        {category}
+                      </h3>
+                      <p className="mt-1.5 text-xs font-medium text-ink-500 sm:mt-2 sm:text-sm">
+                        {count} {count === 1 ? "product" : "products"}
+                      </p>
+                    </Link>
+                  );
+                })}
             </div>
           </div>
         </section>

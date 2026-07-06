@@ -1,4 +1,12 @@
-import type { Review } from "./products";
+export type Review = {
+  id: string;
+  productId: number;
+  author: string;
+  rating: number;
+  title: string;
+  comment: string;
+  date: string;
+};
 
 const STORAGE_KEY = "nxteraa-reviews";
 

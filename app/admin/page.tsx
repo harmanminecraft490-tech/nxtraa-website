@@ -10,8 +10,6 @@ export default async function AdminPage() {
   }
 
   // Admin configuration must exist; otherwise show a clear configuration error.
-  console.log("ADMIN_EMAIL =", process.env.ADMIN_EMAIL);
-  console.log("NODE_ENV =", process.env.NODE_ENV);
   const adminEmail = process.env.ADMIN_EMAIL;
   if (!adminEmail) {
 

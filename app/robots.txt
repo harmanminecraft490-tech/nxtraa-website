@@ -1,9 +1,0 @@
-# Allow all crawlers full access
-User-agent: *
-Disallow:
-
-# Disallow access to admin and private areas
-Disallow: /admin/
-Disallow: /cart/
-Disallow: /checkout/
-Disallow: /account/
