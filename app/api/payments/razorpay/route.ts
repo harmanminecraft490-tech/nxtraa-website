@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       amount: Math.round(total * 100),
       currency: "INR",
       receipt: typeof body.orderId === "string" ? body.orderId : `rcpt_${user.id}`,
-      payment_capture: 1,
+      payment_capture: true,
     });
 
     return NextResponse.json({ success: true, order });
