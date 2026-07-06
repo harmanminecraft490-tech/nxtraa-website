@@ -7,6 +7,7 @@ import Footer from "../components/layout/footer";
 import ProductGallery from "../components/ui/productgallery";
 import ProductReviews from "../components/ui/productreviews";
 import { getAllProductsCached } from "../components/lib/products-cache";
+import { formatPrice, getDiscountPercent } from "../components/lib/product-types";
 import BuyActions from "./buyactions";
 
 type BuyPageProps = {
@@ -46,9 +47,8 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
     );
   }
 
-  const discount = Math.round(
-    ((product.oldPrice - product.price) / product.oldPrice) * 100,
-  );
+  const discount = getDiscountPercent(product.price, product.oldPrice);
+  const hasDiscount = discount > 0;
   const startInCart = params.action === "cart";
 
   return (
@@ -93,15 +93,19 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
                     <Star size={14} fill="currentColor" />
                     {product.rating}
                   </span>
-                  <span className="rounded-full bg-accent-soft px-3 py-1.5 text-sm font-bold text-accent-deep">
-                    {discount}% OFF
-                  </span>
+                  {hasDiscount && (
+                    <span className="rounded-full bg-accent-soft px-3 py-1.5 text-sm font-bold text-accent-deep">
+                      {discount}% OFF
+                    </span>
+                  )}
                   <span className="rounded-full bg-ink-100 px-3 py-1.5 text-sm font-bold text-ink-700">
                     In stock
                   </span>
-                  <span className="rounded-full bg-ink-950 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-white">
-                    {product.badge}
-                  </span>
+                  {product.badge && (
+                    <span className="rounded-full bg-ink-950 px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-white">
+                      {product.badge}
+                    </span>
+                  )}
                 </div>
 
                 <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-ink-950 sm:text-4xl lg:leading-[1.15]">
@@ -113,11 +117,13 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
 
               <div className="flex flex-wrap items-baseline gap-5 border-b border-line pb-10">
                 <span className="text-4xl font-extrabold tracking-tight text-ink-950 sm:text-5xl">
-                  Rs. {product.price}
+                  Rs. {formatPrice(product.price)}
                 </span>
-                <span className="text-xl font-medium text-ink-400 line-through">
-                  MRP Rs. {product.oldPrice}
-                </span>
+                {hasDiscount && (
+                  <span className="text-xl font-medium text-ink-400 line-through">
+                    MRP Rs. {formatPrice(product.oldPrice)}
+                  </span>
+                )}
               </div>
 
               <div className="grid grid-cols-3 gap-4">

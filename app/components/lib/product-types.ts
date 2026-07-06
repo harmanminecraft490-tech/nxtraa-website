@@ -39,6 +39,17 @@ export function getDeliveryFee(subtotal: number): number {
   return subtotal >= FREE_DELIVERY_THRESHOLD || subtotal <= 0 ? 0 : DELIVERY_FEE;
 }
 
+/** Rupee amount with Indian thousands grouping, e.g. 1299 -> "1,299". */
+export function formatPrice(amount: number): string {
+  return Math.round(amount).toLocaleString("en-IN");
+}
+
+/** Discount percent, guarded against a zero/absent oldPrice. */
+export function getDiscountPercent(price: number, oldPrice: number): number {
+  if (!(oldPrice > price) || oldPrice <= 0) return 0;
+  return Math.round(((oldPrice - price) / oldPrice) * 100);
+}
+
 export const UNKNOWN_PRODUCT: Product = {
   id: 0,
   title: "Unknown Product",

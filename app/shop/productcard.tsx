@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Heart, Minus, Plus, ShoppingCart, Star, Trash2 } from "lucide-react";
 
 import ProductVisual from "../components/ui/productvisual";
+import { formatPrice, getDiscountPercent } from "../components/lib/product-types";
 
 interface ProductCardProps {
   id: number;
@@ -29,7 +30,7 @@ export default function ProductCard({
   imageUrls = [],
 }: ProductCardProps) {
   const hasDiscount = oldPrice > price && oldPrice > 0;
-  const discount = hasDiscount ? Math.round(((oldPrice - price) / oldPrice) * 100) : 0;
+  const discount = getDiscountPercent(price, oldPrice);
   const buyHref = `/buy?product=${id}`;
   const cartHref = `/buy?product=${id}&action=cart`;
 
@@ -78,12 +79,12 @@ export default function ProductCard({
 
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1.5 sm:gap-x-3 sm:gap-y-2">
           <span className="text-xl font-black tracking-tight text-ink-950 sm:text-2xl">
-            Rs. {price}
+            Rs. {formatPrice(price)}
           </span>
           {hasDiscount && (
             <>
               <span className="text-[10px] font-semibold text-ink-400 line-through sm:text-xs">
-                Rs. {oldPrice}
+                Rs. {formatPrice(oldPrice)}
               </span>
               <span className="rounded-full bg-accent-soft px-1.5 py-0.5 text-[9px] font-bold text-accent-deep sm:px-2 sm:py-1 sm:text-[10px]">
                 {discount}% OFF
@@ -149,7 +150,7 @@ export function CartLineItem({
           </h3>
         </Link>
         <p className="text-sm font-semibold text-ink-500">{model}</p>
-        <p className="pt-2 text-2xl font-black text-accent">Rs. {price}</p>
+        <p className="pt-2 text-2xl font-black text-accent">Rs. {formatPrice(price)}</p>
       </div>
 
       <div className="flex items-center justify-between gap-6 sm:flex-col sm:items-end">
