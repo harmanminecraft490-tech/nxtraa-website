@@ -41,6 +41,10 @@ const CATEGORY_ICONS: Record<string, LucideIcon> = {
   Accessories: Package,
 };
 
+// Re-render at most every few seconds so the homepage reflects catalog edits
+// made in the admin panel instead of being frozen at build time.
+export const revalidate = 5;
+
 export const metadata = {
   title: "Nxteraa | Premium Mobile Accessories",
   description:

@@ -8,6 +8,9 @@ import ProductCard from "../shop/productcard";
 import { categories } from "../components/lib/product-types";
 import { getAllProductsCached } from "../components/lib/products-cache";
 
+// Reflect catalog edits instead of freezing the grid at build time.
+export const revalidate = 5;
+
 export default async function CollectionsPage() {
   const products = await getAllProductsCached();
 
