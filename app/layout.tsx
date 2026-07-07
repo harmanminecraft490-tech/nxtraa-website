@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "./authcontext";
 import { CartProvider } from "./components/lib/cartcontext";
+import MobileTabBar from "./components/layout/mobiletabbar";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -90,7 +91,11 @@ export default function RootLayout({
         />
         <AuthProvider>
           <CartProvider>
-            <div className="flex min-h-screen w-full flex-col">{children}</div>
+            {/* pb-[64px] on mobile keeps content clear of the bottom tab bar */}
+            <div className="flex min-h-screen w-full flex-col pb-[calc(64px+env(safe-area-inset-bottom))] lg:pb-0">
+              {children}
+            </div>
+            <MobileTabBar />
           </CartProvider>
         </AuthProvider>
       </body>

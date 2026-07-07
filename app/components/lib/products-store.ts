@@ -1,8 +1,12 @@
 "use client";
 
-// Client-side products store. Fetches the catalog once from /api/products and
-// shares it across all client components (cart, checkout, search, drawers).
+// Client-side products store. Fetches the catalog from /api/products and shares
+// it across all client components (shop, cart, checkout, search, drawers).
 // Never imports Prisma — server code should use products-cache.ts instead.
+//
+// The store revalidates in the background on every mount and whenever the tab
+// regains focus, so edits made in the admin panel show up on the storefront
+// without a hard refresh.
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 
@@ -14,11 +18,23 @@ const EMPTY: Product[] = [];
 let products: Product[] = EMPTY;
 let inflight: Promise<Product[]> | null = null;
 let loaded = false;
+let signature = "";
 
 const listeners = new Set<() => void>();
 
 function emit() {
   for (const listener of listeners) listener();
+}
+
+// Cheap change-detection so background revalidation only re-renders subscribers
+// when the catalog actually changed (id, price, title, images, etc.).
+function computeSignature(list: Product[]): string {
+  return list
+    .map(
+      (p) =>
+        `${p.id}:${p.price}:${p.oldPrice}:${p.rating}:${p.badge}:${p.category}:${p.title}:${(p.imageUrls || []).length}`,
+    )
+    .join("|");
 }
 
 export function subscribeProducts(listener: () => void): () => void {
@@ -36,25 +52,35 @@ function getServerProductsSnapshot(): Product[] {
   return EMPTY;
 }
 
+/**
+ * Fetch the catalog. Always hits the network (deduped across concurrent
+ * callers) so the store stays fresh, but only notifies subscribers when the
+ * data actually changed.
+ */
 export function loadProducts(): Promise<Product[]> {
-  if (loaded) return Promise.resolve(products);
   if (inflight) return inflight;
 
-  inflight = fetch("/api/products")
+  inflight = fetch("/api/products", { cache: "no-store" })
     .then(async (response) => {
       if (!response.ok) {
         throw new Error(`Failed to load products (HTTP ${response.status})`);
       }
       const data = (await response.json()) as Product[];
-      products = Array.isArray(data) ? data : EMPTY;
+      const next = Array.isArray(data) ? data : EMPTY;
+      const nextSignature = computeSignature(next);
+
       loaded = true;
-      emit();
+
+      if (nextSignature !== signature) {
+        products = next;
+        signature = nextSignature;
+        emit();
+      }
       return products;
     })
-    .catch(() => {
-      // Allow a retry on the next call instead of caching the failure.
+    .catch(() => products)
+    .finally(() => {
       inflight = null;
-      return products;
     });
 
   return inflight;
@@ -64,7 +90,7 @@ export function getProductById(id: number): Product {
   return products.find((p) => p.id === id) ?? { ...UNKNOWN_PRODUCT, id };
 }
 
-/** Subscribes to the shared catalog and triggers the initial fetch. */
+/** Subscribes to the shared catalog and revalidates it in the background. */
 export function useProducts(): Product[] {
   const snapshot = useSyncExternalStore(
     subscribeProducts,
@@ -73,7 +99,19 @@ export function useProducts(): Product[] {
   );
 
   useEffect(() => {
+    // Revalidate on mount (covers navigating in from the admin panel) …
     void loadProducts();
+
+    // … and whenever the tab regains focus or becomes visible again.
+    const revalidate = () => {
+      if (document.visibilityState === "visible") void loadProducts();
+    };
+    window.addEventListener("focus", revalidate);
+    document.addEventListener("visibilitychange", revalidate);
+    return () => {
+      window.removeEventListener("focus", revalidate);
+      document.removeEventListener("visibilitychange", revalidate);
+    };
   }, []);
 
   return snapshot;
@@ -88,11 +126,10 @@ export function useCatalog(): { products: Product[]; loading: boolean } {
   const [loading, setLoading] = useState(!loaded);
 
   useEffect(() => {
-    // If the catalog is already loaded, initial state is already false.
+    // Initial state already reflects `loaded`; only settle the spinner once the
+    // first fetch resolves (loadProducts resolves immediately if already loaded).
     if (loaded) return;
     let active = true;
-    // loadProducts() resolves immediately when already loaded, and on error too,
-    // so loading always settles — no infinite skeleton.
     void loadProducts().finally(() => {
       if (active) setLoading(false);
     });

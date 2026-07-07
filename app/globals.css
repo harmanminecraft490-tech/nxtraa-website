@@ -121,6 +121,10 @@
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
+    /* Clip horizontal overflow here, NOT on <body>. Setting overflow on <body>
+       makes it the scroll container, which silently breaks `position: sticky`
+       on the navbar (it would scroll away on mobile). */
+    overflow-x: hidden;
   }
 
   body {
@@ -134,7 +138,6 @@
     -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
     margin: 0;
-    overflow-x: hidden;
     letter-spacing: -0.011em;
   }
 

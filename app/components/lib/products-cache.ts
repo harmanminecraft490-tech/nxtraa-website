@@ -10,7 +10,10 @@ export type { Product };
 let cache: Product[] | null = null;
 let cacheAtMs: number | null = null;
 
-const TTL_MS = 30_000; // 30 seconds
+// Short TTL so admin edits appear on the storefront within a few seconds even
+// on serverless, where a public request may hit a different warm instance than
+// the one that ran (and locally invalidated) the mutation.
+const TTL_MS = 5_000; // 5 seconds
 
 function isCacheFresh() {
   if (!cache || !cacheAtMs) return false;
