@@ -21,7 +21,10 @@ export default function AnnouncementBar() {
   }, []);
 
   return (
-    <div className="relative isolate w-full overflow-hidden border-b border-line-soft bg-ink-950 text-white">
+    <div
+      className="relative isolate w-full overflow-hidden border-b border-line-soft bg-ink-950 text-white"
+      style={{ paddingTop: "env(safe-area-inset-top)" }}
+    >
       <div className="page-wrap flex h-8 items-center justify-between text-[10px] font-medium uppercase tracking-[0.18em] sm:h-10 sm:text-xs">
         <Link
           href="/shop"

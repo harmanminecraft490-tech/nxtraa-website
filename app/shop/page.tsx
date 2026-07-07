@@ -4,7 +4,6 @@ import AnnouncementBar from "../components/layout/announcementbar";
 import Navbar from "../components/layout/navbar";
 import Footer from "../components/layout/footer";
 
-import ShopBanner from "./shopbanner";
 import ShopClient from "./shopclient";
 
 export const metadata: Metadata = {
@@ -21,7 +20,6 @@ export default function ShopPage() {
       <Navbar />
 
       <main className="bg-white min-h-screen">
-        <ShopBanner />
         <ShopClient />
       </main>
 
