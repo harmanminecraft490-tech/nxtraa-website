@@ -330,7 +330,17 @@
 
 /* =====================================================
    BUTTONS
+
+   Everything from here down to ANIMATIONS lives in
+   `@layer components` so that Tailwind utility classes
+   (e.g. `hidden`, `sm:inline-flex`) always override these
+   component styles. Without the layer, the unlayered
+   `.btn { display: inline-flex }` rule beats the layered
+   `.hidden` utility, so `hidden sm:inline-flex` on a `.btn`
+   would never actually hide it on mobile.
    ===================================================== */
+
+@layer components {
 
 .btn {
   --btn-bg: var(--fg);
@@ -743,6 +753,8 @@
   background: #fff;
   transform: scale(1.04);
 }
+
+} /* end @layer components */
 
 /* =====================================================
    ANIMATIONS

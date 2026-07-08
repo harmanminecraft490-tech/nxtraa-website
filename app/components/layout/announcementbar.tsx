@@ -39,12 +39,11 @@ export default function AnnouncementBar() {
             <span
               key={message}
               aria-hidden={i !== index}
-              className={`absolute inset-y-0 flex items-center justify-center transition-all duration-500 ${
+              className={`absolute inset-x-0 flex items-center justify-center whitespace-nowrap px-2 transition-all duration-500 sm:inset-x-auto sm:right-0 sm:justify-end sm:px-0 ${
                 i === index
                   ? "opacity-100 translate-y-0"
                   : "pointer-events-none opacity-0 translate-y-2"
               }`}
-              style={{ right: 0 }}
             >
               {message}
             </span>

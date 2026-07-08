@@ -112,9 +112,13 @@ export default function Navbar() {
               )}
             </button>
 
+            {/* Hidden on phones: the right cluster (search + profile + cart +
+                menu) already fills the row, and Shop is reachable via the
+                bottom tab bar and the hamburger menu. Showing it only from sm+
+                stops the pill from overflowing the header on narrow screens. */}
             <Link
               href="/shop"
-              className="btn btn-primary btn-sm inline-flex text-xs sm:text-sm px-3 py-2 sm:px-4 sm:py-2.5"
+              className="btn btn-primary btn-sm hidden sm:inline-flex text-xs sm:text-sm px-3 py-2 sm:px-4 sm:py-2.5"
             >
               Shop now
             </Link>
