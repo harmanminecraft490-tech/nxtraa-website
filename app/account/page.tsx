@@ -29,7 +29,7 @@ export default async function AccountPage() {
       <AnnouncementBar />
       <Navbar />
 
-      <main className="min-h-screen bg-canvas">
+      <main className="min-h-screen min-h-dvh bg-canvas">
         <div className="page-wrap section-space !pt-10">
           <div className="section-header flex flex-wrap items-end justify-between gap-6">
             <div>

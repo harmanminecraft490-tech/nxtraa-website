@@ -74,7 +74,7 @@ declare global {
 export default function CheckoutPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-canvas flex items-center justify-center">
+      <div className="min-h-screen min-h-dvh bg-canvas flex items-center justify-center">
         <div className="animate-spin h-8 w-8 text-accent border-4 border-t-transparent border-accent/20 rounded-full" />
       </div>
     }>
@@ -147,7 +147,7 @@ function CheckoutPageContent() {
 
   if (!authChecked) {
     return (
-      <div className="min-h-screen bg-canvas flex items-center justify-center">
+      <div className="min-h-screen min-h-dvh bg-canvas flex items-center justify-center">
         <div className="animate-spin h-8 w-8 text-accent border-4 border-t-transparent border-accent/20 rounded-full" />
       </div>
     );
@@ -319,7 +319,7 @@ function CheckoutPageContent() {
     <>
       <AnnouncementBar />
       <Navbar />
-      <main className="min-h-screen bg-canvas">
+      <main className="min-h-screen min-h-dvh bg-canvas">
         <div className="page-wrap section-space !pt-10">
           <div className="section-header">
             <p className="eyebrow">Secure checkout</p>

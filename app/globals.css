@@ -136,9 +136,15 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* 100vh on mobile Safari includes the address bar, making the page taller
+       than the visible viewport. 100dvh tracks the actual visible area so the
+       shell fits the phone exactly. Keep 100vh as a fallback for old browsers. */
     min-height: 100vh;
+    min-height: 100dvh;
     margin: 0;
     letter-spacing: -0.011em;
+    /* Stop rubber-band scroll from revealing the page background at the edges */
+    overscroll-behavior-y: none;
   }
 
   ::selection {

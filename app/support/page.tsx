@@ -10,7 +10,7 @@ export default function SupportPage() {
     <>
       <AnnouncementBar />
       <Navbar />
-      <main className="min-h-screen bg-canvas">
+      <main className="min-h-screen min-h-dvh bg-canvas">
         <div className="mx-auto w-full max-w-[900px] px-5 py-12 sm:px-8">
           <p className="text-sm font-black uppercase tracking-[0.3em] text-accent">Support</p>
           <h1 className="mt-2 text-4xl font-black text-ink-950">How can we help?</h1>

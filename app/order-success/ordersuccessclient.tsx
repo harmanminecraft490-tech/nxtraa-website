@@ -50,7 +50,7 @@ export default function OrderSuccessClient() {
     <>
       <AnnouncementBar />
       <Navbar />
-      <main className="min-h-screen bg-white">
+      <main className="min-h-screen min-h-dvh bg-white">
         <div className="page-wrap flex flex-col items-center py-20 text-center sm:py-24">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-50 text-green-600">
             <CheckCircle2 size={40} />

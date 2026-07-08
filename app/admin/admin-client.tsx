@@ -284,14 +284,14 @@ export default function AdminClient() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen min-h-dvh items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-screen min-h-dvh bg-canvas">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <div className="mb-8">
           <h1 className="text-3xl font-black text-ink-950">Dashboard</h1>

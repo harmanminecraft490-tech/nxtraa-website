@@ -19,7 +19,7 @@ export default function ShopPage() {
       <AnnouncementBar />
       <Navbar />
 
-      <main className="bg-white min-h-screen">
+      <main className="bg-white min-h-screen min-h-dvh">
         <ShopClient />
       </main>
 

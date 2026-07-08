@@ -22,7 +22,7 @@ function SearchResults() {
   const hasQuery = q.trim().length > 0;
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen min-h-dvh bg-white">
       <div className="page-wrap section-space !pt-10">
         <div className="section-header max-w-2xl">
           <p className="eyebrow">Search</p>

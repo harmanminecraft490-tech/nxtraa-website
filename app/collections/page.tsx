@@ -18,7 +18,7 @@ export default async function CollectionsPage() {
     <>
       <AnnouncementBar />
       <Navbar />
-      <main className="min-h-screen bg-white">
+      <main className="min-h-screen min-h-dvh bg-white">
         <section className="bg-canvas py-12">
           <div className="mx-auto w-full max-w-[1500px] px-5 sm:px-8 lg:px-10">
             <p className="text-sm font-black uppercase tracking-[0.3em] text-accent">Collections</p>

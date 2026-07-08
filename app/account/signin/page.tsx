@@ -34,7 +34,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
     <>
       <AnnouncementBar />
       <Navbar />
-      <main className="min-h-screen bg-canvas">
+      <main className="min-h-screen min-h-dvh bg-canvas">
         <div className="mx-auto flex w-full max-w-md flex-col px-5 py-12 sm:px-8 sm:py-16">
           <div className="card-premium p-8 sm:p-10">
             <p className="eyebrow">Nxteraa account</p>

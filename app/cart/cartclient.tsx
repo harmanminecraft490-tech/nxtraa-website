@@ -219,7 +219,7 @@ export default function CartPageClient() {
       <AnnouncementBar />
       <Navbar />
 
-      <main className="min-h-screen bg-canvas py-12 sm:py-16 lg:py-20 px-5 sm:px-8 xl:px-12">
+      <main className="min-h-screen min-h-dvh bg-canvas py-12 sm:py-16 lg:py-20 px-5 sm:px-8 xl:px-12">
         <style>{`
           @keyframes slide-up {
             from { transform: translateY(20px); opacity: 0; }

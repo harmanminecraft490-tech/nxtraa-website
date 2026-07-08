@@ -75,7 +75,7 @@ export default function TrackOrderClient() {
     <>
       <AnnouncementBar />
       <Navbar />
-      <main className="min-h-screen bg-canvas">
+      <main className="min-h-screen min-h-dvh bg-canvas">
         <div className="page-wrap section-space !pt-12">
           <div className="section-header max-w-xl">
             <p className="eyebrow">Track order</p>

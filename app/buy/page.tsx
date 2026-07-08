@@ -56,7 +56,7 @@ export default async function BuyPage({ searchParams }: BuyPageProps) {
       <AnnouncementBar />
       <Navbar />
 
-      <main className="min-h-screen bg-white">
+      <main className="min-h-screen min-h-dvh bg-white">
         <div className="page-wrap section-space !pb-10">
           <nav className="mb-10 flex flex-wrap items-center gap-2 text-sm font-medium text-ink-500">
             <Link href="/shop" className="hover:text-accent">
