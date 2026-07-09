@@ -35,7 +35,59 @@ export default function ProductCard({
   const cartHref = `/buy?product=${id}&action=cart`;
 
   return (
-    <article className="card-premium !p-0 flex flex-col h-full">
+    <>
+      {/* ---------- Compact card (phones) ---------- */}
+      <article className="card-premium !p-0 flex flex-col h-full overflow-hidden sm:hidden">
+        <Link href={buyHref} className="relative block aspect-square overflow-hidden bg-mist">
+          {badge && (
+            <span className="absolute left-1.5 top-1.5 z-10 max-w-[calc(100%-3rem)] truncate rounded-full bg-white/95 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide text-ink-950 shadow-sm">
+              {badge}
+            </span>
+          )}
+          {hasDiscount && (
+            <span className="absolute right-1.5 top-1.5 z-10 rounded-full bg-accent px-1.5 py-0.5 text-[8px] font-black text-white shadow-sm">
+              {discount}% OFF
+            </span>
+          )}
+          <ProductVisual category={category} model={model} size="sm" productId={id} imageUrls={imageUrls} />
+        </Link>
+
+        <div className="flex flex-1 flex-col p-2">
+          <Link href={buyHref}>
+            <h3 className="line-clamp-2 min-h-[2.05rem] text-[11px] font-bold leading-[1.15] text-ink-950">
+              {title}
+            </h3>
+          </Link>
+
+          <div className="mt-1 flex items-center gap-1">
+            <Star className="h-2.5 w-2.5 shrink-0 text-amber-500" fill="currentColor" />
+            <span className="text-[9px] font-bold text-ink-500">{rating}</span>
+          </div>
+
+          <div className="mt-1 flex flex-wrap items-baseline gap-x-1 gap-y-0.5">
+            <span className="text-[13px] font-black tracking-tight text-ink-950">
+              Rs. {formatPrice(price)}
+            </span>
+            {hasDiscount && (
+              <span className="text-[9px] font-medium text-ink-400 line-through">
+                {formatPrice(oldPrice)}
+              </span>
+            )}
+          </div>
+
+          <Link
+            href={cartHref}
+            className="mt-2 flex h-8 items-center justify-center gap-1 rounded-full bg-accent text-[11px] font-bold text-white transition active:scale-95"
+            aria-label={`Add ${title} to cart`}
+          >
+            <ShoppingCart className="h-3 w-3" />
+            Add
+          </Link>
+        </div>
+      </article>
+
+      {/* ---------- Full card (tablet / desktop) ---------- */}
+      <article className="card-premium !p-0 hidden sm:flex flex-col h-full">
       <div className="relative aspect-[4/3] overflow-hidden rounded-t-[20px] sm:rounded-t-[24px] border-b border-line-soft">
         {badge && (
           <span className="absolute left-3 top-3 z-10 max-w-[calc(100%-5rem)] truncate rounded-full bg-white/95 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-ink-950 shadow-sm backdrop-blur-sm sm:left-4 sm:top-4 sm:px-3 sm:py-1.5 sm:text-[10px]">
@@ -111,7 +163,8 @@ export default function ProductCard({
           </Link>
         </div>
       </div>
-    </article>
+      </article>
+    </>
   );
 }
 
@@ -186,3 +239,4 @@ export function CartLineItem({
     </article>
   );
 }
+
