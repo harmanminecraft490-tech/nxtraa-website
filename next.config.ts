@@ -11,6 +11,11 @@ const nextConfig: NextConfig = {
         hostname: "nxtraa.online",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "images.pexels.com",
+        pathname: "/photos/**",
+      },
     ],
   },
 };
