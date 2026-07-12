@@ -4,8 +4,22 @@
 import prisma from "@/lib/prisma";
 
 import type { Product } from "./product-types";
+import { getDealOldPrice, getDiscountPercent } from "./product-types";
 
 export type { Product };
+
+// The generated catalog marks every product up by the same ~18%, which reads
+// as one flat fake discount. Storefront responses replace that formulaic MRP
+// with a per-product deal (40–70% off, deterministic per id — see
+// product-types.ts). Discounts of 25%+ are assumed to be set deliberately in
+// the admin panel and are left untouched. The admin API reads Prisma directly,
+// so admins always see and edit the raw database values.
+function withDealPricing(products: Product[]): Product[] {
+  return products.map((p) => {
+    if (p.price <= 0 || getDiscountPercent(p.price, p.oldPrice) >= 25) return p;
+    return { ...p, oldPrice: getDealOldPrice(p.id, p.price) };
+  });
+}
 
 let cache: Product[] | null = null;
 let cacheAtMs: number | null = null;
@@ -32,9 +46,9 @@ export async function getAllProductsCached(): Promise<Product[]> {
     const products = (await prisma.product.findMany({
       orderBy: { id: "asc" },
     })) as Product[];
-    cache = products;
+    cache = withDealPricing(products);
     cacheAtMs = Date.now();
-    return products;
+    return cache;
   } catch (error) {
     console.error("Failed to fetch products from database:", error);
     return []; // Return empty array on error to prevent site crash

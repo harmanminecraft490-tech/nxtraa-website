@@ -36,52 +36,49 @@ export default function ProductCard({
 
   return (
     <>
-      {/* ---------- Compact card (phones) ---------- */}
-      <article className="card-premium !p-0 flex flex-col h-full overflow-hidden sm:hidden">
+      {/* ---------- Compact card (phones, boAt-style) ---------- */}
+      <article className="flex h-full flex-col overflow-hidden rounded-xl border border-line-soft bg-white shadow-xs sm:hidden">
         <Link href={buyHref} className="relative block aspect-square overflow-hidden bg-mist">
           {badge && (
-            <span className="absolute left-1.5 top-1.5 z-10 max-w-[calc(100%-3rem)] truncate rounded-full bg-white/95 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide text-ink-950 shadow-sm">
+            <span className="absolute left-1.5 top-1.5 z-10 max-w-[70%] truncate rounded-md bg-ink-950/85 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide text-white">
               {badge}
             </span>
           )}
-          {hasDiscount && (
-            <span className="absolute right-1.5 top-1.5 z-10 rounded-full bg-accent px-1.5 py-0.5 text-[8px] font-black text-white shadow-sm">
-              {discount}% OFF
-            </span>
-          )}
           <ProductVisual category={category} model={model} size="sm" productId={id} imageUrls={imageUrls} />
+          <span className="absolute bottom-1.5 left-1.5 z-10 flex items-center gap-0.5 rounded-md bg-white/95 px-1 py-0.5 text-[9px] font-bold text-ink-900 shadow-sm">
+            <Star className="h-2.5 w-2.5 text-amber-500" fill="currentColor" />
+            {rating}
+          </span>
         </Link>
 
         <div className="flex flex-1 flex-col p-2">
           <Link href={buyHref}>
-            <h3 className="line-clamp-2 min-h-[2.05rem] text-[11px] font-bold leading-[1.15] text-ink-950">
+            <h3 className="line-clamp-2 min-h-[2rem] text-[11px] font-semibold leading-[1.35] text-ink-900">
               {title}
             </h3>
           </Link>
 
-          <div className="mt-1 flex items-center gap-1">
-            <Star className="h-2.5 w-2.5 shrink-0 text-amber-500" fill="currentColor" />
-            <span className="text-[9px] font-bold text-ink-500">{rating}</span>
-          </div>
-
-          <div className="mt-1 flex flex-wrap items-baseline gap-x-1 gap-y-0.5">
-            <span className="text-[13px] font-black tracking-tight text-ink-950">
+          <div className="mt-1 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+            <span className="text-[13px] font-extrabold tracking-tight text-ink-950">
               Rs. {formatPrice(price)}
             </span>
             {hasDiscount && (
-              <span className="text-[9px] font-medium text-ink-400 line-through">
-                {formatPrice(oldPrice)}
-              </span>
+              <>
+                <span className="text-[10px] font-medium text-ink-400 line-through">
+                  {formatPrice(oldPrice)}
+                </span>
+                <span className="text-[10px] font-bold text-signal">{discount}% off</span>
+              </>
             )}
           </div>
 
           <Link
             href={cartHref}
-            className="mt-2 flex h-8 items-center justify-center gap-1 rounded-full bg-accent text-[11px] font-bold text-white transition active:scale-95"
+            className="mt-2 flex h-8 items-center justify-center gap-1 rounded-lg bg-accent text-[11px] font-bold text-white transition active:scale-95"
             aria-label={`Add ${title} to cart`}
           >
             <ShoppingCart className="h-3 w-3" />
-            Add
+            Add to cart
           </Link>
         </div>
       </article>

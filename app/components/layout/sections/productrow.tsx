@@ -15,7 +15,7 @@ export function ProductRow({ eyebrow, title, href, items }: ProductRowProps) {
   if (items.length === 0) return null;
 
   return (
-    <section className="section-space border-b border-line-soft last:border-0 py-12 sm:py-16 lg:py-20">
+    <section className="section-space border-b border-line-soft last:border-0 py-8 sm:py-16 lg:py-20">
       <div className="page-wrap">
         <div className="section-header flex flex-wrap items-end justify-between gap-4 sm:gap-6">
           <div>
@@ -31,12 +31,14 @@ export function ProductRow({ eyebrow, title, href, items }: ProductRowProps) {
           </Link>
         </div>
 
-        {/* Mobile: horizontal swipe carousel (boAt-style). Desktop: grid. */}
-        <div className="no-scrollbar -mx-6 flex snap-x snap-mandatory gap-3 overflow-x-auto px-6 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-8 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4 lg:gap-10">
+        {/* Mobile: horizontal swipe carousel (boAt-style). Desktop: grid.
+            -mx-4/px-4 mirror the 16px page-wrap gutter so the strip bleeds
+            edge-to-edge while the first card still lines up with the header. */}
+        <div className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-8 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4 lg:gap-10">
           {items.map((product) => (
             <div
               key={product.id}
-              className="w-[40%] shrink-0 snap-start sm:w-auto sm:shrink"
+              className="w-[43%] shrink-0 snap-start sm:w-auto sm:shrink"
             >
               <ProductCard {...product} />
             </div>

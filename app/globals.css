@@ -178,7 +178,14 @@
   margin-inline: auto;
   width: 100%;
   max-width: 1440px;
-  padding-inline: 24px;
+  /* Tight gutter on phones (boAt-style density); roomier from tablet up. */
+  padding-inline: 16px;
+}
+
+@media (min-width: 640px) {
+  .page-wrap {
+    padding-inline: 24px;
+  }
 }
 
 @media (min-width: 768px) {

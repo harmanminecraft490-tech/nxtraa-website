@@ -128,7 +128,7 @@ export default function ShopClient() {
 
         {/* Grid */}
         {loading ? (
-          <div className="mt-10 grid grid-cols-3 gap-2.5 sm:grid-cols-2 sm:gap-8 md:grid-cols-3 lg:grid-cols-4 lg:gap-10">
+          <div className="mt-8 grid grid-cols-2 gap-2 sm:mt-10 sm:grid-cols-2 sm:gap-8 md:grid-cols-3 lg:grid-cols-4 lg:gap-10">
             {Array.from({ length: 8 }).map((_, i) => (
               <ProductCardSkeleton key={i} />
             ))}
@@ -148,7 +148,7 @@ export default function ShopClient() {
             </button>
           </div>
         ) : (
-          <div className="mt-10 grid grid-cols-3 gap-2.5 sm:grid-cols-2 sm:gap-8 md:grid-cols-3 lg:grid-cols-4 lg:gap-10">
+          <div className="mt-8 grid grid-cols-2 gap-2 sm:mt-10 sm:grid-cols-2 sm:gap-8 md:grid-cols-3 lg:grid-cols-4 lg:gap-10">
             {visible.map((product) => (
               <ProductCard key={product.id} {...product} />
             ))}
@@ -161,12 +161,12 @@ export default function ShopClient() {
 
 function ProductCardSkeleton() {
   return (
-    <div className="card-premium !p-0 overflow-hidden">
+    <div className="overflow-hidden rounded-xl border border-line-soft bg-white sm:card-premium sm:!p-0">
       <div className="aspect-square w-full animate-pulse bg-mist sm:aspect-[4/3]" />
       <div className="flex flex-col gap-2 p-2 sm:gap-3 sm:p-6">
         <div className="h-3 w-3/4 animate-pulse rounded-full bg-mist" />
         <div className="h-3 w-1/2 animate-pulse rounded-full bg-mist" />
-        <div className="mt-1 h-7 w-full animate-pulse rounded-full bg-mist sm:h-9" />
+        <div className="mt-1 h-8 w-full animate-pulse rounded-lg bg-mist sm:h-9 sm:rounded-full" />
       </div>
     </div>
   );
