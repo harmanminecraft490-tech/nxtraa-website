@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Mail, MessageCircle, Phone } from "lucide-react";
+import { MessageCircle, Phone } from "lucide-react";
 
 import AnnouncementBar from "../components/layout/announcementbar";
 import Navbar from "../components/layout/navbar";
@@ -16,11 +16,10 @@ export default function SupportPage() {
           <h1 className="mt-2 text-4xl font-black text-ink-950">How can we help?</h1>
           <p className="mt-3 text-ink-500">Warranty, orders, product questions — we are here for you.</p>
 
-          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+          <div className="mt-10 grid gap-4 sm:grid-cols-2">
             {[
-              [Phone, "Call us", "Mon–Sat, 10am–7pm", "tel:+911800000000"],
-              [Mail, "Email", "support@nxteraa.com", "mailto:support@nxteraa.com"],
-              [MessageCircle, "WhatsApp", "Quick chat support", "https://wa.me/911800000000"],
+              [Phone, "Call us", "Mon–Sat, 10am–7pm", "tel:+919999653622"],
+              [MessageCircle, "WhatsApp", "Quick chat support", "https://wa.me/919999653622"],
             ].map(([Icon, title, text, href]) => (
               <a
                 key={title as string}

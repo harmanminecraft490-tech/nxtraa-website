@@ -172,6 +172,7 @@ export function CartLineItem({
   category,
   price,
   quantity,
+  imageUrls = [],
   onUpdate,
   onRemove,
 }: {
@@ -181,6 +182,7 @@ export function CartLineItem({
   category: string;
   price: number;
   quantity: number;
+  imageUrls?: string[];
   onUpdate: (qty: number) => void;
   onRemove: () => void;
 }) {
@@ -190,7 +192,7 @@ export function CartLineItem({
         href={`/buy?product=${productId}`}
         className="aspect-square overflow-hidden rounded-2xl border border-line-soft shrink-0 block"
       >
-        <ProductVisual category={category} model={model} size="sm" productId={productId} />
+        <ProductVisual category={category} model={model} size="sm" productId={productId} imageUrls={imageUrls} />
       </Link>
 
       <div className="min-w-0 space-y-2">
