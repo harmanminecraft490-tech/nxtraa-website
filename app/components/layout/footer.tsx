@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Share2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const SHOP = [
   { href: "/shop", label: "All products" },
@@ -71,40 +71,27 @@ export default function Footer() {
               </p>
               <div className="mt-4 space-y-2.5 text-[13px] text-white/80 sm:mt-5 sm:space-y-3 sm:text-[14px]">
                 <a
-                  href="https://wa.me/919996536222"
+                  href="https://wa.me/919999653622"
                   className="block transition hover:text-white"
                 >
-                  WhatsApp - +91 99965 36222
-                </a>
-                <a
-                  href="mailto:hello@nxteraa.com"
-                  className="block transition hover:text-white"
-                >
-                  hello@nxteraa.com
+                  WhatsApp - +91 99996 53622
                 </a>
                 <p className="text-white/60">Mon-Sat - 10am - 7pm IST</p>
               </div>
               <div className="mt-5 flex items-center gap-2 sm:mt-6">
                 <a
-                  href="https://instagram.com"
+                  href="https://instagram.com/nxtra_accessories"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label="Instagram"
                   className="icon-btn-ghost"
                 >
-                  <Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                </a>
-                <a
-                  href="https://twitter.com"
-                  aria-label="Twitter"
-                  className="icon-btn-ghost"
-                >
-                  <Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                </a>
-                <a
-                  href="https://youtube.com"
-                  aria-label="YouTube"
-                  className="icon-btn-ghost"
-                >
-                  <Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  {/* Instagram SVG icon */}
+                  <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                    <circle cx="12" cy="12" r="5" />
+                    <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none" />
+                  </svg>
                 </a>
               </div>
             </div>

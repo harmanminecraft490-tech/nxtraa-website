@@ -21,8 +21,8 @@ export const metadata: Metadata = {
   description: "Nxteraa offers premium mobile accessories including neckbands, earbuds, chargers, data cables, speakers, power banks and more.",
   metadataBase: new URL("https://nxtraa.online"),
   icons: {
-    icon: "/favicon.ico",
-    apple: "/favicon.ico",
+    icon: "/logo.svg",
+    apple: "/logo.svg",
   },
   openGraph: {
     title: "Nxteraa | Premium Mobile Accessories",
@@ -38,19 +38,6 @@ export const metadata: Metadata = {
       },
     ],
     type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Nxteraa | Premium Mobile Accessories",
-    description: "Nxteraa offers premium mobile accessories including neckbands, earbuds, chargers, data cables, speakers, power banks and more.",
-    images: [
-      {
-        url: "/logo.svg",
-        width: 1200,
-        height: 630,
-        alt: "Nxteraa Logo",
-      },
-    ],
   },
 };
 

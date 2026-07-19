@@ -62,16 +62,6 @@ export const metadata = {
       },
     ],
   },
-  twitter: {
-    images: [
-      {
-        url: "/logo.svg",
-        width: 1200,
-        height: 630,
-        alt: "Nxteraa Logo",
-      },
-    ],
-  },
 };
 
 export default async function HomePage() {

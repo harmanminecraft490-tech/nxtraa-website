@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 
 import type { OrderAddress } from "@/app/components/lib/orders";
 import { getSessionUser } from "@/lib/auth/session";
+import { notifyNewOrder } from "@/lib/notify";
 import {
   computeCartPricing,
   createOrderForUser,
@@ -118,6 +119,20 @@ export async function POST(request: Request) {
     payment,
     address,
   });
+
+  // Send order notification (fire-and-forget — never block the response).
+  notifyNewOrder({
+    orderNumber: order.id,
+    recipientName: address.name,
+    phone: address.phone,
+    address: address.address,
+    city: address.city,
+    pincode: address.pincode,
+    items,
+    payment,
+    paymentStatus: payment === "Razorpay" ? "Paid" : payment === "COD" ? "Pending (COD)" : payment,
+    createdAt: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
+  }).catch(() => {});
 
   return NextResponse.json({ order }, { status: 201 });
 }

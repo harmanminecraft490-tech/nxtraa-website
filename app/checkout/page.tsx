@@ -458,6 +458,7 @@ function CheckoutPageContent() {
                           model={product.model}
                           size="sm"
                           productId={product.id}
+                          imageUrls={product.imageUrls}
                         />
                       </div>
                       <div className="min-w-0 flex-1">

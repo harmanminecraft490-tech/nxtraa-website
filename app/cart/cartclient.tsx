@@ -309,7 +309,7 @@ export default function CartPageClient() {
                       <div className="mx-auto md:mx-0 w-[140px] h-[140px] shrink-0 overflow-hidden rounded-2xl shadow-sm border border-line-soft bg-canvas relative">
                         <Link href={`/buy?product=${product.id}`} className="block w-full h-full">
                           <div className="w-full h-full transition-transform duration-500 group-hover:scale-110">
-                            <ProductVisual category={product.category} model={product.model} size="md" productId={product.id} />
+                            <ProductVisual category={product.category} model={product.model} size="md" productId={product.id} imageUrls={product.imageUrls} />
                           </div>
                         </Link>
                       </div>
@@ -685,7 +685,7 @@ export default function CartPageClient() {
                         </button>
                         <Link href={`/buy?product=${recProduct.id}`} className="block h-full w-full">
                           <div className="w-full h-full transition-transform duration-500 group-hover:scale-105">
-                            <ProductVisual category={recProduct.category} model={recProduct.model} size="sm" productId={recProduct.id} />
+                            <ProductVisual category={recProduct.category} model={recProduct.model} size="sm" productId={recProduct.id} imageUrls={recProduct.imageUrls} />
                           </div>
                         </Link>
                       </div>
