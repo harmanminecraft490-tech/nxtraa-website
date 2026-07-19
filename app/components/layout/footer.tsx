@@ -17,6 +17,14 @@ const SUPPORT = [
   { href: "/account", label: "My account" },
 ];
 
+const LEGAL = [
+  { href: "/privacy-policy", label: "Privacy Policy" },
+  { href: "/terms-and-conditions", label: "Terms & Conditions" },
+  { href: "/refund-policy", label: "Refund Policy" },
+  { href: "/shipping-policy", label: "Shipping Policy" },
+  { href: "/contact", label: "Contact Us" },
+];
+
 export default function Footer() {
   return (
     <footer className="border-t border-line-soft bg-ink-950 text-white">
@@ -65,50 +73,64 @@ export default function Footer() {
           <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:col-span-7 lg:grid-cols-3 sm:gap-8">
             <FooterColumn title="Shop" links={SHOP} />
             <FooterColumn title="Support" links={SUPPORT} />
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50 sm:text-[11px]">
-                Contact
-              </p>
-              <div className="mt-4 space-y-2.5 text-[13px] text-white/80 sm:mt-5 sm:space-y-3 sm:text-[14px]">
-                <a
-                  href="https://wa.me/919999653622"
-                  className="block transition hover:text-white"
-                >
-                  WhatsApp - +91 99996 53622
-                </a>
-                <p className="text-white/60">Mon-Sat - 10am - 7pm IST</p>
-              </div>
-              <div className="mt-5 flex items-center gap-2 sm:mt-6">
-                <a
-                  href="https://instagram.com/nxtera_accessories"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Instagram"
-                  className="icon-btn-ghost"
-                >
-                  {/* Instagram SVG icon */}
-                  <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                    <circle cx="12" cy="12" r="5" />
-                    <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none" />
-                  </svg>
-                </a>
-              </div>
+            <FooterColumn title="Legal" links={LEGAL} />
+          </div>
+        </div>
+
+        {/* Contact & Social Row */}
+        <div className="mt-10 border-t border-white/10 pt-8">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-2.5 text-[13px] text-white/80 sm:text-[14px]">
+              <a
+                href="https://wa.me/919999653622"
+                className="block transition hover:text-white"
+              >
+                WhatsApp - +91 99996 53622
+              </a>
+              <a
+                href="mailto:support@nxtraa.online"
+                className="block transition hover:text-white"
+              >
+                support@nxtraa.online
+              </a>
+              <p className="text-white/60">Mon-Sat - 10am - 7pm IST</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <a
+                href="https://instagram.com/nxtera_accessories"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="icon-btn-ghost"
+              >
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                  <circle cx="12" cy="12" r="5" />
+                  <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none" />
+                </svg>
+              </a>
             </div>
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-white/10 pt-6 text-[11px] text-white/40 sm:mt-16 sm:gap-4 sm:pt-8 sm:text-[12px] sm:flex-row sm:items-center">
+        {/* Bottom Bar */}
+        <div className="mt-8 flex flex-col items-start justify-between gap-3 border-t border-white/10 pt-6 text-[11px] text-white/40 sm:mt-12 sm:gap-4 sm:pt-8 sm:text-[12px] sm:flex-row sm:items-center">
           <p>&copy; {new Date().getFullYear()} Nxteraa. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-x-6 sm:gap-y-2">
-            <Link href="/support" className="transition hover:text-white">
+            <Link href="/privacy-policy" className="transition hover:text-white">
               Privacy
             </Link>
-            <Link href="/support" className="transition hover:text-white">
+            <Link href="/terms-and-conditions" className="transition hover:text-white">
               Terms
             </Link>
-            <Link href="/support" className="transition hover:text-white">
-              Cookies
+            <Link href="/refund-policy" className="transition hover:text-white">
+              Refunds
+            </Link>
+            <Link href="/shipping-policy" className="transition hover:text-white">
+              Shipping
+            </Link>
+            <Link href="/contact" className="transition hover:text-white">
+              Contact
             </Link>
             <span className="hidden sm:inline">Made in India</span>
           </div>

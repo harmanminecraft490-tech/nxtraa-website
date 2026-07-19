@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Package, ShoppingBag } from "lucide-react";
+import { Package, ShoppingBag, ClipboardList } from "lucide-react";
 
 import AnnouncementBar from "../components/layout/announcementbar";
 import Navbar from "../components/layout/navbar";
@@ -40,6 +40,10 @@ export default async function AccountPage() {
               <p className="body-copy mt-3">{user.email}</p>
             </div>
             <div className="flex flex-wrap gap-3">
+              <Link href="/account/orders" className="btn btn-primary">
+                <ClipboardList size={16} />
+                My Orders
+              </Link>
               <Link href="/shop" className="btn btn-primary">
                 <ShoppingBag size={16} />
                 Continue shopping
@@ -49,7 +53,17 @@ export default async function AccountPage() {
           </div>
 
           <div className="mt-10">
-            <h2 className="text-lg font-bold text-ink-950">Order history</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-ink-950">Recent orders</h2>
+              {orders.length > 0 && (
+                <Link
+                  href="/account/orders"
+                  className="text-sm font-bold text-accent hover:underline"
+                >
+                  View all orders →
+                </Link>
+              )}
+            </div>
 
             {orders.length === 0 ? (
               <div className="mt-6 rounded-3xl border border-line-soft bg-white p-12 text-center">
@@ -66,7 +80,7 @@ export default async function AccountPage() {
               </div>
             ) : (
               <div className="mt-6 space-y-4">
-                {orders.map((order) => (
+                {orders.slice(0, 3).map((order) => (
                   <Link
                     key={order.id}
                     href={`/track-order?id=${encodeURIComponent(order.id)}`}

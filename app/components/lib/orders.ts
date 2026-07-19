@@ -8,13 +8,20 @@ export type OrderAddress = {
   pincode: string;
 };
 
+export type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "REFUNDED";
+
 export type Order = {
   id: string;
   items: CartItem[];
   subtotal: number;
   deliveryFee: number;
+  discount: number;
   total: number;
   payment: string;
+  paymentStatus: PaymentStatus;
+  razorpayOrderId?: string | null;
+  razorpayPaymentId?: string | null;
+  currency: string;
   address: OrderAddress;
   status: "confirmed" | "processing" | "shipped" | "delivered";
   createdAt: string;

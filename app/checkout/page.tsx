@@ -8,6 +8,9 @@ import {
   CreditCard,
   MapPin,
   ShieldCheck,
+  Loader2,
+  AlertCircle,
+  ShoppingCart,
 } from "lucide-react";
 
 import AnnouncementBar from "../components/layout/announcementbar";
@@ -63,6 +66,9 @@ type RazorpayOptions = {
   theme: {
     color: string;
   };
+  modal?: {
+    ondismiss?: () => void;
+  };
 };
 
 declare global {
@@ -91,6 +97,7 @@ function CheckoutPageContent() {
   const [payment, setPayment] = useState("UPI");
   const [step, setStep] = useState<"address" | "payment">("address");
   const [placingOrder, setPlacingOrder] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -99,6 +106,7 @@ function CheckoutPageContent() {
     pincode: "",
   });
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     // Load Razorpay script
@@ -160,7 +168,10 @@ function CheckoutPageContent() {
         <Navbar />
         <main className="min-h-[60vh] bg-white">
           <div className="page-wrap flex flex-col items-center py-20 text-center">
-            <h1 className="section-title text-ink-950">Nothing to checkout</h1>
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-accent-soft text-accent">
+              <ShoppingCart size={36} />
+            </div>
+            <h1 className="section-title mt-8 text-ink-950">Nothing to checkout</h1>
             <p className="body-copy mt-4">Add items to your cart first.</p>
             <Link
               href="/shop"
@@ -175,8 +186,26 @@ function CheckoutPageContent() {
     );
   }
 
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    if (!form.name.trim()) errors.name = "Name is required";
+    if (!form.phone.trim()) errors.phone = "Phone number is required";
+    else if (!/^[6-9]\d{9}$/.test(form.phone.trim())) errors.phone = "Enter a valid 10-digit Indian phone number";
+    if (!form.address.trim()) errors.address = "Address is required";
+    if (!form.city.trim()) errors.city = "City is required";
+    if (!form.pincode.trim()) errors.pincode = "PIN code is required";
+    else if (!/^\d{6}$/.test(form.pincode.trim())) errors.pincode = "Enter a valid 6-digit PIN code";
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleRazorpayPayment = async () => {
+    if (!validateForm()) return;
+
     setPlacingOrder(true);
+    setPaymentError(null);
 
     try {
       // Create Razorpay order
@@ -186,7 +215,6 @@ function CheckoutPageContent() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          // Server derives the amount from these items — do not send a price.
           items,
           orderId: `order_${Date.now()}`,
         }),
@@ -199,12 +227,12 @@ function CheckoutPageContent() {
           router.push("/account/signin?next=/checkout");
           return;
         }
-        alert("Failed to initialize payment. Please try again.");
+        setPaymentError(orderData.error || "Failed to initialize payment. Please try again.");
         return;
       }
 
       // Initialize Razorpay checkout
-      const options = {
+      const options: RazorpayOptions = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: orderData.order.amount,
         currency: orderData.order.currency,
@@ -212,36 +240,46 @@ function CheckoutPageContent() {
         description: "Premium Mobile Accessories",
         order_id: orderData.order.id,
         handler: async (response: RazorpayPaymentSuccess) => {
-          // Verify payment and place order
-          const verifyResponse = await fetch("/api/orders", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              items,
-              subtotal,
-              deliveryFee,
-              total,
-              payment: "Razorpay",
-              address: form,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpayOrderId: response.razorpay_order_id,
-              razorpaySignature: response.razorpay_signature,
-            }),
-          });
+          try {
+            // Verify payment and place order
+            const verifyResponse = await fetch("/api/orders", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                items,
+                subtotal,
+                deliveryFee,
+                total,
+                payment: "Razorpay",
+                address: form,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpaySignature: response.razorpay_signature,
+              }),
+            });
 
-          const data = (await verifyResponse.json()) as OrderResponse;
+            const data = (await verifyResponse.json()) as OrderResponse;
 
-          if (verifyResponse.ok && data.order) {
-            clearCart();
-            router.push(`/order-success?id=${data.order.id}`);
-          } else {
-            if (verifyResponse.status === 401) {
-              router.push("/account/signin?next=/checkout");
-              return;
+            if (verifyResponse.ok && data.order) {
+              clearCart();
+              router.push(`/order-success?id=${data.order.id}`);
+            } else {
+              if (verifyResponse.status === 401) {
+                router.push("/account/signin?next=/checkout");
+                return;
+              }
+              if (verifyResponse.status === 409) {
+                // Duplicate payment — order already exists
+                clearCart();
+                router.push(`/order-success?id=${(data as { orderId?: string }).orderId || ""}`);
+                return;
+              }
+              setPaymentError(data.error || "Order placement failed. Contact support.");
             }
-            alert(data.error ?? "Order placement failed. Contact support.");
+          } catch {
+            setPaymentError("Payment was successful but we couldn't confirm your order. Please contact support with your payment ID: " + response.razorpay_payment_id);
           }
         },
         prefill: {
@@ -252,23 +290,34 @@ function CheckoutPageContent() {
         theme: {
           color: "#06b6d4",
         },
+        modal: {
+          ondismiss: () => {
+            setPaymentError(null);
+            setPlacingOrder(false);
+          },
+        },
       };
 
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (error) {
       console.error("Payment error:", error);
-      alert("Payment initialization failed. Please try again.");
+      setPaymentError("Payment initialization failed. Please check your connection and try again.");
     } finally {
       setPlacingOrder(false);
     }
   };
 
   const handlePlaceOrder = async () => {
+    if (!validateForm()) {
+      setStep("address");
+      return;
+    }
+
     // For online payments, use Razorpay
     if (payment === "UPI" || payment === "Card") {
       if (!razorpayLoaded) {
-        alert("Payment gateway not loaded. Please try again.");
+        setPaymentError("Payment gateway is still loading. Please wait a moment and try again.");
         return;
       }
       await handleRazorpayPayment();
@@ -277,6 +326,7 @@ function CheckoutPageContent() {
 
     // For COD, place order directly
     setPlacingOrder(true);
+    setPaymentError(null);
 
     try {
       const response = await fetch("/api/orders", {
@@ -301,7 +351,7 @@ function CheckoutPageContent() {
           router.push("/account/signin?next=/checkout");
           return;
         }
-        alert(data.error ?? "We could not place your order. Please try again.");
+        setPaymentError(data.error || "We could not place your order. Please try again.");
         return;
       }
 
@@ -309,9 +359,15 @@ function CheckoutPageContent() {
       router.push(`/order-success?id=${data.order.id}`);
     } catch (error) {
       console.error("Order placement failed:", error);
-      alert("We could not reach the server. Please check your connection and try again.");
+      setPaymentError("We could not reach the server. Please check your connection and try again.");
     } finally {
       setPlacingOrder(false);
+    }
+  };
+
+  const handleProceedToPayment = () => {
+    if (validateForm()) {
+      setStep("payment");
     }
   };
 
@@ -340,7 +396,7 @@ function CheckoutPageContent() {
                 <button
                   type="button"
                   onClick={() => setStep("address")}
-                  className={`flex items-center gap-2 text-sm font-bold ${
+                  className={`flex items-center gap-2 text-sm font-bold transition ${
                     step === "address" ? "text-ink-950" : "text-ink-400"
                   }`}
                 >
@@ -349,7 +405,8 @@ function CheckoutPageContent() {
                 </button>
                 <button
                   type="button"
-                  className={`flex items-center gap-2 text-sm font-bold ${
+                  onClick={() => step === "payment" || (form.name && form.phone && setStep("payment"))}
+                  className={`flex items-center gap-2 text-sm font-bold transition ${
                     step === "payment" ? "text-ink-950" : "text-ink-400"
                   }`}
                 >
@@ -357,6 +414,27 @@ function CheckoutPageContent() {
                   2. Payment
                 </button>
               </div>
+
+              {/* Payment Error Banner */}
+              {paymentError && (
+                <div className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4">
+                  <AlertCircle size={20} className="mt-0.5 shrink-0 text-red-500" />
+                  <div>
+                    <p className="text-sm font-bold text-red-800">{paymentError}</p>
+                    <p className="mt-1 text-xs text-red-600">
+                      If this persists, contact support at{" "}
+                      <a href="/support" className="underline">nxtraa.online/support</a>
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentError(null)}
+                    className="ml-auto shrink-0 text-red-400 hover:text-red-600"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
 
               {step === "address" ? (
                 <section className="card-premium hover:!translate-y-0 space-y-6">
@@ -384,17 +462,33 @@ function CheckoutPageContent() {
                           required
                           type={type}
                           value={form[key]}
-                          onChange={(e) =>
-                            setForm((f) => ({ ...f, [key]: e.target.value }))
+                          onChange={(e) => {
+                            setForm((f) => ({ ...f, [key]: e.target.value }));
+                            if (formErrors[key]) {
+                              setFormErrors((prev) => {
+                                const next = { ...prev };
+                                delete next[key];
+                                return next;
+                              });
+                            }
+                          }}
+                          className={`input-premium ${formErrors[key] ? "!border-red-400 focus:!border-red-500" : ""}`}
+                          placeholder={
+                            key === "phone" ? "9876543210" :
+                            key === "pincode" ? "110001" :
+                            key === "address" ? "House no., Street, Landmark" :
+                            ""
                           }
-                          className="input-premium"
                         />
+                        {formErrors[key] && (
+                          <p className="mt-1.5 text-xs font-medium text-red-500 pl-1">{formErrors[key]}</p>
+                        )}
                       </div>
                     ))}
                   </div>
                   <button
                     type="button"
-                    onClick={() => setStep("payment")}
+                    onClick={handleProceedToPayment}
                     className="w-full sm:w-auto bg-accent text-white px-6 py-3 rounded-full font-bold hover:bg-accent-deep transition-all duration-300 inline-flex items-center justify-center gap-2 hover:shadow-[0_8px_24px_-8px_rgba(6,182,212,0.5)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
                   >
                     Continue to payment
@@ -407,28 +501,40 @@ function CheckoutPageContent() {
                     Payment method
                   </h2>
                   <div className="grid gap-3 sm:grid-cols-3">
-                    {["UPI", "Card", "COD"].map((method) => (
+                    {[
+                      { id: "UPI", label: "UPI", desc: "Google Pay, PhonePe, Paytm", icon: "💳" },
+                      { id: "Card", label: "Card", desc: "Debit or Credit card", icon: "💳" },
+                      { id: "COD", label: "COD", desc: "Pay on delivery", icon: "💵" },
+                    ].map((method) => (
                       <button
-                        key={method}
+                        key={method.id}
                         type="button"
-                        onClick={() => setPayment(method)}
+                        onClick={() => setPayment(method.id)}
                         className={`rounded-2xl border p-5 text-left transition cursor-pointer ${
-                          payment === method
+                          payment === method.id
                             ? "border-accent bg-accent-soft/50 shadow-[0_4px_12px_rgba(39,196,221,0.15)]"
                             : "border-line hover:border-line hover:bg-canvas"
                         }`}
                       >
-                        <span className="text-sm font-bold text-ink-950">
-                          {method}
+                        <span className="text-lg">{method.icon}</span>
+                        <span className="mt-2 block text-sm font-bold text-ink-950">
+                          {method.label}
                         </span>
                         <p className="mt-1 text-xs text-ink-500">
-                          {method === "COD"
-                            ? "Pay on delivery"
-                            : "Pay securely online"}
+                          {method.desc}
                         </p>
                       </button>
                     ))}
                   </div>
+
+                  {payment !== "COD" && (
+                    <div className="rounded-xl bg-accent-soft/30 p-4">
+                      <p className="text-xs font-medium text-accent-deep">
+                        🔒 You will be redirected to Razorpay&apos;s secure payment page.
+                        Never share your OTP or password with anyone.
+                      </p>
+                    </div>
+                  )}
 
                   <div className="pt-2">
                     <button
@@ -483,9 +589,18 @@ function CheckoutPageContent() {
                 <div className="flex justify-between">
                   <span>Delivery</span>
                   <span className="text-ink-950">
-                    {deliveryFee === 0 ? "Free" : `Rs. ${deliveryFee}`}
+                    {deliveryFee === 0 ? (
+                      <span className="text-signal-500">Free</span>
+                    ) : (
+                      `Rs. ${deliveryFee}`
+                    )}
                   </span>
                 </div>
+                {deliveryFee > 0 && (
+                  <p className="text-xs text-ink-400">
+                    Free delivery on orders above Rs. 999
+                  </p>
+                )}
                 <div className="flex justify-between border-t border-line-soft pt-4">
                   <span className="text-ink-950">Total</span>
                   <span className="text-2xl font-black text-ink-950">
@@ -503,9 +618,16 @@ function CheckoutPageContent() {
                   !form.phone ||
                   placingOrder
                 }
-                className="btn-primary w-full disabled:opacity-40 disabled:scale-100 disabled:cursor-not-allowed"
+                className="btn-primary w-full disabled:opacity-40 disabled:scale-100 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
               >
-                {placingOrder ? "Processing..." : `Pay Rs. ${total}`}
+                {placingOrder ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  `Pay Rs. ${total}`
+                )}
               </button>
 
               <p className="flex items-center justify-center gap-2 text-xs font-semibold text-ink-400">

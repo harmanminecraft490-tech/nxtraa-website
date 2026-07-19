@@ -16,11 +16,19 @@ export async function GET() {
       prisma.user.count(),
     ]);
 
-    const totalRevenue = await prisma.order.aggregate({
-      _sum: {
-        total: true,
-      },
-    });
+    const [totalRevenue, paidRevenue, pendingRevenue] = await Promise.all([
+      prisma.order.aggregate({
+        _sum: { total: true },
+      }),
+      prisma.order.aggregate({
+        where: { paymentStatus: "PAID" },
+        _sum: { total: true },
+      }),
+      prisma.order.aggregate({
+        where: { paymentStatus: "PENDING" },
+        _sum: { total: true },
+      }),
+    ]);
 
     const recentOrders = await prisma.order.findMany({
       take: 5,
@@ -35,12 +43,27 @@ export async function GET() {
       },
     });
 
+    // Payment status breakdown
+    const paymentStatusCounts = await prisma.order.groupBy({
+      by: ["paymentStatus"],
+      _count: true,
+    });
+
     return NextResponse.json({
       productCount,
       orderCount,
       userCount,
       totalRevenue: totalRevenue._sum.total || 0,
+      paidRevenue: paidRevenue._sum.total || 0,
+      pendingRevenue: pendingRevenue._sum.total || 0,
       recentOrders,
+      paymentStatusCounts: paymentStatusCounts.reduce(
+        (acc, item) => {
+          acc[item.paymentStatus] = item._count;
+          return acc;
+        },
+        {} as Record<string, number>,
+      ),
     });
   } catch (error) {
     console.error("Failed to load admin stats", error);

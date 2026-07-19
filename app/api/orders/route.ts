@@ -1,10 +1,9 @@
-import { createHmac, timingSafeEqual } from "crypto";
-
 import { NextResponse } from "next/server";
 
 import type { OrderAddress } from "@/app/components/lib/orders";
 import { getSessionUser } from "@/lib/auth/session";
-import { notifyNewOrder } from "@/lib/notify";
+import { verifyRazorpaySignature } from "@/lib/payment-verification";
+import { notifyOrderConfirmed } from "@/lib/notifications";
 import {
   computeCartPricing,
   createOrderForUser,
@@ -25,37 +24,6 @@ function isValidAddress(address: unknown): address is OrderAddress {
     typeof candidate.city === "string" &&
     typeof candidate.pincode === "string"
   );
-}
-
-/**
- * Verifies a Razorpay payment signature: HMAC_SHA256(order_id|payment_id, secret).
- * Returns false on any mismatch so a forged success handler cannot create a paid
- * order without an actual captured payment.
- */
-function isValidRazorpaySignature(
-  orderId: unknown,
-  paymentId: unknown,
-  signature: unknown,
-): boolean {
-  const secret = process.env.RAZORPAY_KEY_SECRET;
-  if (!secret) return false;
-  if (
-    typeof orderId !== "string" ||
-    typeof paymentId !== "string" ||
-    typeof signature !== "string"
-  ) {
-    return false;
-  }
-  const expected = createHmac("sha256", secret)
-    .update(`${orderId}|${paymentId}`)
-    .digest("hex");
-  try {
-    const a = Buffer.from(expected);
-    const b = Buffer.from(signature);
-    return a.length === b.length && timingSafeEqual(a, b);
-  } catch {
-    return false;
-  }
 }
 
 export async function GET() {
@@ -88,10 +56,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Select a payment method." }, { status: 400 });
   }
 
+  let paymentStatus = "PENDING";
+
   // Online payments must carry a valid Razorpay signature that we verify against
   // our secret — otherwise the paid amount cannot be trusted.
   if (payment === "Razorpay") {
-    const ok = isValidRazorpaySignature(
+    const ok = verifyRazorpaySignature(
       body.razorpayOrderId,
       body.razorpayPaymentId,
       body.razorpaySignature,
@@ -100,6 +70,26 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Payment could not be verified." },
         { status: 400 },
+      );
+    }
+    paymentStatus = "PAID";
+  } else if (payment === "COD") {
+    paymentStatus = "PENDING";
+  }
+
+  // Prevent duplicate order creation: check if this Razorpay payment ID was
+  // already used for an order. This guards against race conditions where the
+  // frontend retries the verify call.
+  if (payment === "Razorpay" && body.razorpayPaymentId) {
+    const existingOrder = await import("@/lib/prisma").then((m) =>
+      m.default.order.findFirst({
+        where: { razorpayPaymentId: body.razorpayPaymentId },
+      }),
+    );
+    if (existingOrder) {
+      return NextResponse.json(
+        { error: "This payment has already been processed.", orderId: existingOrder.id },
+        { status: 409 },
       );
     }
   }
@@ -118,19 +108,29 @@ export async function POST(request: Request) {
     total,
     payment,
     address,
+    paymentStatus,
+    razorpayOrderId: body.razorpayOrderId || null,
+    razorpayPaymentId: body.razorpayPaymentId || null,
   });
 
-  // Send order notification (fire-and-forget — never block the response).
-  notifyNewOrder({
+  // Send order notifications (fire-and-forget — never block the response).
+  notifyOrderConfirmed({
     orderNumber: order.id,
+    userId: user.id,
     recipientName: address.name,
     phone: address.phone,
+    email: user.email ?? "",
     address: address.address,
     city: address.city,
     pincode: address.pincode,
     items,
+    subtotal,
+    deliveryFee,
+    discount: 0,
+    total,
     payment,
-    paymentStatus: payment === "Razorpay" ? "Paid" : payment === "COD" ? "Pending (COD)" : payment,
+    paymentStatus,
+    razorpayPaymentId: body.razorpayPaymentId,
     createdAt: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
   }).catch(() => {});
 

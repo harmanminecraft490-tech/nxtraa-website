@@ -1,8 +1,9 @@
   "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Save, X, Image as ImageIcon, Search, Upload, Trash2 } from "lucide-react";
+import { Save, X, Image as ImageIcon, Search, Upload, Trash2, Package } from "lucide-react";
 
 import { categories, type Product } from "@/app/components/lib/product-types";
 
@@ -16,17 +17,21 @@ type AdminStats = {
   orderCount: number;
   userCount: number;
   totalRevenue: number;
+  paidRevenue: number;
+  pendingRevenue: number;
   recentOrders: Array<{
     id: string;
     orderNumber: string;
     total: number;
     status: string;
+    paymentStatus: string;
     createdAt: string;
     user: {
       name: string | null;
       email: string | null;
     };
   }>;
+  paymentStatusCounts: Record<string, number>;
 };
 
 const MAX_IMAGES = 3;
@@ -298,6 +303,15 @@ export default function AdminClient() {
           <p className="mt-1 text-ink-500 text-sm">
             Manage your products, view statistics, and monitor orders
           </p>
+          <div className="mt-4 flex gap-3">
+            <Link
+              href="/admin/orders"
+              className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-bold text-white hover:bg-accent-deep transition-all duration-300"
+            >
+              <Package size={16} />
+              Manage Orders
+            </Link>
+          </div>
         </div>
 
         {/* Dashboard Statistics */}
@@ -318,6 +332,42 @@ export default function AdminClient() {
             <div className="rounded-2xl border border-line bg-white p-6">
               <p className="text-sm font-medium text-ink-500">Revenue</p>
               <p className="mt-2 text-3xl font-black text-ink-950">{formatINR(stats.totalRevenue)}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Payment Status Breakdown */}
+        {stats && stats.paymentStatusCounts && Object.keys(stats.paymentStatusCounts).length > 0 && (
+          <div className="mb-8 rounded-2xl border border-line bg-white p-6">
+            <h2 className="text-lg font-bold text-ink-950">Payment Overview</h2>
+            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {Object.entries(stats.paymentStatusCounts).map(([status, count]) => (
+                <div key={status} className="text-center">
+                  <p className={`inline-block rounded-full px-3 py-1 text-xs font-bold ${
+                    status === "PAID" ? "bg-green-100 text-green-700" :
+                    status === "PENDING" ? "bg-yellow-100 text-yellow-700" :
+                    status === "FAILED" ? "bg-red-100 text-red-700" :
+                    "bg-gray-100 text-gray-700"
+                  }`}>
+                    {status}
+                  </p>
+                  <p className="mt-2 text-2xl font-black text-ink-950">{count}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 text-sm">
+              <div>
+                <span className="text-ink-500">Paid Revenue:</span>
+                <span className="ml-2 font-bold text-green-600">{formatINR(stats.paidRevenue)}</span>
+              </div>
+              <div>
+                <span className="text-ink-500">Pending Revenue:</span>
+                <span className="ml-2 font-bold text-yellow-600">{formatINR(stats.pendingRevenue)}</span>
+              </div>
+              <div>
+                <span className="text-ink-500">Total Revenue:</span>
+                <span className="ml-2 font-bold text-ink-950">{formatINR(stats.totalRevenue)}</span>
+              </div>
             </div>
           </div>
         )}

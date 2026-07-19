@@ -12,6 +12,15 @@ type OrderWithItems = Prisma.OrderGetPayload<{
   };
 }>;
 
+// Ensure the type has all the fields we need
+type OrderWithItemsFull = OrderWithItems & {
+  discount: number;
+  paymentStatus: string;
+  razorpayOrderId: string | null;
+  razorpayPaymentId: string | null;
+  currency: string;
+};
+
 /** True when `items` is a non-empty list of { productId:number, quantity:number>0 }. */
 export function isValidCartItems(items: unknown): items is CartItem[] {
   if (!Array.isArray(items) || items.length === 0) return false;
@@ -59,8 +68,13 @@ export function mapOrder(order: OrderWithItems): Order {
     })) as CartItem[],
     subtotal: order.subtotal,
     deliveryFee: order.deliveryFee,
+    discount: order.discount,
     total: order.total,
     payment: order.payment,
+    paymentStatus: order.paymentStatus as Order["paymentStatus"],
+    razorpayOrderId: order.razorpayOrderId,
+    razorpayPaymentId: order.razorpayPaymentId,
+    currency: order.currency,
     address: {
       name: order.recipientName,
       phone: order.phone,
@@ -81,6 +95,10 @@ export async function createOrderForUser({
   total,
   payment,
   address,
+  paymentStatus = "PENDING",
+  razorpayOrderId,
+  razorpayPaymentId,
+  discount = 0,
 }: {
   userId: string;
   items: CartItem[];
@@ -89,6 +107,10 @@ export async function createOrderForUser({
   total: number;
   payment: string;
   address: OrderAddress;
+  paymentStatus?: string;
+  razorpayOrderId?: string | null;
+  razorpayPaymentId?: string | null;
+  discount?: number;
 }) {
   // Fetch all products to get their prices for the order items.
   const products = await getAllProductsCached();
@@ -111,7 +133,11 @@ export async function createOrderForUser({
       subtotal,
       deliveryFee,
       total,
+      discount,
       payment,
+      paymentStatus: paymentStatus as "PENDING" | "PAID" | "FAILED" | "REFUNDED",
+      razorpayOrderId: razorpayOrderId ?? null,
+      razorpayPaymentId: razorpayPaymentId ?? null,
       recipientName: address.name,
       phone: address.phone,
       addressLine: address.address,

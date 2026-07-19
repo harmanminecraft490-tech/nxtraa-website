@@ -1,22 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import Razorpay from "razorpay";
 
 import { getSessionUser } from "@/lib/auth/session";
+import { getRazorpay, isRazorpayConfigured } from "@/lib/razorpay";
 import { computeCartPricing, isValidCartItems } from "@/lib/order-data";
 
-// Only initialize Razorpay if keys are available
-const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
-const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
-
-const razorpay = razorpayKeyId && razorpayKeySecret
-  ? new Razorpay({
-      key_id: razorpayKeyId,
-      key_secret: razorpayKeySecret,
-    })
-  : null;
-
 export async function POST(request: NextRequest) {
-  if (!razorpay) {
+  if (!isRazorpayConfigured()) {
     return NextResponse.json(
       { error: "Razorpay not configured. Please set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET." },
       { status: 500 }
@@ -27,6 +16,14 @@ export async function POST(request: NextRequest) {
   const user = await getSessionUser();
   if (!user) {
     return NextResponse.json({ error: "Please sign in to pay." }, { status: 401 });
+  }
+
+  const razorpay = getRazorpay();
+  if (!razorpay) {
+    return NextResponse.json(
+      { error: "Razorpay initialization failed." },
+      { status: 500 }
+    );
   }
 
   try {
@@ -62,9 +59,17 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  if (!razorpay) {
+  if (!isRazorpayConfigured()) {
     return NextResponse.json(
       { error: "Razorpay not configured." },
+      { status: 500 }
+    );
+  }
+
+  const razorpay = getRazorpay();
+  if (!razorpay) {
+    return NextResponse.json(
+      { error: "Razorpay initialization failed." },
       { status: 500 }
     );
   }
