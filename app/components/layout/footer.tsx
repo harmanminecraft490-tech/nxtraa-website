@@ -80,7 +80,7 @@ export default function Footer() {
               </div>
               <div className="mt-5 flex items-center gap-2 sm:mt-6">
                 <a
-                  href="https://instagram.com/nxtra_accessories"
+                  href="https://instagram.com/nxtera_accessories"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram"
