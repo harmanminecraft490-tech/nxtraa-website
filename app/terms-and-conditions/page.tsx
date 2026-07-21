@@ -64,7 +64,7 @@ export default function TermsAndConditionsPage() {
               <section>
                 <h2 className="text-xl font-black text-ink-950">5. Payments</h2>
                 <p className="mt-3 leading-relaxed">
-                  We accept payments via UPI, credit cards, debit cards, and Cash on Delivery (COD). Online payments are processed securely through Razorpay. Cash on Delivery is available for select pin codes and may involve an additional verification step.
+                  We accept payments via UPI, credit cards, debit cards, and Cash on Delivery (COD). Online payments are processed securely through PhonePe. Cash on Delivery is available for select pin codes and may involve an additional verification step.
                 </p>
                 <p className="mt-3 leading-relaxed">
                   For COD orders, payment must be made in full at the time of delivery. We do not accept partial payments.

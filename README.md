@@ -1,6 +1,6 @@
 # Nxteraa Website
 
-Next.js storefront for Nxteraa with Prisma-backed data, custom auth routes, admin tools, and Razorpay checkout.
+Next.js storefront for Nxteraa with Prisma-backed data, custom auth routes, admin tools, and PhonePe checkout.
 
 ## Setup
 
@@ -37,9 +37,7 @@ Open [http://localhost:3000](http://localhost:3000). The root route redirects to
 - `DATABASE_URL`: Prisma database connection string
 - `SESSION_SECRET`: secret used for session signing
 - `ADMIN_EMAIL`: email allowed to access admin screens
-- `RAZORPAY_KEY_ID`: Razorpay server key id
-- `RAZORPAY_KEY_SECRET`: Razorpay server key secret
-- `NEXT_PUBLIC_RAZORPAY_KEY_ID`: Razorpay public key exposed to the client
+- See `.env.example` for all required environment variables
 
 ## Useful Scripts
 

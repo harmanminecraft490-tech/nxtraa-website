@@ -9,7 +9,6 @@ import {
   Calendar,
   CreditCard,
   Truck,
-  Download,
   ArrowRight,
 } from "lucide-react";
 
@@ -25,14 +24,14 @@ export default function OrderSuccessClient() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!orderId) {
-      setLoading(false);
-      return;
-    }
-
     let cancelled = false;
 
     async function loadOrder() {
+      if (!orderId) {
+        if (!cancelled) setLoading(false);
+        return;
+      }
+
       try {
         const response = await fetch(`/api/orders/${encodeURIComponent(orderId)}`);
 
@@ -122,16 +121,16 @@ export default function OrderSuccessClient() {
                 </div>
               </div>
 
-              {/* Payment ID */}
-              {order.razorpayPaymentId && (
+              {/* Transaction ID */}
+              {order.phonepeTransactionId && (
                 <div className="flex items-center gap-3">
                   <CreditCard className="text-accent" size={22} />
                   <div>
                     <p className="text-xs font-bold uppercase tracking-wider text-ink-500">
-                      Payment ID
+                      Transaction ID
                     </p>
                     <p className="text-sm font-bold text-ink-950 font-mono">
-                      {order.razorpayPaymentId}
+                      {order.phonepeTransactionId}
                     </p>
                   </div>
                 </div>

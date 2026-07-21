@@ -19,8 +19,8 @@ export type Order = {
   total: number;
   payment: string;
   paymentStatus: PaymentStatus;
-  razorpayOrderId?: string | null;
-  razorpayPaymentId?: string | null;
+  phonepeMerchantTransactionId?: string | null;
+  phonepeTransactionId?: string | null;
   currency: string;
   address: OrderAddress;
   status: "confirmed" | "processing" | "shipped" | "delivered";

@@ -16,7 +16,6 @@
  */
 
 import type { CartItem } from "@/app/components/lib/cartcontext";
-import type { OrderAddress } from "@/app/components/lib/orders";
 import { getAllProductsCached } from "@/app/components/lib/products-cache";
 
 const MAX_RETRIES = 3;

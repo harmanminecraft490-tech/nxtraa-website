@@ -14,7 +14,6 @@
  */
 
 import type { CartItem } from "@/app/components/lib/cartcontext";
-import type { OrderAddress } from "@/app/components/lib/orders";
 import { getAllProductsCached } from "@/app/components/lib/products-cache";
 import { notifyNewOrder } from "./notify";
 
@@ -34,7 +33,7 @@ export type OrderNotificationData = {
   total: number;
   payment: string;
   paymentStatus: string;
-  razorpayPaymentId?: string;
+  phonepeTransactionId?: string;
   createdAt: string;
 };
 
@@ -94,9 +93,9 @@ function buildOrderEmailHtml(data: OrderNotificationData, products: Array<{ name
             <td style="padding:6px 0;font-size:13px;color:#888;">Order Number</td>
             <td style="padding:6px 0;font-size:13px;color:#1a1a2e;font-weight:700;text-align:right;">${data.orderNumber}</td>
           </tr>
-          ${data.razorpayPaymentId ? `<tr>
-            <td style="padding:6px 0;font-size:13px;color:#888;">Payment ID</td>
-            <td style="padding:6px 0;font-size:13px;color:#1a1a2e;font-weight:700;text-align:right;">${data.razorpayPaymentId}</td>
+          ${data.phonepeTransactionId ? `<tr>
+            <td style="padding:6px 0;font-size:13px;color:#888;">Transaction ID</td>
+            <td style="padding:6px 0;font-size:13px;color:#1a1a2e;font-weight:700;text-align:right;">${data.phonepeTransactionId}</td>
           </tr>` : ""}
           <tr>
             <td style="padding:6px 0;font-size:13px;color:#888;">Payment Method</td>

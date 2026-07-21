@@ -35,8 +35,8 @@ type AdminOrder = {
   total: number;
   payment: string;
   paymentStatus: string;
-  razorpayOrderId: string | null;
-  razorpayPaymentId: string | null;
+  phonepeMerchantTransactionId: string | null;
+  phonepeTransactionId: string | null;
   status: string;
   recipientName: string;
   phone: string;
@@ -107,7 +107,8 @@ export default function AdminOrdersClient() {
   };
 
   useEffect(() => {
-    fetchOrders();
+    const timer = setTimeout(() => fetchOrders(), 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleSearch = () => {
@@ -341,11 +342,11 @@ export default function AdminOrdersClient() {
                               {order.paymentStatus}
                             </span>
                           </div>
-                          {order.razorpayPaymentId && (
+                          {order.phonepeTransactionId && (
                             <div className="flex items-center gap-1">
                               <CreditCard size={12} className="text-ink-400" />
                               <span className="font-mono text-xs text-ink-600">
-                                {order.razorpayPaymentId}
+                                {order.phonepeTransactionId}
                               </span>
                             </div>
                           )}

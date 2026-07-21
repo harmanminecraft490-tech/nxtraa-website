@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       { orderNumber: { contains: search, mode: "insensitive" } },
       { recipientName: { contains: search, mode: "insensitive" } },
       { phone: { contains: search, mode: "insensitive" } },
-      { razorpayPaymentId: { contains: search, mode: "insensitive" } },
+      { phonepeTransactionId: { contains: search, mode: "insensitive" } },
     ];
   }
 

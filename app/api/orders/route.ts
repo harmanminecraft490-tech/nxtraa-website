@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 
 import type { OrderAddress } from "@/app/components/lib/orders";
 import { getSessionUser } from "@/lib/auth/session";
-import { verifyRazorpaySignature } from "@/lib/payment-verification";
 import { notifyOrderConfirmed } from "@/lib/notifications";
 import {
   computeCartPricing,
@@ -58,40 +57,65 @@ export async function POST(request: Request) {
 
   let paymentStatus = "PENDING";
 
-  // Online payments must carry a valid Razorpay signature that we verify against
-  // our secret — otherwise the paid amount cannot be trusted.
-  if (payment === "Razorpay") {
-    const ok = verifyRazorpaySignature(
-      body.razorpayOrderId,
-      body.razorpayPaymentId,
-      body.razorpaySignature,
-    );
-    if (!ok) {
+  // PhonePe online payments carry a merchant transaction ID that we verify
+  // server-side by checking the payment status with PhonePe's API.
+  if (payment === "PhonePe") {
+    const merchantTransactionId = body.merchantTransactionId;
+    if (!merchantTransactionId) {
+      return NextResponse.json(
+        { error: "Missing payment transaction ID." },
+        { status: 400 },
+      );
+    }
+
+    // Check payment status with PhonePe's server (authoritative).
+    const { checkPaymentStatus } = await import("@/lib/phonepe");
+    const statusResult = await checkPaymentStatus(merchantTransactionId);
+
+    if (!statusResult.success) {
       return NextResponse.json(
         { error: "Payment could not be verified." },
         { status: 400 },
       );
     }
-    paymentStatus = "PAID";
+
+    const state = statusResult.state || "";
+    const responseCode = statusResult.code || "";
+
+    if (
+      state === "COMPLETED" ||
+      responseCode === "PAYMENT_SUCCESS" ||
+      responseCode === "SUCCESS"
+    ) {
+      paymentStatus = "PAID";
+    } else if (
+      state === "FAILED" ||
+      responseCode === "PAYMENT_FAILED" ||
+      responseCode === "FAILED"
+    ) {
+      paymentStatus = "FAILED";
+    }
+    // Otherwise stays PENDING.
+
+    // Prevent duplicate order: check if this PhonePe transaction was already used.
+    if (paymentStatus === "PAID" && statusResult.transactionId) {
+      const existingOrder = await import("@/lib/prisma").then((m) =>
+        m.default.order.findFirst({
+          where: { phonepeTransactionId: statusResult.transactionId },
+        }),
+      );
+      if (existingOrder) {
+        return NextResponse.json(
+          { error: "This payment has already been processed.", orderId: existingOrder.id },
+          { status: 409 },
+        );
+      }
+    }
+
+    // Store the transaction ID for the order.
+    body.phonepeTransactionId = statusResult.transactionId || null;
   } else if (payment === "COD") {
     paymentStatus = "PENDING";
-  }
-
-  // Prevent duplicate order creation: check if this Razorpay payment ID was
-  // already used for an order. This guards against race conditions where the
-  // frontend retries the verify call.
-  if (payment === "Razorpay" && body.razorpayPaymentId) {
-    const existingOrder = await import("@/lib/prisma").then((m) =>
-      m.default.order.findFirst({
-        where: { razorpayPaymentId: body.razorpayPaymentId },
-      }),
-    );
-    if (existingOrder) {
-      return NextResponse.json(
-        { error: "This payment has already been processed.", orderId: existingOrder.id },
-        { status: 409 },
-      );
-    }
   }
 
   // Prices always come from the catalog, never the client.
@@ -109,8 +133,8 @@ export async function POST(request: Request) {
     payment,
     address,
     paymentStatus,
-    razorpayOrderId: body.razorpayOrderId || null,
-    razorpayPaymentId: body.razorpayPaymentId || null,
+    phonepeMerchantTransactionId: body.merchantTransactionId || null,
+    phonepeTransactionId: body.phonepeTransactionId || null,
   });
 
   // Send order notifications (fire-and-forget — never block the response).
@@ -130,7 +154,7 @@ export async function POST(request: Request) {
     total,
     payment,
     paymentStatus,
-    razorpayPaymentId: body.razorpayPaymentId,
+    phonepeTransactionId: body.phonepeTransactionId,
     createdAt: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
   }).catch(() => {});
 

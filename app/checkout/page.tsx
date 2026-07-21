@@ -22,23 +22,6 @@ import { getProductById } from "../components/lib/products-store";
 
 import { Suspense } from "react";
 
-type RazorpayPaymentSuccess = {
-  razorpay_payment_id: string;
-  razorpay_order_id: string;
-  razorpay_signature: string;
-};
-
-type RazorpayOrder = {
-  id: string;
-  amount: number;
-  currency: string;
-};
-
-type RazorpayOrderResponse = {
-  error?: string;
-  order?: RazorpayOrder;
-};
-
 type OrderResponse = {
   error?: string;
   order?: { id: string };
@@ -50,32 +33,13 @@ type SessionUser = {
   email: string | null;
 };
 
-type RazorpayOptions = {
-  key: string | undefined;
-  amount: number;
-  currency: string;
-  name: string;
-  description: string;
-  order_id: string;
-  handler: (response: RazorpayPaymentSuccess) => Promise<void>;
-  prefill: {
-    name: string;
-    email?: string | null;
-    contact: string;
-  };
-  theme: {
-    color: string;
-  };
-  modal?: {
-    ondismiss?: () => void;
-  };
+type PhonePeInitiateResponse = {
+  success?: boolean;
+  error?: string;
+  code?: string;
+  redirectUrl?: string;
+  merchantTransactionId?: string;
 };
-
-declare global {
-  interface Window {
-    Razorpay: new (options: RazorpayOptions) => { open: () => void };
-  }
-}
 
 export default function CheckoutPage() {
   return (
@@ -105,23 +69,7 @@ function CheckoutPageContent() {
     city: "",
     pincode: "",
   });
-  const [razorpayLoaded, setRazorpayLoaded] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    // Load Razorpay script
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    script.onload = () => setRazorpayLoaded(true);
-    document.body.appendChild(script);
-
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -201,105 +149,59 @@ function CheckoutPageContent() {
     return Object.keys(errors).length === 0;
   };
 
-  const handleRazorpayPayment = async () => {
+  const handlePhonePePayment = async () => {
     if (!validateForm()) return;
 
     setPlacingOrder(true);
     setPaymentError(null);
 
     try {
-      // Create Razorpay order
-      const orderResponse = await fetch("/api/payments/razorpay", {
+      // Initiate payment with PhonePe.
+      const response = await fetch("/api/phonepe/initiate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           items,
-          orderId: `order_${Date.now()}`,
+          phone: form.phone,
         }),
       });
 
-      const orderData = (await orderResponse.json()) as RazorpayOrderResponse;
+      const data = (await response.json()) as PhonePeInitiateResponse;
 
-      if (!orderResponse.ok || !orderData.order) {
-        if (orderResponse.status === 401) {
+      if (!response.ok || !data.redirectUrl) {
+        if (response.status === 401) {
           router.push("/account/signin?next=/checkout");
           return;
         }
-        setPaymentError(orderData.error || "Failed to initialize payment. Please try again.");
+        setPaymentError(data.error || "Failed to initialize payment. Please try again.");
         return;
       }
 
-      // Initialize Razorpay checkout
-      const options: RazorpayOptions = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: orderData.order.amount,
-        currency: orderData.order.currency,
-        name: "Nxteraa",
-        description: "Premium Mobile Accessories",
-        order_id: orderData.order.id,
-        handler: async (response: RazorpayPaymentSuccess) => {
-          try {
-            // Verify payment and place order
-            const verifyResponse = await fetch("/api/orders", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                items,
-                subtotal,
-                deliveryFee,
-                total,
-                payment: "Razorpay",
-                address: form,
-                razorpayPaymentId: response.razorpay_payment_id,
-                razorpayOrderId: response.razorpay_order_id,
-                razorpaySignature: response.razorpay_signature,
-              }),
-            });
-
-            const data = (await verifyResponse.json()) as OrderResponse;
-
-            if (verifyResponse.ok && data.order) {
-              clearCart();
-              router.push(`/order-success?id=${data.order.id}`);
-            } else {
-              if (verifyResponse.status === 401) {
-                router.push("/account/signin?next=/checkout");
-                return;
-              }
-              if (verifyResponse.status === 409) {
-                // Duplicate payment — order already exists
-                clearCart();
-                router.push(`/order-success?id=${(data as { orderId?: string }).orderId || ""}`);
-                return;
-              }
-              setPaymentError(data.error || "Order placement failed. Contact support.");
-            }
-          } catch {
-            setPaymentError("Payment was successful but we couldn't confirm your order. Please contact support with your payment ID: " + response.razorpay_payment_id);
-          }
-        },
-        prefill: {
-          name: form.name || user?.name || "",
-          email: user?.email,
-          contact: form.phone,
-        },
-        theme: {
-          color: "#06b6d4",
-        },
-        modal: {
-          ondismiss: () => {
-            setPaymentError(null);
-            setPlacingOrder(false);
+      // Store checkout data in sessionStorage so the callback page can
+      // create the order after PhonePe redirects back.
+      sessionStorage.setItem(
+        "phonepe_checkout",
+        JSON.stringify({
+          merchantTransactionId: data.merchantTransactionId,
+          items,
+          subtotal,
+          deliveryFee,
+          total,
+          payment: "PhonePe",
+          address: {
+            name: form.name.trim(),
+            phone: form.phone.trim(),
+            address: form.address.trim(),
+            city: form.city.trim(),
+            pincode: form.pincode.trim(),
           },
-        },
-      };
+        }),
+      );
 
-      const rzp = new window.Razorpay(options);
-      rzp.open();
+      // Redirect the user to PhonePe's secure payment page.
+      window.location.href = data.redirectUrl;
     } catch (error) {
       console.error("Payment error:", error);
       setPaymentError("Payment initialization failed. Please check your connection and try again.");
@@ -314,17 +216,13 @@ function CheckoutPageContent() {
       return;
     }
 
-    // For online payments, use Razorpay
+    // For online payments, use PhonePe (redirect flow).
     if (payment === "UPI" || payment === "Card") {
-      if (!razorpayLoaded) {
-        setPaymentError("Payment gateway is still loading. Please wait a moment and try again.");
-        return;
-      }
-      await handleRazorpayPayment();
+      await handlePhonePePayment();
       return;
     }
 
-    // For COD, place order directly
+    // For COD, place order directly.
     setPlacingOrder(true);
     setPaymentError(null);
 
@@ -530,7 +428,7 @@ function CheckoutPageContent() {
                   {payment !== "COD" && (
                     <div className="rounded-xl bg-accent-soft/30 p-4">
                       <p className="text-xs font-medium text-accent-deep">
-                        🔒 You will be redirected to Razorpay&apos;s secure payment page.
+                        🔒 You will be redirected to PhonePe&apos;s secure payment page to complete your transaction.
                         Never share your OTP or password with anyone.
                       </p>
                     </div>
@@ -623,7 +521,7 @@ function CheckoutPageContent() {
                 {placingOrder ? (
                   <>
                     <Loader2 size={18} className="animate-spin" />
-                    Processing...
+                    Redirecting to Payment...
                   </>
                 ) : (
                   `Pay Rs. ${total}`

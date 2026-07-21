@@ -12,15 +12,6 @@ type OrderWithItems = Prisma.OrderGetPayload<{
   };
 }>;
 
-// Ensure the type has all the fields we need
-type OrderWithItemsFull = OrderWithItems & {
-  discount: number;
-  paymentStatus: string;
-  razorpayOrderId: string | null;
-  razorpayPaymentId: string | null;
-  currency: string;
-};
-
 /** True when `items` is a non-empty list of { productId:number, quantity:number>0 }. */
 export function isValidCartItems(items: unknown): items is CartItem[] {
   if (!Array.isArray(items) || items.length === 0) return false;
@@ -36,8 +27,8 @@ export function isValidCartItems(items: unknown): items is CartItem[] {
 
 /**
  * Authoritative, server-side order pricing. Prices come from the catalog — never
- * from the client — so a tampered request cannot change what is charged. Shared
- * by /api/orders and /api/payments/razorpay so both always agree.
+ * from the client — so a tampered request cannot change what is charged.
+ * Shared by /api/orders and /api/phonepe/initiate so both always agree.
  */
 export async function computeCartPricing(items: CartItem[]) {
   const products = await getAllProductsCached();
@@ -72,8 +63,8 @@ export function mapOrder(order: OrderWithItems): Order {
     total: order.total,
     payment: order.payment,
     paymentStatus: order.paymentStatus as Order["paymentStatus"],
-    razorpayOrderId: order.razorpayOrderId,
-    razorpayPaymentId: order.razorpayPaymentId,
+    phonepeMerchantTransactionId: order.phonepeMerchantTransactionId,
+    phonepeTransactionId: order.phonepeTransactionId,
     currency: order.currency,
     address: {
       name: order.recipientName,
@@ -96,8 +87,8 @@ export async function createOrderForUser({
   payment,
   address,
   paymentStatus = "PENDING",
-  razorpayOrderId,
-  razorpayPaymentId,
+  phonepeMerchantTransactionId,
+  phonepeTransactionId,
   discount = 0,
 }: {
   userId: string;
@@ -108,8 +99,8 @@ export async function createOrderForUser({
   payment: string;
   address: OrderAddress;
   paymentStatus?: string;
-  razorpayOrderId?: string | null;
-  razorpayPaymentId?: string | null;
+  phonepeMerchantTransactionId?: string | null;
+  phonepeTransactionId?: string | null;
   discount?: number;
 }) {
   // Fetch all products to get their prices for the order items.
@@ -136,8 +127,8 @@ export async function createOrderForUser({
       discount,
       payment,
       paymentStatus: paymentStatus as "PENDING" | "PAID" | "FAILED" | "REFUNDED",
-      razorpayOrderId: razorpayOrderId ?? null,
-      razorpayPaymentId: razorpayPaymentId ?? null,
+      phonepeMerchantTransactionId: phonepeMerchantTransactionId ?? null,
+      phonepeTransactionId: phonepeTransactionId ?? null,
       recipientName: address.name,
       phone: address.phone,
       addressLine: address.address,

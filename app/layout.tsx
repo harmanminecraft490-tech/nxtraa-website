@@ -113,11 +113,6 @@ export default function RootLayout({
           </CartProvider>
         </AuthProvider>
         <Analytics />
-        {/* Razorpay Checkout.js — loaded globally so any page can open the payment modal */}
-        <script
-          src="https://checkout.razorpay.com/v1/checkout.js"
-          async
-        />
       </body>
     </html>
   );

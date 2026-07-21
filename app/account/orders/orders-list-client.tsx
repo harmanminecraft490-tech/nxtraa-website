@@ -6,7 +6,6 @@ import {
   Truck,
   Clock,
   CheckCircle2,
-  CreditCard,
   ChevronRight,
 } from "lucide-react";
 

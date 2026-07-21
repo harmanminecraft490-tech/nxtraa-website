@@ -49,12 +49,12 @@ export default function PrivacyPolicyPage() {
 
                 <h3 className="mt-4 text-lg font-bold text-ink-950">Order Information</h3>
                 <p className="mt-2 leading-relaxed">
-                  When you place an order, we collect your shipping address, phone number, order details, and payment information. Payment details are processed securely through Razorpay and are never stored on our servers.
+                  When you place an order, we collect your shipping address, phone number, order details, and payment information. Payment details are processed securely through PhonePe and are never stored on our servers.
                 </p>
 
                 <h3 className="mt-4 text-lg font-bold text-ink-950">Payment Information</h3>
                 <p className="mt-2 leading-relaxed">
-                  All payment transactions are processed through Razorpay, a PCI DSS compliant payment gateway. We do not store your credit card numbers, debit card numbers, UPI IDs, or any other payment credentials on our servers.
+                  All payment transactions are processed through PhonePe, a PCI DSS compliant payment gateway. We do not store your credit card numbers, debit card numbers, UPI IDs, or any other payment credentials on our servers.
                 </p>
               </section>
 
@@ -83,7 +83,7 @@ export default function PrivacyPolicyPage() {
                   We share your information only with third parties necessary to fulfill your order:
                 </p>
                 <ul className="mt-3 space-y-2 list-disc list-inside leading-relaxed">
-                  <li><strong>Razorpay</strong> — for payment processing</li>
+                  <li><strong>PhonePe</strong> — for payment processing</li>
                   <li><strong>Courier partners</strong> — for order delivery (name, address, phone number)</li>
                   <li><strong>Vercel</strong> — for website hosting and analytics</li>
                 </ul>
