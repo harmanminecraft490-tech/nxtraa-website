@@ -35,8 +35,6 @@ type AdminOrder = {
   total: number;
   payment: string;
   paymentStatus: string;
-  phonepeMerchantTransactionId: string | null;
-  phonepeTransactionId: string | null;
   cashfreeOrderId: string | null;
   cashfreePaymentId: string | null;
   cashfreePaymentStatus: string | null;
@@ -346,14 +344,6 @@ export default function AdminOrdersClient() {
                               {order.paymentStatus}
                             </span>
                           </div>
-                          {order.phonepeTransactionId && (
-                            <div className="flex items-center gap-1">
-                              <CreditCard size={12} className="text-ink-400" />
-                              <span className="font-mono text-xs text-ink-600">
-                                {order.phonepeTransactionId}
-                              </span>
-                            </div>
-                          )}
                         </div>
                         {(order.cashfreeOrderId || order.cashfreePaymentId || order.cashfreeTransactionId) && (
                           <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">

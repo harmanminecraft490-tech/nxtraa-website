@@ -31,7 +31,7 @@ const FAQ_ITEMS = [
   },
   {
     question: "What payment methods do you accept?",
-    answer: "We accept UPI (Google Pay, PhonePe, Paytm), credit cards, debit cards, and Cash on Delivery (COD) for select pin codes.",
+    answer: "We accept UPI (Google Pay, Paytm, BHIM), credit cards, debit cards, and Cash on Delivery (COD) for select pin codes.",
   },
   {
     question: "Do you offer bulk or wholesale orders?",

@@ -28,7 +28,7 @@ export function isValidCartItems(items: unknown): items is CartItem[] {
 /**
  * Authoritative, server-side order pricing. Prices come from the catalog — never
  * from the client — so a tampered request cannot change what is charged.
- * Shared by /api/orders and /api/phonepe/initiate so both always agree.
+ * Shared by /api/orders and /api/cashfree/orders so both always agree.
  */
 export async function computeCartPricing(items: CartItem[]) {
   const products = await getAllProductsCached();
@@ -76,8 +76,6 @@ export function mapOrder(order: OrderWithItems): Order {
     total: order.total,
     payment: order.payment,
     paymentStatus: order.paymentStatus as Order["paymentStatus"],
-    phonepeMerchantTransactionId: order.phonepeMerchantTransactionId,
-    phonepeTransactionId: order.phonepeTransactionId,
     cashfreeOrderId: order.cashfreeOrderId,
     cashfreePaymentId: order.cashfreePaymentId,
     cashfreePaymentStatus: order.cashfreePaymentStatus,
@@ -104,8 +102,6 @@ export async function createOrderForUser({
   payment,
   address,
   paymentStatus = "PENDING",
-  phonepeMerchantTransactionId,
-  phonepeTransactionId,
   cashfreeOrderId,
   cashfreePaymentId,
   cashfreePaymentStatus,
@@ -121,8 +117,6 @@ export async function createOrderForUser({
   payment: string;
   address: OrderAddress;
   paymentStatus?: string;
-  phonepeMerchantTransactionId?: string | null;
-  phonepeTransactionId?: string | null;
   cashfreeOrderId?: string | null;
   cashfreePaymentId?: string | null;
   cashfreePaymentStatus?: string | null;
@@ -150,8 +144,6 @@ export async function createOrderForUser({
       discount,
       payment,
       paymentStatus: paymentStatus as "PENDING" | "PAID" | "FAILED" | "REFUNDED",
-      phonepeMerchantTransactionId: phonepeMerchantTransactionId ?? null,
-      phonepeTransactionId: phonepeTransactionId ?? null,
       cashfreeOrderId: cashfreeOrderId ?? null,
       cashfreePaymentId: cashfreePaymentId ?? null,
       cashfreePaymentStatus: cashfreePaymentStatus ?? null,

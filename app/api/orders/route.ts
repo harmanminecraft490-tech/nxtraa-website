@@ -55,68 +55,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Select a payment method." }, { status: 400 });
   }
 
-  let paymentStatus = "PENDING";
-
-  // PhonePe online payments carry a merchant transaction ID that we verify
-  // server-side by checking the payment status with PhonePe's API.
-  if (payment === "PhonePe") {
-    const merchantTransactionId = body.merchantTransactionId;
-    if (!merchantTransactionId) {
-      return NextResponse.json(
-        { error: "Missing payment transaction ID." },
-        { status: 400 },
-      );
-    }
-
-    // Check payment status with PhonePe's server (authoritative).
-    const { checkPaymentStatus } = await import("@/lib/phonepe");
-    const statusResult = await checkPaymentStatus(merchantTransactionId);
-
-    if (!statusResult.success) {
-      return NextResponse.json(
-        { error: "Payment could not be verified." },
-        { status: 400 },
-      );
-    }
-
-    const state = statusResult.state || "";
-    const responseCode = statusResult.code || "";
-
-    if (
-      state === "COMPLETED" ||
-      responseCode === "PAYMENT_SUCCESS" ||
-      responseCode === "SUCCESS"
-    ) {
-      paymentStatus = "PAID";
-    } else if (
-      state === "FAILED" ||
-      responseCode === "PAYMENT_FAILED" ||
-      responseCode === "FAILED"
-    ) {
-      paymentStatus = "FAILED";
-    }
-    // Otherwise stays PENDING.
-
-    // Prevent duplicate order: check if this PhonePe transaction was already used.
-    if (paymentStatus === "PAID" && statusResult.transactionId) {
-      const existingOrder = await import("@/lib/prisma").then((m) =>
-        m.default.order.findFirst({
-          where: { phonepeTransactionId: statusResult.transactionId },
-        }),
-      );
-      if (existingOrder) {
-        return NextResponse.json(
-          { error: "This payment has already been processed.", orderId: existingOrder.id },
-          { status: 409 },
-        );
-      }
-    }
-
-    // Store the transaction ID for the order.
-    body.phonepeTransactionId = statusResult.transactionId || null;
-  } else if (payment === "COD") {
-    paymentStatus = "PENDING";
-  }
+  // Online payments (Cashfree) and COD are created PENDING; Cashfree payment
+  // state is confirmed only by the verified webhook or /api/cashfree/verify.
+  const paymentStatus = "PENDING";
 
   // Prices always come from the catalog, never the client.
   const { subtotal, deliveryFee, total } = await computeCartPricing(items);
@@ -133,8 +74,6 @@ export async function POST(request: Request) {
     payment,
     address,
     paymentStatus,
-    phonepeMerchantTransactionId: body.merchantTransactionId || null,
-    phonepeTransactionId: body.phonepeTransactionId || null,
   });
 
   // Send order notifications (fire-and-forget — never block the response).
@@ -154,7 +93,6 @@ export async function POST(request: Request) {
     total,
     payment,
     paymentStatus,
-    phonepeTransactionId: body.phonepeTransactionId,
     createdAt: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
   }).catch(() => {});
 

@@ -1,6 +1,6 @@
 # Nxteraa Website
 
-Next.js storefront for Nxteraa with Prisma-backed data, custom auth routes, admin tools, and PhonePe checkout.
+Next.js storefront for Nxteraa with Prisma-backed data, custom auth routes, admin tools, and Cashfree checkout.
 
 ## Setup
 

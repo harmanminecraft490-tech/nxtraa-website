@@ -406,7 +406,7 @@ function CheckoutPageContent() {
                   </h2>
                   <div className="grid gap-3 sm:grid-cols-3">
                     {[
-                      { id: "UPI", label: "UPI", desc: "Google Pay, PhonePe, Paytm", icon: "📱" },
+                      { id: "UPI", label: "UPI", desc: "Google Pay, Paytm, BHIM", icon: "📱" },
                       { id: "Card", label: "Card", desc: "Debit or Credit card", icon: "💳" },
                       { id: "Net Banking", label: "Net Banking", desc: "All major banks", icon: "🏦" },
                       { id: "Wallet", label: "Wallet", desc: "Paytm, Mobikwik & more", icon: "👛" },

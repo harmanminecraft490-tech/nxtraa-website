@@ -33,7 +33,6 @@ export type OrderNotificationData = {
   total: number;
   payment: string;
   paymentStatus: string;
-  phonepeTransactionId?: string;
   cashfreeTransactionId?: string;
   createdAt: string;
 };
@@ -94,9 +93,9 @@ function buildOrderEmailHtml(data: OrderNotificationData, products: Array<{ name
             <td style="padding:6px 0;font-size:13px;color:#888;">Order Number</td>
             <td style="padding:6px 0;font-size:13px;color:#1a1a2e;font-weight:700;text-align:right;">${data.orderNumber}</td>
           </tr>
-          ${data.phonepeTransactionId || data.cashfreeTransactionId ? `<tr>
+          ${data.cashfreeTransactionId ? `<tr>
             <td style="padding:6px 0;font-size:13px;color:#888;">Transaction ID</td>
-            <td style="padding:6px 0;font-size:13px;color:#1a1a2e;font-weight:700;text-align:right;">${data.phonepeTransactionId || data.cashfreeTransactionId}</td>
+            <td style="padding:6px 0;font-size:13px;color:#1a1a2e;font-weight:700;text-align:right;">${data.cashfreeTransactionId}</td>
           </tr>` : ""}
           <tr>
             <td style="padding:6px 0;font-size:13px;color:#888;">Payment Method</td>
@@ -232,9 +231,7 @@ export async function notifyOrderConfirmed(data: OrderNotificationData): Promise
       createdAt: data.createdAt,
       notes: data.cashfreeTransactionId
         ? `Transaction: ${data.cashfreeTransactionId}`
-        : data.phonepeTransactionId
-          ? `Transaction: ${data.phonepeTransactionId}`
-          : undefined,
+        : undefined,
     })
       .then(() => true)
       .catch(() => false),

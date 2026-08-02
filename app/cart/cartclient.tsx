@@ -594,7 +594,7 @@ export default function CartPageClient() {
                       100% Secure Payment Methods
                     </p>
                     <div className="grid grid-cols-4 gap-2">
-                      {["Visa", "Mastercard", "RuPay", "UPI", "Paytm", "PhonePe", "Google Pay", "Apple Pay"].map((method) => (
+                      {["Visa", "Mastercard", "RuPay", "UPI", "Paytm", "Google Pay", "Apple Pay"].map((method) => (
                         <div 
                           key={method} 
                           className="flex h-10 items-center justify-center rounded-xl border border-line-soft bg-white p-1 text-[10px] font-bold text-ink-500 shadow-sm hover:border-accent/30 hover:bg-accent/5 transition-colors cursor-default"

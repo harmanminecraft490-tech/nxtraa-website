@@ -19,8 +19,6 @@ export type Order = {
   total: number;
   payment: string;
   paymentStatus: PaymentStatus;
-  phonepeMerchantTransactionId?: string | null;
-  phonepeTransactionId?: string | null;
   cashfreeOrderId?: string | null;
   cashfreePaymentId?: string | null;
   cashfreePaymentStatus?: string | null;
