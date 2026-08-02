@@ -37,6 +37,10 @@ type AdminOrder = {
   paymentStatus: string;
   phonepeMerchantTransactionId: string | null;
   phonepeTransactionId: string | null;
+  cashfreeOrderId: string | null;
+  cashfreePaymentId: string | null;
+  cashfreePaymentStatus: string | null;
+  cashfreeTransactionId: string | null;
   status: string;
   recipientName: string;
   phone: string;
@@ -351,6 +355,31 @@ export default function AdminOrdersClient() {
                             </div>
                           )}
                         </div>
+                        {(order.cashfreeOrderId || order.cashfreePaymentId || order.cashfreeTransactionId) && (
+                          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                            {order.cashfreeOrderId && (
+                              <span className="flex items-center gap-1">
+                                <CreditCard size={12} className="text-ink-400" />
+                                <span className="text-ink-500">Order:</span>
+                                <span className="font-mono text-ink-600">{order.cashfreeOrderId}</span>
+                              </span>
+                            )}
+                            {order.cashfreePaymentId && (
+                              <span className="flex items-center gap-1">
+                                <CreditCard size={12} className="text-ink-400" />
+                                <span className="text-ink-500">Payment:</span>
+                                <span className="font-mono text-ink-600">{order.cashfreePaymentId}</span>
+                              </span>
+                            )}
+                            {order.cashfreeTransactionId && order.cashfreeTransactionId !== order.cashfreePaymentId && (
+                              <span className="flex items-center gap-1">
+                                <CreditCard size={12} className="text-ink-400" />
+                                <span className="text-ink-500">Txn:</span>
+                                <span className="font-mono text-ink-600">{order.cashfreeTransactionId}</span>
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       {/* Products */}

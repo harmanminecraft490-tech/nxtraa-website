@@ -21,6 +21,10 @@ export type Order = {
   paymentStatus: PaymentStatus;
   phonepeMerchantTransactionId?: string | null;
   phonepeTransactionId?: string | null;
+  cashfreeOrderId?: string | null;
+  cashfreePaymentId?: string | null;
+  cashfreePaymentStatus?: string | null;
+  cashfreeTransactionId?: string | null;
   currency: string;
   address: OrderAddress;
   status: "confirmed" | "processing" | "shipped" | "delivered";

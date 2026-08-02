@@ -50,6 +50,19 @@ export function generateOrderNumber() {
   return `NX-${new Date().getFullYear()}-${num}`;
 }
 
+/**
+ * Generate an order number guaranteed not to collide with an existing order.
+ * Callers that need the number before the order exists (e.g. to pass the same
+ * value to Cashfree as `order_id`) use this.
+ */
+export async function generateUniqueOrderNumber(): Promise<string> {
+  let orderNumber = generateOrderNumber();
+  while (await prisma.order.findUnique({ where: { orderNumber } })) {
+    orderNumber = generateOrderNumber();
+  }
+  return orderNumber;
+}
+
 export function mapOrder(order: OrderWithItems): Order {
   return {
     id: order.orderNumber,
@@ -65,6 +78,10 @@ export function mapOrder(order: OrderWithItems): Order {
     paymentStatus: order.paymentStatus as Order["paymentStatus"],
     phonepeMerchantTransactionId: order.phonepeMerchantTransactionId,
     phonepeTransactionId: order.phonepeTransactionId,
+    cashfreeOrderId: order.cashfreeOrderId,
+    cashfreePaymentId: order.cashfreePaymentId,
+    cashfreePaymentStatus: order.cashfreePaymentStatus,
+    cashfreeTransactionId: order.cashfreeTransactionId,
     currency: order.currency,
     address: {
       name: order.recipientName,
@@ -89,6 +106,11 @@ export async function createOrderForUser({
   paymentStatus = "PENDING",
   phonepeMerchantTransactionId,
   phonepeTransactionId,
+  cashfreeOrderId,
+  cashfreePaymentId,
+  cashfreePaymentStatus,
+  cashfreeTransactionId,
+  orderNumber,
   discount = 0,
 }: {
   userId: string;
@@ -101,25 +123,26 @@ export async function createOrderForUser({
   paymentStatus?: string;
   phonepeMerchantTransactionId?: string | null;
   phonepeTransactionId?: string | null;
+  cashfreeOrderId?: string | null;
+  cashfreePaymentId?: string | null;
+  cashfreePaymentStatus?: string | null;
+  cashfreeTransactionId?: string | null;
+  orderNumber?: string;
   discount?: number;
 }) {
   // Fetch all products to get their prices for the order items.
   const products = await getAllProductsCached();
   const productPriceMap = new Map(products.map((p) => [p.id, p.price]));
 
-  let orderNumber = generateOrderNumber();
+  const finalOrderNumber = orderNumber ?? (await generateUniqueOrderNumber());
   const pricedItems = items.map((item) => ({
     ...item,
     unitPrice: productPriceMap.get(item.productId) ?? 0,
   }));
 
-  while (await prisma.order.findUnique({ where: { orderNumber } })) {
-    orderNumber = generateOrderNumber();
-  }
-
   const order = await prisma.order.create({
     data: {
-      orderNumber,
+      orderNumber: finalOrderNumber,
       userId,
       subtotal,
       deliveryFee,
@@ -129,6 +152,10 @@ export async function createOrderForUser({
       paymentStatus: paymentStatus as "PENDING" | "PAID" | "FAILED" | "REFUNDED",
       phonepeMerchantTransactionId: phonepeMerchantTransactionId ?? null,
       phonepeTransactionId: phonepeTransactionId ?? null,
+      cashfreeOrderId: cashfreeOrderId ?? null,
+      cashfreePaymentId: cashfreePaymentId ?? null,
+      cashfreePaymentStatus: cashfreePaymentStatus ?? null,
+      cashfreeTransactionId: cashfreeTransactionId ?? null,
       recipientName: address.name,
       phone: address.phone,
       addressLine: address.address,

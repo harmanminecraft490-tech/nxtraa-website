@@ -36,6 +36,9 @@ export async function GET(request: NextRequest) {
       { recipientName: { contains: search, mode: "insensitive" } },
       { phone: { contains: search, mode: "insensitive" } },
       { phonepeTransactionId: { contains: search, mode: "insensitive" } },
+      { cashfreeOrderId: { contains: search, mode: "insensitive" } },
+      { cashfreePaymentId: { contains: search, mode: "insensitive" } },
+      { cashfreeTransactionId: { contains: search, mode: "insensitive" } },
     ];
   }
 

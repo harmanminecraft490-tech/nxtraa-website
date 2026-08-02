@@ -69,6 +69,10 @@ model Order {
   paymentStatus                PaymentStatus @default(PENDING)
   phonepeMerchantTransactionId String?
   phonepeTransactionId         String?
+  cashfreeOrderId              String?      @unique
+  cashfreePaymentId            String?
+  cashfreePaymentStatus        String?
+  cashfreeTransactionId        String?
   status                       OrderStatus  @default(confirmed)
   recipientName                String
   phone                        String
@@ -81,6 +85,8 @@ model Order {
   items                        OrderItem[]
   @@index([phonepeMerchantTransactionId])
   @@index([phonepeTransactionId])
+  @@index([cashfreeOrderId])
+  @@index([cashfreePaymentId])
 }
 
 model OrderItem {
