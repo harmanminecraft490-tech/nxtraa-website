@@ -12,9 +12,11 @@ import {
 
 /**
  * The payment methods the Cashfree checkout is restricted to:
- * UPI, Cards, Net Banking and Wallets.
+ * UPI, Cards, Net Banking and Wallets. Cashfree requires a comma-separated
+ * string of its method codes: upi, cc (credit), dc (debit), nb (net banking),
+ * app (wallets).
  */
-const CASHFREE_PAYMENT_METHODS = ["upi", "card", "netbanking", "wallet"];
+const CASHFREE_PAYMENT_METHODS = "upi,cc,dc,nb,app";
 
 function isValidAddress(address: unknown): address is OrderAddress {
   if (!address || typeof address !== "object") {

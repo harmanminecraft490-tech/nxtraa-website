@@ -108,8 +108,10 @@ export interface CreateCashfreeOrderParams {
   customerPhone?: string;
   customerEmail?: string;
   // Restrict the checkout to the payment methods we support:
-  // UPI, Cards, Net Banking and Wallets.
-  paymentMethods?: string[];
+  // UPI, Cards, Net Banking and Wallets. Cashfree expects a comma-separated
+  // string using its codes: cc (credit card), dc (debit card), nb (net
+  // banking), app (wallets), upi. NOT an array, and NOT names like "card".
+  paymentMethods?: string;
 }
 
 export interface CreateCashfreeOrderResult {
@@ -153,7 +155,7 @@ export async function createCashfreeOrder(
     order_meta: {
       return_url: getCashfreeReturnUrl(),
       notify_url: getCashfreeWebhookUrl(),
-      payment_methods: params.paymentMethods ?? ["upi", "card", "netbanking", "wallet"],
+      payment_methods: params.paymentMethods ?? "upi,cc,dc,nb,app",
     },
   };
 
