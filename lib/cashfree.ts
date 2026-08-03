@@ -433,6 +433,16 @@ export async function applyCashfreePaymentResult({
 
   // Notify only on the PENDING → PAID transition (idempotent for retries).
   if (application.paymentStatus === "PAID" && !wasPaid) {
+    console.log(`[Cashfree] Payment Success for order ${orderNumber}`);
+    
+    await prisma.shipmentLog.create({
+      data: {
+        orderId: updated.id,
+        action: "Cashfree Payment Success",
+        status: "SUCCESS",
+        details: JSON.parse(JSON.stringify(application))
+      }
+    });
     const user = await prisma.user.findUnique({
       where: { id: order.userId },
       select: { email: true },
@@ -464,7 +474,10 @@ export async function applyCashfreePaymentResult({
     }).catch(() => {});
 
     // Enqueue Shiprocket shipment creation asynchronously
-    queue.enqueue({ name: "create_shipment", payload: { orderNumber } }).catch(() => {});
+    console.log(`[Shiprocket] Enqueuing Shipment Request for order ${orderNumber}`);
+    queue.enqueue({ name: "create_shipment", payload: { orderNumber } }).catch((e) => {
+      console.error(`[Shiprocket] Failed to enqueue shipment for order ${orderNumber}:`, e);
+    });
   }
 
   return { status: "updated", order: updated };

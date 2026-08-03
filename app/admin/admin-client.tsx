@@ -316,6 +316,13 @@ export default function AdminClient() {
               <Package size={16} />
               Manage Orders
             </Link>
+            <Link
+              href="/admin/shipping-debug"
+              className="inline-flex items-center gap-2 rounded-full border border-accent text-accent px-5 py-2.5 text-sm font-bold hover:bg-accent/5 transition-all duration-300"
+            >
+              <span className="text-lg">🛠️</span>
+              Shipping Debug
+            </Link>
           </div>
         </div>
 

@@ -11,14 +11,29 @@ export async function processShipmentCreation(orderNumber: string) {
     throw new Error(`Order ${orderNumber} not found in database.`);
   }
 
-  // Log start
-  await prisma.shipmentLog.create({
-    data: { orderId: order.id, action: "Shipment Creation Started" }
-  });
+  const logEvent = async (action: string, status: string = "INFO", details?: any, error?: any) => {
+    console.log(`[Shiprocket] [${orderNumber}] ${action} - ${status}`);
+    if (error) console.error(`[Shiprocket] [${orderNumber}] ERROR:`, error);
+    
+    await prisma.shipmentLog.create({
+      data: { 
+        orderId: order!.id, 
+        action, 
+        status,
+        details: details ? JSON.parse(JSON.stringify(details)) : null,
+        error: error ? (error instanceof Error ? error.stack || error.message : JSON.stringify(error)) : null
+      }
+    });
+  };
+
+  await logEvent("Shipment Creation Started");
 
   try {
     // 1. Create Order in Shiprocket
+    await logEvent("Shipment Request");
     const orderResponse = await createShiprocketOrder(orderNumber);
+    await logEvent("Shipment Response", "SUCCESS", orderResponse);
+    
     const shiprocketOrderId = orderResponse.order_id;
     const shipmentId = orderResponse.shipment_id;
 
@@ -37,45 +52,49 @@ export async function processShipmentCreation(orderNumber: string) {
     });
 
     // 2. Fetch Available Couriers
-    const pickupPostcode = "110001"; // TODO: Should come from settings. Hardcoding a default origin for now.
+    await logEvent("Courier Fetch Request");
+    const pickupPostcode = "110001"; // TODO: Should come from settings
     const deliveryPostcode = order.pincode;
     
-    // We calculate weight roughly, or get from the order Response if available.
-    // createShiprocketOrder handles weight internally, but we need it here.
-    // For now, pass a safe minimum weight of 0.5kg
     const couriers = await getAvailableCouriers(pickupPostcode, deliveryPostcode, 0.5, 0);
     
     if (!couriers || couriers.length === 0) {
       throw new Error("No couriers available for this pincode.");
     }
+    await logEvent("Courier Fetch Response", "SUCCESS", { count: couriers.length });
 
     // 3. Assign Best Courier and Generate AWB
+    await logEvent("Courier Assignment Request");
     const assignResponse = await assignBestCourier(shipmentId, couriers);
     const awb = assignResponse.response?.data?.awb_code;
     const courierName = assignResponse.bestCourier?.courier_name;
     const courierCompanyId = assignResponse.bestCourier?.courier_company_id;
     const shippingCharges = assignResponse.bestCourier?.rate;
-    const etd = assignResponse.bestCourier?.etd; // Estimated delivery date
+    const etd = assignResponse.bestCourier?.etd;
 
     if (!awb) {
        throw new Error(`Failed to generate AWB: ${JSON.stringify(assignResponse)}`);
     }
 
-    await prisma.shipmentLog.create({
-      data: { orderId: order.id, action: "Courier Assigned & AWB Generated", details: assignResponse }
-    });
+    await logEvent("Courier Assigned & AWB Generated", "SUCCESS", { awb, courierName, shippingCharges, etd });
 
     // 4. Generate Label
+    await logEvent("Label Generation Request");
     const labelResponse = await generateLabel([shipmentId]);
     const labelUrl = labelResponse.label_created === 1 ? labelResponse.label_url : null;
+    await logEvent("Label Generation Response", "SUCCESS", { labelUrl });
 
     // 5. Generate Invoice
+    await logEvent("Invoice Generation Request");
     const invoiceResponse = await generateInvoice([shiprocketOrderId]);
     const invoiceUrl = invoiceResponse.is_invoice_created ? invoiceResponse.invoice_url : null;
+    await logEvent("Invoice Generation Response", "SUCCESS", { invoiceUrl });
 
-    // 6. Schedule Pickup (Optional immediately, but let's do it)
+    // 6. Schedule Pickup
+    await logEvent("Pickup Scheduling Request");
     const pickupResponse = await schedulePickup([shipmentId]);
     const pickupScheduled = pickupResponse.pickup_status === 1;
+    await logEvent("Pickup Scheduling Response", "SUCCESS", pickupResponse);
 
     // 7. Save Everything to DB
     await prisma.order.update({
@@ -83,10 +102,10 @@ export async function processShipmentCreation(orderNumber: string) {
       data: {
         awbCode: awb,
         trackingNumber: awb,
-        trackingUrl: `https://shiprocket.co/tracking/${awb}`, // Generic tracking url
+        trackingUrl: `https://shiprocket.co/tracking/${awb}`,
         courierName: courierName,
         courierCompany: courierCompanyId?.toString(),
-        shippingCharges: Math.round(parseFloat(shippingCharges) * 100), // Convert to paise/cents
+        shippingCharges: Math.round(parseFloat(shippingCharges) * 100),
         labelUrl: labelUrl,
         invoiceUrl: invoiceUrl,
         pickupScheduled: pickupScheduled,
@@ -95,24 +114,10 @@ export async function processShipmentCreation(orderNumber: string) {
       }
     });
 
-    await prisma.shipmentLog.create({
-      data: { orderId: order.id, action: "Shipment Creation Completed Successfully" }
-    });
-
-    console.log(`Successfully processed shipment for order ${orderNumber}`);
+    await logEvent("Shipment Creation Completed Successfully", "SUCCESS");
 
   } catch (error: any) {
-    console.error(`Failed to process shipment for ${orderNumber}:`, error);
-    
-    // Log Error
-    await prisma.shipmentLog.create({
-      data: { 
-        orderId: order.id, 
-        action: "Shipment Creation Failed", 
-        error: error.message,
-        status: "FAILED"
-      }
-    });
+    await logEvent("Shipment Creation Failed", "FAILED", null, error);
 
     // Increment retry count
     await prisma.order.update({
@@ -123,7 +128,6 @@ export async function processShipmentCreation(orderNumber: string) {
       }
     });
 
-    // We do NOT throw here if we are called asynchronously, we let the job finish and cron retry later.
     throw error;
   }
 }

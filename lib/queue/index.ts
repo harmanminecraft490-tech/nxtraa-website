@@ -1,4 +1,4 @@
-import { after } from "next/server";
+import { waitUntil } from "@vercel/functions";
 import { processShipmentCreation } from "../shiprocket/orchestrator";
 
 export interface QueueJob<T = any> {
@@ -26,19 +26,21 @@ class DefaultQueueService implements QueueService {
   async enqueue<T>(job: QueueJob<T>): Promise<void> {
     console.log(`[QueueService] Enqueuing job: ${job.name}`);
     
-    after(async () => {
-      try {
-        const handler = this.handlers[job.name];
-        if (handler) {
-          console.log(`[QueueService] Processing job: ${job.name}`);
-          await handler(job.payload);
-        } else {
-          console.error(`[QueueService] No handler registered for job: ${job.name}`);
+    waitUntil(
+      (async () => {
+        try {
+          const handler = this.handlers[job.name];
+          if (handler) {
+            console.log(`[QueueService] Processing job: ${job.name}`);
+            await handler(job.payload);
+          } else {
+            console.error(`[QueueService] No handler registered for job: ${job.name}`);
+          }
+        } catch (error) {
+          console.error(`[QueueService] Job ${job.name} failed. It will be retried by the cron.`, error);
         }
-      } catch (error) {
-        console.error(`[QueueService] Job ${job.name} failed. It will be retried by the cron.`, error);
-      }
-    });
+      })()
+    );
   }
 }
 
