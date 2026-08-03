@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+
+export const dynamic = "force-dynamic";
 import { getShiprocketToken } from "@/lib/shiprocket/client";
 import prisma from "@/lib/prisma";
 
