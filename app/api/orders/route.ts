@@ -9,6 +9,7 @@ import {
   getOrdersForUser,
   isValidCartItems,
 } from "@/lib/order-data";
+import { queue } from "@/lib/queue";
 
 function isValidAddress(address: unknown): address is OrderAddress {
   if (!address || typeof address !== "object") {
@@ -78,7 +79,7 @@ export async function POST(request: Request) {
 
   // Send order notifications (fire-and-forget — never block the response).
   notifyOrderConfirmed({
-    orderNumber: order.id,
+    orderNumber: order.orderNumber, // Use the generated order number format!
     userId: user.id,
     recipientName: address.name,
     phone: address.phone,
@@ -95,6 +96,13 @@ export async function POST(request: Request) {
     paymentStatus,
     createdAt: new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
   }).catch(() => {});
+
+  if (payment.toLowerCase() === "cod") {
+    console.log(`[Shiprocket] Enqueuing Shipment Request for COD order ${order.orderNumber}`);
+    queue.enqueue({ name: "create_shipment", payload: { orderNumber: order.orderNumber } }).catch((e) => {
+      console.error(`[Shiprocket] Failed to enqueue COD shipment for order ${order.orderNumber}:`, e);
+    });
+  }
 
   return NextResponse.json({ order }, { status: 201 });
 }

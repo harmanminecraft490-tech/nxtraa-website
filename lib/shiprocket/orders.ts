@@ -98,7 +98,7 @@ export async function createShiprocketOrder(orderId: string): Promise<any> {
     billing_phone: order.phone,
     shipping_is_billing: true,
     order_items: orderItems,
-    payment_method: "Prepaid", // Assuming Cashfree implies prepaid
+    payment_method: order.payment.toLowerCase() === "cod" ? "COD" : "Prepaid",
     sub_total: order.total / 100,
     length: maxLength,
     breadth: maxWidth,
