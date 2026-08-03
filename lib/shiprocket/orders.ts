@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { shiprocketRequest } from "./client";
+import { shiprocketConfig } from "../config/shiprocket";
 
 export interface ShiprocketOrderPayload {
   order_id: string;
@@ -85,7 +86,7 @@ export async function createShiprocketOrder(orderId: string): Promise<any> {
   const payload: ShiprocketOrderPayload = {
     order_id: order.orderNumber,
     order_date: orderDate,
-    pickup_location: "Primary", // Assumes a default pickup location name set in Shiprocket dashboard
+    pickup_location: shiprocketConfig.pickupLocation,
     billing_customer_name: order.recipientName.split(" ")[0] || "Customer",
     billing_last_name: order.recipientName.split(" ").slice(1).join(" ") || ".",
     billing_address: order.addressLine,

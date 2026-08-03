@@ -3,6 +3,7 @@ export interface ShiprocketConfig {
   password: string;
   baseUrl: string;
   webhookSecret?: string;
+  pickupLocation: string;
 }
 
 export const shiprocketConfig = {
@@ -34,5 +35,9 @@ export const shiprocketConfig = {
   
   get webhookSecret() {
     return process.env.SHIPROCKET_WEBHOOK_SECRET;
+  },
+
+  get pickupLocation() {
+    return process.env.SHIPROCKET_PICKUP_LOCATION || "Home";
   }
 };
