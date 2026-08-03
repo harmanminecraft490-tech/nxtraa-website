@@ -85,8 +85,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Amount in paise (Cashfree expects the minor unit).
-    const amountInPaise = Math.round(total * 100);
+    // Amount in INR (Cashfree expects the exact decimal value, not minor units).
+    const amountInINR = Number(total.toFixed(2));
 
     // Pre-generate the order number so it can double as Cashfree's order_id.
     const orderNumber = await generateUniqueOrderNumber();
@@ -96,7 +96,7 @@ export async function POST(request: Request) {
     //    creating a DB order, so no orphan PENDING orders are left behind.
     const cashfreeResult = await createCashfreeOrder({
       orderId: orderNumber,
-      amount: amountInPaise,
+      amount: amountInINR,
       currency: "INR",
       customerName: address.name,
       customerPhone: phone,
