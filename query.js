@@ -3,11 +3,11 @@ const prisma = new PrismaClient();
 
 async function main() {
   const logs = await prisma.shipmentLog.findMany({
+    where: { order: { orderNumber: "NX-2026-98207" } },
     orderBy: { createdAt: "desc" },
-    take: 10,
-    include: { order: { select: { orderNumber: true, shipmentStatus: true } } }
+    take: 20
   });
-  console.log(JSON.stringify(logs, null, 2));
+  console.log(JSON.stringify(logs.map(l => ({ action: l.action, status: l.status, error: l.error, detailKeys: l.details ? Object.keys(l.details) : null })), null, 2));
 }
 
 main().catch(console.error).finally(() => prisma.$disconnect());

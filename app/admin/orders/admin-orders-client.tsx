@@ -75,6 +75,7 @@ const DELIVERY_STATUSES = [
   { value: "processing", label: "Processing", color: "bg-yellow-100 text-yellow-700" },
   { value: "shipped", label: "Shipped", color: "bg-purple-100 text-purple-700" },
   { value: "delivered", label: "Delivered", color: "bg-green-100 text-green-700" },
+  { value: "cancelled", label: "Cancelled", color: "bg-red-100 text-red-700" },
 ] as const;
 
 const PAYMENT_STATUS_COLORS: Record<string, string> = {
@@ -444,6 +445,46 @@ export default function AdminOrdersClient() {
                               Refresh Tracking
                             </button>
                           )}
+
+                          {/* Admin Cancel Button */}
+                          {order.status !== "cancelled" && (
+                            <button
+                              onClick={async () => {
+                                if (!confirm("Are you sure you want to gracefully cancel this order? This will cancel the AWB/Order in Shiprocket as well.")) return;
+                                const res = await fetch(`/api/orders/${order.orderNumber}/cancel`, {
+                                  method: "POST"
+                                });
+                                if (res.ok) {
+                                  alert("Order cancelled.");
+                                  fetchOrders(pagination?.page || 1, searchQuery, statusFilter, paymentStatusFilter);
+                                } else {
+                                  alert("Failed: " + (await res.json()).error);
+                                }
+                              }}
+                              className="rounded-lg bg-white border border-red-200 px-3 py-1.5 text-xs font-bold text-red-600 hover:border-red-500 hover:bg-red-50 transition"
+                            >
+                              Cancel Order
+                            </button>
+                          )}
+
+                          {/* Admin Hard Delete Button */}
+                          <button
+                            onClick={async () => {
+                              if (!confirm("DANGER: Are you sure you want to permanently DELETE this order from the database? This action cannot be undone and will NOT cancel the order in Shiprocket! Use Cancel Order first if it is active.")) return;
+                              const res = await fetch(`/api/admin/orders/${order.id}`, {
+                                method: "DELETE"
+                              });
+                              if (res.ok) {
+                                alert("Order deleted permanently.");
+                                fetchOrders(pagination?.page || 1, searchQuery, statusFilter, paymentStatusFilter);
+                              } else {
+                                alert("Failed to delete order.");
+                              }
+                            }}
+                            className="rounded-lg bg-red-600 text-white px-3 py-1.5 text-xs font-bold hover:bg-red-700 transition ml-auto"
+                          >
+                            Delete Order
+                          </button>
 
                           {order.shipmentId && !order.pickupScheduled && (
                             <button

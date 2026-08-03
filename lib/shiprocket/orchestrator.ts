@@ -111,6 +111,7 @@ export async function processShipmentCreation(orderNumber: string) {
         pickupScheduled: pickupScheduled,
         shipmentStatus: "READY_TO_SHIP",
         estimatedDelivery: etd ? new Date(etd) : undefined,
+        shipmentResponse: orderResponse,
       }
     });
 

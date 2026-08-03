@@ -11,6 +11,8 @@ import {
 
 import type { Order } from "@/app/components/lib/orders";
 import { useProducts } from "@/app/components/lib/products-store";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 type OrdersListClientProps = {
   orders: Order[];
@@ -37,6 +39,11 @@ const STATUS_CONFIG = {
     color: "bg-green-100 text-green-700",
     icon: Package,
   },
+  cancelled: {
+    label: "Cancelled",
+    color: "bg-red-100 text-red-700",
+    icon: CheckCircle2,
+  },
 } as const;
 
 const PAYMENT_STATUS_CONFIG = {
@@ -48,6 +55,29 @@ const PAYMENT_STATUS_CONFIG = {
 
 export default function OrdersListClient({ orders }: OrdersListClientProps) {
   useProducts();
+  const router = useRouter();
+  const [cancelling, setCancelling] = useState<string | null>(null);
+
+  const handleCancel = async (e: React.MouseEvent, orderNumber: string) => {
+    e.preventDefault();
+    if (!confirm("Are you sure you want to cancel this order?")) return;
+    
+    setCancelling(orderNumber);
+    try {
+      const res = await fetch(`/api/orders/${orderNumber}/cancel`, { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Order cancelled successfully!");
+        router.refresh();
+      } else {
+        alert(data.error || "Failed to cancel order");
+      }
+    } catch (err) {
+      alert("Something went wrong");
+    } finally {
+      setCancelling(null);
+    }
+  };
 
   return (
     <div className="mt-8 space-y-4">
@@ -126,6 +156,19 @@ export default function OrdersListClient({ orders }: OrdersListClientProps) {
                 <ChevronRight size={20} className="text-ink-300" />
               </div>
             </div>
+            
+            {/* Cancel Button Row */}
+            {order.status !== "cancelled" && order.status !== "shipped" && order.status !== "delivered" && (
+              <div className="mt-4 border-t border-line pt-4 flex justify-end">
+                <button
+                  onClick={(e) => handleCancel(e, order.id)}
+                  disabled={cancelling === order.id}
+                  className="rounded-lg bg-red-50 text-red-600 px-4 py-2 text-sm font-bold hover:bg-red-100 disabled:opacity-50"
+                >
+                  {cancelling === order.id ? "Cancelling..." : "Cancel Order"}
+                </button>
+              </div>
+            )}
           </Link>
         );
       })}
