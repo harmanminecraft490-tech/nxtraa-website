@@ -79,7 +79,7 @@ export async function POST(request: Request) {
 
   // Send order notifications (fire-and-forget — never block the response).
   notifyOrderConfirmed({
-    orderNumber: order.orderNumber, // Use the generated order number format!
+    orderNumber: order.id,
     userId: user.id,
     recipientName: address.name,
     phone: address.phone,
@@ -98,9 +98,9 @@ export async function POST(request: Request) {
   }).catch(() => {});
 
   if (payment.toLowerCase() === "cod") {
-    console.log(`[Shiprocket] Enqueuing Shipment Request for COD order ${order.orderNumber}`);
-    queue.enqueue({ name: "create_shipment", payload: { orderNumber: order.orderNumber } }).catch((e) => {
-      console.error(`[Shiprocket] Failed to enqueue COD shipment for order ${order.orderNumber}:`, e);
+    console.log(`[Shiprocket] Enqueuing Shipment Request for COD order ${order.id}`);
+    queue.enqueue({ name: "create_shipment", payload: { orderNumber: order.id } }).catch((e) => {
+      console.error(`[Shiprocket] Failed to enqueue COD shipment for order ${order.id}:`, e);
     });
   }
 
