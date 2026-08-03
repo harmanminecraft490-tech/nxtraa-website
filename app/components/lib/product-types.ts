@@ -12,6 +12,11 @@ export type Product = {
   category: string;
   color: string;
   description: string;
+  weight?: number;
+  length?: number;
+  width?: number;
+  height?: number;
+  hsnCode?: string;
   highlights: string[];
   imageUrls: string[];
 };

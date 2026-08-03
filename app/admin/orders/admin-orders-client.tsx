@@ -46,6 +46,16 @@ type AdminOrder = {
   city: string;
   pincode: string;
   createdAt: string;
+  shipmentId: string | null;
+  shipmentStatus: string | null;
+  trackingNumber: string | null;
+  awbCode: string | null;
+  trackingUrl: string | null;
+  courierName: string | null;
+  labelUrl: string | null;
+  invoiceUrl: string | null;
+  pickupScheduled: boolean;
+  estimatedDelivery: string | null;
   user: {
     name: string | null;
     email: string | null;
@@ -370,6 +380,99 @@ export default function AdminOrdersClient() {
                             )}
                           </div>
                         )}
+                      </div>
+
+                      {/* Shipping & Shiprocket Details */}
+                      <div className="rounded-xl border border-line-soft bg-canvas p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="text-xs font-bold uppercase tracking-wider text-ink-500">
+                            Shiprocket Fulfillment
+                          </h3>
+                          <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                            order.shipmentStatus === 'FAILED' ? 'bg-red-100 text-red-700' :
+                            order.shipmentStatus ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
+                          }`}>
+                            {order.shipmentStatus || "NOT CREATED"}
+                          </span>
+                        </div>
+                        
+                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 text-sm">
+                          <div>
+                            <span className="text-ink-500">Courier:</span>
+                            <span className="ml-2 font-medium text-ink-950">{order.courierName || "-"}</span>
+                          </div>
+                          <div>
+                            <span className="text-ink-500">AWB:</span>
+                            <span className="ml-2 font-mono text-ink-950">{order.awbCode || "-"}</span>
+                          </div>
+                          <div>
+                            <span className="text-ink-500">Est. Delivery:</span>
+                            <span className="ml-2 font-medium text-ink-950">
+                              {order.estimatedDelivery ? new Date(order.estimatedDelivery).toLocaleDateString() : "-"}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          <button
+                            onClick={async () => {
+                              const res = await fetch("/api/shipping/admin", {
+                                method: "POST",
+                                body: JSON.stringify({ action: "retry_shipment", orderId: order.id }),
+                                headers: { "Content-Type": "application/json" }
+                              });
+                              if (res.ok) alert("Retrying shipment in background.");
+                              else alert("Failed: " + (await res.json()).error);
+                            }}
+                            className="rounded-lg bg-white border border-line px-3 py-1.5 text-xs font-bold text-ink-700 hover:border-accent hover:text-accent transition"
+                          >
+                            Retry Shipment
+                          </button>
+                          
+                          {order.awbCode && (
+                            <button
+                              onClick={async () => {
+                                const res = await fetch("/api/shipping/admin", {
+                                  method: "POST",
+                                  body: JSON.stringify({ action: "refresh_tracking", orderId: order.id }),
+                                  headers: { "Content-Type": "application/json" }
+                                });
+                                if (res.ok) alert("Tracking refreshed.");
+                              }}
+                              className="rounded-lg bg-white border border-line px-3 py-1.5 text-xs font-bold text-ink-700 hover:border-accent hover:text-accent transition"
+                            >
+                              Refresh Tracking
+                            </button>
+                          )}
+
+                          {order.shipmentId && !order.pickupScheduled && (
+                            <button
+                              onClick={async () => {
+                                const res = await fetch("/api/shipping/admin", {
+                                  method: "POST",
+                                  body: JSON.stringify({ action: "schedule_pickup", orderId: order.id }),
+                                  headers: { "Content-Type": "application/json" }
+                                });
+                                if (res.ok) alert("Pickup scheduled.");
+                              }}
+                              className="rounded-lg bg-white border border-line px-3 py-1.5 text-xs font-bold text-ink-700 hover:border-accent hover:text-accent transition"
+                            >
+                              Schedule Pickup
+                            </button>
+                          )}
+
+                          {order.labelUrl && (
+                            <a href={order.labelUrl} target="_blank" rel="noreferrer" className="rounded-lg bg-white border border-line px-3 py-1.5 text-xs font-bold text-ink-700 hover:border-accent hover:text-accent transition">
+                              Download Label
+                            </a>
+                          )}
+                          
+                          {order.invoiceUrl && (
+                            <a href={order.invoiceUrl} target="_blank" rel="noreferrer" className="rounded-lg bg-white border border-line px-3 py-1.5 text-xs font-bold text-ink-700 hover:border-accent hover:text-accent transition">
+                              Download Invoice
+                            </a>
+                          )}
+                        </div>
                       </div>
 
                       {/* Products */}

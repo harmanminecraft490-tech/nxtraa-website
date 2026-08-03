@@ -56,6 +56,11 @@ export default function AdminClient() {
     color: "",
     description: "",
     badge: "",
+    weight: 0.5,
+    length: 10,
+    width: 10,
+    height: 10,
+    hsnCode: "",
   });
 
   const showMessage = (type: "success" | "error", text: string) => {
@@ -494,6 +499,42 @@ export default function AdminClient() {
                   placeholder="Enter color"
                 />
               </div>
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">
+                  Weight (kg)
+                </label>
+                <input
+                  type="number" step="0.01"
+                  value={newProduct.weight}
+                  onChange={(e) => setNewProduct({ ...newProduct, weight: Number(e.target.value) })}
+                  className="w-full rounded-xl border border-line bg-white px-4 py-3 text-sm focus:border-accent focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">
+                  Dimensions (L x W x H cm)
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="number" placeholder="L"
+                    value={newProduct.length}
+                    onChange={(e) => setNewProduct({ ...newProduct, length: Number(e.target.value) })}
+                    className="w-full rounded-xl border border-line bg-white px-2 py-3 text-sm focus:border-accent focus:outline-none"
+                  />
+                  <input
+                    type="number" placeholder="W"
+                    value={newProduct.width}
+                    onChange={(e) => setNewProduct({ ...newProduct, width: Number(e.target.value) })}
+                    className="w-full rounded-xl border border-line bg-white px-2 py-3 text-sm focus:border-accent focus:outline-none"
+                  />
+                  <input
+                    type="number" placeholder="H"
+                    value={newProduct.height}
+                    onChange={(e) => setNewProduct({ ...newProduct, height: Number(e.target.value) })}
+                    className="w-full rounded-xl border border-line bg-white px-2 py-3 text-sm focus:border-accent focus:outline-none"
+                  />
+                </div>
+              </div>
             </div>
             <div className="mt-4">
               <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">
@@ -532,6 +573,11 @@ export default function AdminClient() {
                         color: "",
                         description: "",
                         badge: "",
+                        weight: 0.5,
+                        length: 10,
+                        width: 10,
+                        height: 10,
+                        hsnCode: "",
                       });
                       showMessage("success", "Product added successfully");
                     }
@@ -563,6 +609,11 @@ export default function AdminClient() {
                     color: "",
                     description: "",
                     badge: "",
+                    weight: 0.5,
+                    length: 10,
+                    width: 10,
+                    height: 10,
+                    hsnCode: "",
                   });
                 }}
                 className="btn btn-secondary flex items-center gap-2"
@@ -655,7 +706,6 @@ function ProductCard({
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
 
-
     price: product.price,
     oldPrice: product.oldPrice,
 
@@ -665,6 +715,11 @@ function ProductCard({
     color: product.color,
     description: product.description,
     badge: product.badge,
+    weight: product.weight || 0.5,
+    length: product.length || 10,
+    width: product.width || 10,
+    height: product.height || 10,
+    hsnCode: product.hsnCode || "",
   });
 
   const handleSave = () => {
@@ -682,6 +737,11 @@ function ProductCard({
       color: product.color,
       description: product.description,
       badge: product.badge,
+      weight: product.weight || 0.5,
+      length: product.length || 10,
+      width: product.width || 10,
+      height: product.height || 10,
+      hsnCode: product.hsnCode || "",
     });
     setIsEditing(false);
   };
@@ -893,6 +953,44 @@ function ProductCard({
                     }
                     className="w-full rounded-xl border border-line bg-white px-4 py-3 text-sm focus:border-accent focus:outline-none"
                   />
+                </div>
+                <div>
+                  <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">
+                    Weight (kg)
+                  </label>
+                  <input
+                    type="number" step="0.01"
+                    value={formData.weight}
+                    onChange={(e) =>
+                      setFormData({ ...formData, weight: Number(e.target.value) })
+                    }
+                    className="w-full rounded-xl border border-line bg-white px-4 py-3 text-sm focus:border-accent focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">
+                    Dimensions (L x W x H cm)
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="number" placeholder="L"
+                      value={formData.length}
+                      onChange={(e) => setFormData({ ...formData, length: Number(e.target.value) })}
+                      className="w-full rounded-xl border border-line bg-white px-2 py-3 text-sm focus:border-accent focus:outline-none"
+                    />
+                    <input
+                      type="number" placeholder="W"
+                      value={formData.width}
+                      onChange={(e) => setFormData({ ...formData, width: Number(e.target.value) })}
+                      className="w-full rounded-xl border border-line bg-white px-2 py-3 text-sm focus:border-accent focus:outline-none"
+                    />
+                    <input
+                      type="number" placeholder="H"
+                      value={formData.height}
+                      onChange={(e) => setFormData({ ...formData, height: Number(e.target.value) })}
+                      className="w-full rounded-xl border border-line bg-white px-2 py-3 text-sm focus:border-accent focus:outline-none"
+                    />
+                  </div>
                 </div>
               </div>
 

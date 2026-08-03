@@ -22,6 +22,7 @@ import { Cashfree, CFEnvironment, type PaymentEntity } from "cashfree-pg";
 import prisma from "@/lib/prisma";
 import { notifyOrderConfirmed } from "@/lib/notifications";
 import type { CartItem } from "@/app/components/lib/cartcontext";
+import { queue } from "@/lib/queue";
 
 /**
  * The SDK's OrderEntity type omits the `payments` array that Cashfree actually
@@ -461,6 +462,9 @@ export async function applyCashfreePaymentResult({
       cashfreeTransactionId: application.cashfreeTransactionId ?? undefined,
       createdAt: updated.createdAt.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }),
     }).catch(() => {});
+
+    // Enqueue Shiprocket shipment creation asynchronously
+    queue.enqueue({ name: "create_shipment", payload: { orderNumber } }).catch(() => {});
   }
 
   return { status: "updated", order: updated };

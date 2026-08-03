@@ -79,8 +79,28 @@ model Order {
   pincode                      String
   createdAt                    DateTime     @default(now())
   updatedAt                    DateTime     @updatedAt
+  // Shiprocket integration fields
+  shipmentId                   String?
+  shipmentStatus               String?
+  trackingNumber               String?
+  awbCode                      String?
+  trackingUrl                  String?
+  courierName                  String?
+  courierCompany               String?
+  shippingCharges              Int?
+  pickupToken                  String?
+  pickupScheduled              Boolean      @default(false)
+  labelUrl                     String?
+  invoiceUrl                   String?
+  estimatedDelivery            DateTime?
+  shipmentCreatedAt            DateTime?
+  lastTrackingUpdate           DateTime?
+  shipmentResponse             Json?
+  shipmentRetryCount           Int          @default(0)
+
   user                         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   items                        OrderItem[]
+  shipmentLogs                 ShipmentLog[]
   @@index([cashfreeOrderId])
   @@index([cashfreePaymentId])
 }
@@ -122,7 +142,24 @@ model Product {
   description String
   stock       Int        @default(100)
 
+  // Dimensions for shipping
+  weight      Float?     // in kg
+  length      Float?     // in cm
+  width       Float?     // in cm
+  height      Float?     // in cm
+  hsnCode     String?
+
   highlights String[]
   imageUrls  String[]
 }
+model ShipmentLog {
+  id          String   @id @default(cuid())
+  orderId     String
+  action      String
+  status      String?
+  details     Json?
+  error       String?
+  createdAt   DateTime @default(now())
 
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
