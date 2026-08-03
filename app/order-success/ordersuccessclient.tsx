@@ -122,7 +122,7 @@ export default function OrderSuccessClient() {
               </div>
 
               {/* Transaction ID */}
-              {order.phonepeTransactionId && (
+              {order.cashfreeTransactionId && (
                 <div className="flex items-center gap-3">
                   <CreditCard className="text-accent" size={22} />
                   <div>
@@ -130,7 +130,7 @@ export default function OrderSuccessClient() {
                       Transaction ID
                     </p>
                     <p className="text-sm font-bold text-ink-950 font-mono">
-                      {order.phonepeTransactionId}
+                      {order.cashfreeTransactionId}
                     </p>
                   </div>
                 </div>

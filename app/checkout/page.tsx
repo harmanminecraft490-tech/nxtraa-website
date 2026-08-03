@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { load as loadCashfree } from "@cashfreepayments/cashfree-js";
 import {
   ArrowRight,
   CreditCard,
@@ -33,13 +34,16 @@ type SessionUser = {
   email: string | null;
 };
 
-type PhonePeInitiateResponse = {
+type CashfreeInitiateResponse = {
   success?: boolean;
   error?: string;
   code?: string;
-  redirectUrl?: string;
-  merchantTransactionId?: string;
+  orderId?: string;
+  paymentSessionId?: string;
 };
+
+/** Payment methods that go through Cashfree checkout (UPI, Cards, Net Banking, Wallets). */
+const CASHFREE_ONLINE_METHODS = ["UPI", "Card", "Net Banking", "Wallet"];
 
 export default function CheckoutPage() {
   return (
@@ -149,47 +153,23 @@ function CheckoutPageContent() {
     return Object.keys(errors).length === 0;
   };
 
-  const handlePhonePePayment = async () => {
+  const handleCashfreePayment = async () => {
     if (!validateForm()) return;
 
     setPlacingOrder(true);
     setPaymentError(null);
 
     try {
-      // Initiate payment with PhonePe.
-      const response = await fetch("/api/phonepe/initiate", {
+      // Create the Cashfree order server-side. The DB order is created there
+      // as PENDING; the returned payment session id powers the checkout widget.
+      const response = await fetch("/api/cashfree/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           items,
-          phone: form.phone,
-        }),
-      });
-
-      const data = (await response.json()) as PhonePeInitiateResponse;
-
-      if (!response.ok || !data.redirectUrl) {
-        if (response.status === 401) {
-          router.push("/account/signin?next=/checkout");
-          return;
-        }
-        setPaymentError(data.error || "Failed to initialize payment. Please try again.");
-        return;
-      }
-
-      // Store checkout data in sessionStorage so the callback page can
-      // create the order after PhonePe redirects back.
-      sessionStorage.setItem(
-        "phonepe_checkout",
-        JSON.stringify({
-          merchantTransactionId: data.merchantTransactionId,
-          items,
-          subtotal,
-          deliveryFee,
-          total,
-          payment: "PhonePe",
+          payment,
           address: {
             name: form.name.trim(),
             phone: form.phone.trim(),
@@ -198,10 +178,36 @@ function CheckoutPageContent() {
             pincode: form.pincode.trim(),
           },
         }),
-      );
+      });
 
-      // Redirect the user to PhonePe's secure payment page.
-      window.location.href = data.redirectUrl;
+      const data = (await response.json()) as CashfreeInitiateResponse;
+
+      if (!response.ok || !data.paymentSessionId) {
+        if (response.status === 401) {
+          router.push("/account/signin?next=/checkout");
+          return;
+        }
+        setPaymentError(data.error || "Failed to initialize payment. Please try again.");
+        return;
+      }
+
+      // Open the Cashfree checkout. The client only ever sees the payment
+      // session id — never the API keys. Payment state is confirmed server-side
+      // on the return page (/payment/cashfree/status).
+      const cashfree = await loadCashfree({
+        mode:
+          process.env.NEXT_PUBLIC_CASHFREE_ENV === "production" ? "production" : "sandbox",
+      });
+
+      if (!cashfree) {
+        setPaymentError("Payment gateway failed to load. Please try again.");
+        return;
+      }
+
+      await cashfree.checkout({
+        paymentSessionId: data.paymentSessionId,
+        redirectTarget: "_self",
+      });
     } catch (error) {
       console.error("Payment error:", error);
       setPaymentError("Payment initialization failed. Please check your connection and try again.");
@@ -216,9 +222,9 @@ function CheckoutPageContent() {
       return;
     }
 
-    // For online payments, use PhonePe (redirect flow).
-    if (payment === "UPI" || payment === "Card") {
-      await handlePhonePePayment();
+    // For online payments, use the Cashfree checkout flow.
+    if (CASHFREE_ONLINE_METHODS.includes(payment)) {
+      await handleCashfreePayment();
       return;
     }
 
@@ -400,8 +406,10 @@ function CheckoutPageContent() {
                   </h2>
                   <div className="grid gap-3 sm:grid-cols-3">
                     {[
-                      { id: "UPI", label: "UPI", desc: "Google Pay, PhonePe, Paytm", icon: "💳" },
+                      { id: "UPI", label: "UPI", desc: "Google Pay, Paytm, BHIM", icon: "📱" },
                       { id: "Card", label: "Card", desc: "Debit or Credit card", icon: "💳" },
+                      { id: "Net Banking", label: "Net Banking", desc: "All major banks", icon: "🏦" },
+                      { id: "Wallet", label: "Wallet", desc: "Paytm, Mobikwik & more", icon: "👛" },
                       { id: "COD", label: "COD", desc: "Pay on delivery", icon: "💵" },
                     ].map((method) => (
                       <button
@@ -428,7 +436,7 @@ function CheckoutPageContent() {
                   {payment !== "COD" && (
                     <div className="rounded-xl bg-accent-soft/30 p-4">
                       <p className="text-xs font-medium text-accent-deep">
-                        🔒 You will be redirected to PhonePe&apos;s secure payment page to complete your transaction.
+                        🔒 You will be redirected to Cashfree&apos;s secure payment page to complete your transaction.
                         Never share your OTP or password with anyone.
                       </p>
                     </div>
