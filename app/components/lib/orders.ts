@@ -25,7 +25,7 @@ export type Order = {
   cashfreeTransactionId?: string | null;
   currency: string;
   address: OrderAddress;
-  status: "confirmed" | "processing" | "shipped" | "delivered";
+  status: "confirmed" | "processing" | "shipped" | "delivered" | "cancelled";
   createdAt: string;
 };
 
