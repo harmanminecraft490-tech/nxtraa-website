@@ -22,6 +22,11 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
 
   // Natural dimensions of the active image: { w, h } once loaded
   const [imgNatural, setImgNatural] = useState<{ w: number; h: number } | null>(null);
+  // Cache of loaded dimensions per image URL — prevents the collapse
+  // when a slide's image already finished loading before it became active.
+  const naturalMapRef = useRef<Record<string, { w: number; h: number }>>({});
+  // Set of image URLs that failed to load — used for graceful fallback.
+  const [failedSrcs, setFailedSrcs] = useState<Set<string>>(new Set());
 
   // Detect mobile viewport
   useEffect(() => {
@@ -107,15 +112,61 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
     }
   }
 
-  // Handle image load — capture natural dimensions
+  // Handle image load — capture natural dimensions and cache them per URL
   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
-    setImgNatural({ w: img.naturalWidth, h: img.naturalHeight });
+    const dims = { w: img.naturalWidth, h: img.naturalHeight };
+    if (dims.w > 0 && dims.h > 0) {
+      naturalMapRef.current[img.currentSrc || img.src] = dims;
+      setImgNatural(dims);
+      console.info(
+        `[BannerCarousel] image loaded OK: ${img.currentSrc || img.src} (${dims.w}x${dims.h})`,
+      );
+    }
   };
 
-  // Reset natural dimensions when active banner changes
+  // Handle image error — mark as failed so a fallback is shown instead of a blank slide
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    const url = img.currentSrc || img.src;
+    console.error(`[BannerCarousel] image FAILED to load: ${url}`);
+    setFailedSrcs((prev) => new Set(prev).add(url));
+  };
+
+  // Reset natural dimensions when active banner changes, and recover instantly
+  // from the cache if the newly-active image already finished loading.
   useEffect(() => {
-    setImgNatural(null);
+    const banner = activeBanners[active];
+    if (!banner) {
+      setImgNatural(null);
+      return;
+    }
+    const src =
+      isMobile && banner.mobileImageUrl
+        ? banner.mobileImageUrl
+        : banner.desktopImageUrl || banner.src;
+    // If this image's dimensions were cached (it already loaded once), use them.
+    const cached = naturalMapRef.current[src];
+    if (cached) {
+      setImgNatural(cached);
+    } else {
+      // If the image finished loading before React attached onLoad
+      // (e.g. browser-cached on first paint), recover dimensions from the DOM.
+      const imgEl = Array.from(document.querySelectorAll("img")).find(
+        (el) => el.currentSrc === src || el.src === src,
+      );
+      if (imgEl && imgEl.complete && imgEl.naturalWidth > 0) {
+        const dims = { w: imgEl.naturalWidth, h: imgEl.naturalHeight };
+        naturalMapRef.current[src] = dims;
+        setImgNatural(dims);
+      } else {
+        setImgNatural(null);
+      }
+    }
+    console.info(
+      `[BannerCarousel] banner count=${count} activeIndex=${active} desktop=${banner.desktopImageUrl || banner.src} mobile=${banner.mobileImageUrl || "N/A"} selected=${src} cached=${cached ? `${cached.w}x${cached.h}` : "no"}`,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, isMobile]);
 
   return (
@@ -145,6 +196,8 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
                 : b.desktopImageUrl || b.src;
 
             const mode = b.displayMode ?? "FIT";
+            const failed = failedSrcs.has(src);
+            const showImage = !failed && !!src;
 
             return (
               <Link
@@ -163,39 +216,74 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
                   <>
                     {/* FIT: blurred background expansion + sharp foreground image */}
                     <div className="absolute inset-0">
-                      <Image
-                        src={src}
-                        alt=""
-                        fill
-                        className="object-cover blur-xl scale-110 opacity-40"
-                        sizes="100vw"
-                        aria-hidden
-                      />
+                      {showImage ? (
+                        <Image
+                          src={src}
+                          alt=""
+                          fill
+                          className="object-cover blur-xl scale-110 opacity-40"
+                          sizes="100vw"
+                          loading="eager"
+                          onError={handleImageError}
+                          aria-hidden
+                        />
+                      ) : null}
                     </div>
                     <div className="relative flex items-center justify-center w-full" style={{ height: containerHeight > 0 ? `${containerHeight}px` : "auto" }}>
-                      <Image
-                        src={src}
-                        alt={b.alt}
-                        width={imgNatural?.w ?? 1920}
-                        height={imgNatural?.h ?? 720}
-                        className="max-h-[80vh] w-auto h-auto object-contain"
-                        sizes="100vw"
-                        priority={index === 0}
-                        onLoad={index === active ? handleImageLoad : undefined}
-                      />
+                      {showImage ? (
+                        <Image
+                          src={src}
+                          alt={b.alt}
+                          width={imgNatural?.w ?? 1920}
+                          height={imgNatural?.h ?? 720}
+                          className="max-h-[80vh] w-auto h-auto object-contain"
+                          sizes="100vw"
+                          loading="eager"
+                          onLoad={handleImageLoad}
+                          onError={handleImageError}
+                        />
+                      ) : (
+                        /* Graceful fallback — never a blank white hero */
+                        <div className="flex h-full w-full flex-col items-center justify-center bg-ink-950 px-8 text-center">
+                          <span className="text-lg font-black tracking-tight text-white sm:text-2xl">
+                            Nxteraa
+                          </span>
+                          <span className="mt-1 text-xs font-medium text-white/60 sm:text-sm">
+                            Premium mobile accessories
+                          </span>
+                          <span className="btn btn-primary btn-sm mt-4">
+                            Shop now
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </>
                 ) : (
-                  /* FILL: object-cover, fills the container */
-                  <Image
-                    src={src}
-                    alt={b.alt}
-                    fill
-                    className="object-cover object-center"
-                    sizes="100vw"
-                    priority={index === 0}
-                    onLoad={index === active ? handleImageLoad : undefined}
-                  />
+                  showImage ? (
+                    <Image
+                      src={src}
+                      alt={b.alt}
+                      fill
+                      className="object-cover object-center"
+                      sizes="100vw"
+                      loading="eager"
+                      onLoad={handleImageLoad}
+                      onError={handleImageError}
+                    />
+                  ) : (
+                    /* Graceful fallback for FILL mode */
+                    <div className="flex h-full w-full flex-col items-center justify-center bg-ink-950 px-8 text-center">
+                      <span className="text-lg font-black tracking-tight text-white sm:text-2xl">
+                        Nxteraa
+                      </span>
+                      <span className="mt-1 text-xs font-medium text-white/60 sm:text-sm">
+                        Premium mobile accessories
+                      </span>
+                      <span className="btn btn-primary btn-sm mt-4">
+                        Shop now
+                      </span>
+                    </div>
+                  )
                 )}
               </Link>
             );
