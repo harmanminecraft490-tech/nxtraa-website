@@ -69,7 +69,7 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
       onTouchEnd={handleTouchEnd}
     >
       <div className="relative w-full">
-        {/* Fluid responsive hero banner — scales from 280px to 720px via clamp() */}
+        {/* Hero banner — fills remaining viewport via calc(100svh - nav heights) */}
         <div className="hero-banner">
           {activeBanners.map((banner, index) => (
             <Link
@@ -87,7 +87,7 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
                 fill
                 priority={index === 0}
                 sizes="100vw"
-                className="object-contain object-center sm:object-cover sm:object-[50%_35%] lg:object-center"
+                className="object-cover object-center"
               />
             </Link>
           ))}

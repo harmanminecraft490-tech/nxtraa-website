@@ -253,16 +253,26 @@
 }
 
 /* =====================================================
-   HERO BANNER — Fluid responsive sizing
+   HERO BANNER — Viewport-based, fills first screen
    ===================================================== */
 
+/*
+ * Height = 100svh minus announcement bar + navbar.
+ * Mobile (<640px):  32px + 56px + 1px  = 89px
+ * Desktop (>=640px): 40px + 64px + 1px  = 105px
+ * Safe-area inset is subtracted via env() for notched devices.
+ */
 .hero-banner {
-  --banner-h: clamp(320px, 65vh, 780px);
   position: relative;
   width: 100%;
-  height: var(--banner-h);
+  height: calc(100svh - 89px - env(safe-area-inset-top, 0px));
   overflow: hidden;
-  background: #000;
+}
+
+@media (min-width: 640px) {
+  .hero-banner {
+    height: calc(100svh - 105px - env(safe-area-inset-top, 0px));
+  }
 }
 
 /* =====================================================
