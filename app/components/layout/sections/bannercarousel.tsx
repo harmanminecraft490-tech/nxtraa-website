@@ -69,8 +69,8 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
       onTouchEnd={handleTouchEnd}
     >
       <div className="relative w-full">
-        {/* Full-bleed hero banner — fixed responsive heights for clean phone/tablet/desktop display */}
-        <div className="relative w-full h-[460px] md:h-[520px] lg:h-[650px] xl:h-[720px]">
+        {/* Fluid responsive hero banner — scales from 280px to 720px via clamp() */}
+        <div className="hero-banner">
           {activeBanners.map((banner, index) => (
             <Link
               key={banner.src + index}
@@ -86,8 +86,8 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
                 alt={banner.alt}
                 fill
                 priority={index === 0}
-                sizes="(max-width: 640px) 100vw, (max-width: 1200px) 100vw, 100vw"
-                className="object-cover object-[50%_35%] sm:object-[50%_40%] lg:object-center"
+                sizes="100vw"
+                className="object-cover object-[50%_30%] sm:object-[50%_35%] lg:object-center"
               />
             </Link>
           ))}

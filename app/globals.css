@@ -253,6 +253,26 @@
 }
 
 /* =====================================================
+   HERO BANNER — Fluid responsive sizing
+   ===================================================== */
+
+.hero-banner {
+  --banner-h: clamp(280px, 60vh, 720px);
+  position: relative;
+  width: 100%;
+  height: var(--banner-h);
+  overflow: hidden;
+}
+
+/* Constrain width on ultrawide so the image doesn't stretch thin */
+@media (min-width: 1920px) {
+  .hero-banner {
+    max-width: 1920px;
+    margin-inline: auto;
+  }
+}
+
+/* =====================================================
    TYPOGRAPHY
    ===================================================== */
 
