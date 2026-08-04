@@ -257,19 +257,12 @@
    ===================================================== */
 
 .hero-banner {
-  --banner-h: clamp(280px, 60vh, 720px);
+  --banner-h: clamp(320px, 65vh, 780px);
   position: relative;
   width: 100%;
   height: var(--banner-h);
   overflow: hidden;
-}
-
-/* Constrain width on ultrawide so the image doesn't stretch thin */
-@media (min-width: 1920px) {
-  .hero-banner {
-    max-width: 1920px;
-    margin-inline: auto;
-  }
+  background: #000;
 }
 
 /* =====================================================

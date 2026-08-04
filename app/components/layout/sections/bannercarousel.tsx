@@ -87,7 +87,7 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
                 fill
                 priority={index === 0}
                 sizes="100vw"
-                className="object-cover object-[50%_30%] sm:object-[50%_35%] lg:object-center"
+                className="object-contain object-center sm:object-cover sm:object-[50%_35%] lg:object-center"
               />
             </Link>
           ))}
