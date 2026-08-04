@@ -64,11 +64,24 @@ export const metadata = {
   },
 };
 
+import prisma from "@/lib/prisma";
+import { Banner } from "@prisma/client";
+
 export default async function HomePage() {
   const bestsellers = await getBestsellers(4);
   const mustTry = await getMustTry(4);
   const fastChargers = await getFastChargers(4);
   const allProducts = await getAllProductsCached();
+
+  // Fetch banners from DB, fallback to an empty array
+  let banners: Banner[] = [];
+  try {
+    banners = await prisma.banner.findMany({
+      orderBy: { order: "asc" },
+    });
+  } catch (error) {
+    console.error("Failed to load banners", error);
+  }
 
   return (
     <>
@@ -76,7 +89,7 @@ export default async function HomePage() {
       <Navbar />
 
       <main className="w-full bg-white">
-        <BannerCarousel />
+        <BannerCarousel banners={banners} />
         <TrustStrip />
 
         <ProductRow

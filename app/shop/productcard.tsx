@@ -51,33 +51,33 @@ export default function ProductCard({
           </span>
         </Link>
 
-        <div className="flex flex-1 flex-col p-2">
+        <div className="flex flex-1 flex-col p-2.5">
           <Link href={buyHref}>
-            <h3 className="line-clamp-2 min-h-[2rem] text-[11px] font-semibold leading-[1.35] text-ink-900">
+            <h3 className="line-clamp-2 min-h-[2.5rem] text-xs font-semibold leading-[1.35] text-ink-900">
               {title}
             </h3>
           </Link>
 
-          <div className="mt-1 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-            <span className="text-[13px] font-extrabold tracking-tight text-ink-950">
+          <div className="mt-1.5 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+            <span className="text-sm font-extrabold tracking-tight text-ink-950">
               Rs. {formatPrice(price)}
             </span>
             {hasDiscount && (
               <>
-                <span className="text-[10px] font-medium text-ink-400 line-through">
+                <span className="text-[11px] font-medium text-ink-400 line-through">
                   {formatPrice(oldPrice)}
                 </span>
-                <span className="text-[10px] font-bold text-signal">{discount}% off</span>
+                <span className="text-[11px] font-bold text-signal">{discount}% off</span>
               </>
             )}
           </div>
 
           <Link
             href={cartHref}
-            className="mt-2 flex h-8 items-center justify-center gap-1 rounded-lg bg-accent text-[11px] font-bold text-white transition active:scale-95"
+            className="mt-2.5 flex h-9 items-center justify-center gap-1.5 rounded-lg bg-accent text-xs font-bold text-white transition active:scale-95"
             aria-label={`Add ${title} to cart`}
           >
-            <ShoppingCart className="h-3 w-3" />
+            <ShoppingCart className="h-3.5 w-3.5" />
             Add to cart
           </Link>
         </div>

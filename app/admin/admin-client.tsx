@@ -323,6 +323,13 @@ export default function AdminClient() {
               <span className="text-lg">🛠️</span>
               Shipping Debug
             </Link>
+            <Link
+              href="/admin/banners"
+              className="inline-flex items-center gap-2 rounded-full border border-accent text-accent px-5 py-2.5 text-sm font-bold hover:bg-accent/5 transition-all duration-300"
+            >
+              <ImageIcon size={16} />
+              Manage Banners
+            </Link>
           </div>
         </div>
 

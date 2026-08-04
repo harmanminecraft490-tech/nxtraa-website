@@ -5,14 +5,21 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { siteBanners } from "../../lib/banners";
+import { siteBanners, SiteBanner } from "../../lib/banners";
 
+interface BannerCarouselProps {
+  banners?: SiteBanner[];
+}
 
-
-export default function BannerCarousel() {
+export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
-  const count = siteBanners.length;
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  // Use DB banners if available, else fallback to hardcoded ones
+  const activeBanners = banners.length > 0 ? banners : siteBanners;
+  const count = activeBanners.length;
 
   const goTo = useCallback(
     (index: number) => setActive((index + count) % count),
@@ -25,19 +32,46 @@ export default function BannerCarousel() {
     return () => clearInterval(timer);
   }, [paused, count]);
 
+  // Touch swipe support for mobile phone UI
+  const minSwipeDistance = 40;
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setPaused(true);
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    setPaused(false);
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    if (distance > minSwipeDistance) {
+      goTo(active + 1);
+    } else if (distance < -minSwipeDistance) {
+      goTo(active - 1);
+    }
+  };
+
   return (
     <section
       id="hero"
-      className="relative w-full overflow-hidden bg-white"
+      className="relative w-full overflow-hidden bg-white select-none"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       <div className="relative w-full">
-        {/* Full-bleed banner — no black box, image fills edge to edge */}
-        <div className="relative aspect-[2.4/1] w-full min-h-[160px] sm:aspect-[2.6/1] sm:min-h-[240px] md:min-h-[300px] lg:aspect-[2.8/1] lg:min-h-[380px] xl:min-h-[440px]">
-          {siteBanners.map((banner, index) => (
+        {/* Full-bleed hero banner — fixed responsive heights for clean phone/tablet/desktop display */}
+        <div className="relative w-full h-[460px] md:h-[520px] lg:h-[650px] xl:h-[720px]">
+          {activeBanners.map((banner, index) => (
             <Link
-              key={banner.src}
+              key={banner.src + index}
               href={banner.href}
               className={`absolute inset-0 block transition-opacity duration-700 ease-in-out ${
                 index === active ? "z-10 opacity-100" : "z-0 opacity-0 pointer-events-none"
@@ -50,45 +84,43 @@ export default function BannerCarousel() {
                 alt={banner.alt}
                 fill
                 priority={index === 0}
-                sizes="100vw"
+                sizes="(max-width: 640px) 100vw, (max-width: 1200px) 100vw, 100vw"
                 className="object-cover object-center"
               />
             </Link>
           ))}
         </div>
 
-
-
         {count > 1 && (
           <>
             <button
               type="button"
               onClick={() => goTo(active - 1)}
-              className="absolute left-3 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-lg transition hover:bg-white sm:left-6 sm:h-11 sm:w-11"
+              className="absolute left-2.5 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 backdrop-blur-md text-white shadow-lg transition-all hover:bg-black/50 active:scale-95 sm:left-6 sm:h-11 sm:w-11 sm:bg-white/90 sm:text-gray-900 sm:hover:bg-white"
               aria-label="Previous banner"
             >
-              <ChevronLeft className="h-[18px] w-[18px] sm:h-[22px] sm:w-[22px]" />
+              <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
             <button
               type="button"
               onClick={() => goTo(active + 1)}
-              className="absolute right-3 top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-gray-900 shadow-lg transition hover:bg-white sm:right-6 sm:h-11 sm:w-11"
+              className="absolute right-2.5 top-1/2 z-20 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 backdrop-blur-md text-white shadow-lg transition-all hover:bg-black/50 active:scale-95 sm:right-6 sm:h-11 sm:w-11 sm:bg-white/90 sm:text-gray-900 sm:hover:bg-white"
               aria-label="Next banner"
             >
-              <ChevronRight className="h-[18px] w-[18px] sm:h-[22px] sm:w-[22px]" />
+              <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
 
-            <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 gap-1.5 sm:bottom-4 sm:gap-2">
-              {siteBanners.map((banner, index) => (
+            <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1.5 sm:bottom-4 sm:gap-2">
+              {activeBanners.map((banner, index) => (
                 <button
-                  key={banner.src}
+                  key={banner.src + index}
                   type="button"
                   onClick={() => goTo(index)}
                   aria-label={`Banner ${index + 1}`}
                   className={`h-1.5 rounded-full transition-all duration-300 sm:h-2 ${
                     index === active
-                      ? "w-5 bg-white shadow-md sm:w-7"
-                      : "w-1.5 bg-white/50 hover:bg-white/80 sm:w-2"
+                      ? "w-6 bg-accent shadow-md sm:w-8"
+                      : "w-1.5 bg-white/70 hover:bg-white sm:w-2"
                   }`}
                 />
               ))}

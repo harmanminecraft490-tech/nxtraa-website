@@ -38,7 +38,7 @@ export function ProductRow({ eyebrow, title, href, items }: ProductRowProps) {
           {items.map((product) => (
             <div
               key={product.id}
-              className="w-[43%] shrink-0 snap-start sm:w-auto sm:shrink"
+              className="w-[55%] shrink-0 snap-start sm:w-auto sm:shrink"
             >
               <ProductCard {...product} />
             </div>
