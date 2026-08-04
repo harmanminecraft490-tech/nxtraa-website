@@ -175,7 +175,7 @@ export default function BannerClient() {
               <ArrowLeft size={16} /> Back to Dashboard
             </Link>
             <h1 className="text-3xl font-black text-ink-950 tracking-tight">Manage Banners</h1>
-            <p className="mt-1 text-ink-500 text-sm">Upload, replace, and reorder hero banners for mobile phone UI and desktop.</p>
+            <p className="mt-1 text-ink-500 text-sm">All banners (including defaults) shown below. Upload, replace, reorder, or delete any banner.</p>
           </div>
           <button onClick={() => { setShowAddForm(true); setEditingBanner(null); }} className="btn btn-primary flex items-center gap-2 self-start sm:self-auto">
             <Plus size={16} /> Add Banner
@@ -335,15 +335,15 @@ export default function BannerClient() {
         {/* Banner List */}
         <div className="space-y-4">
           <div className="flex items-center justify-between px-2">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-ink-400">Active Homepage Banners ({banners.length})</h2>
-            <span className="text-xs text-ink-500 font-medium">Banners adapt automatically for Phone & Desktop</span>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-ink-400">All Homepage Banners ({banners.length})</h2>
+            <span className="text-xs text-ink-500 font-medium">Edit, reorder, or delete any banner</span>
           </div>
 
           {banners.length === 0 ? (
             <div className="rounded-2xl border border-line bg-white p-12 text-center">
               <ImageIcon className="mx-auto h-10 w-10 text-ink-300 mb-3" />
-              <p className="text-ink-950 font-bold">No active custom banners</p>
-              <p className="mt-1 text-sm text-ink-500">The website will fallback to default system banners. Add a banner above to override.</p>
+              <p className="text-ink-950 font-bold">No banners yet</p>
+              <p className="mt-1 text-sm text-ink-500">Default banners will be auto-added when you refresh. Add a custom banner above to get started.</p>
             </div>
           ) : (
             banners.map((banner) => (
