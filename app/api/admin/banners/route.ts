@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { id, src, href, alt, order } = body;
+    const { id, src, href, alt, order, desktopImageUrl, mobileImageUrl } = body;
 
     // Update existing
     if (id) {
@@ -39,6 +39,8 @@ export async function POST(request: Request) {
           href,
           alt,
           order: typeof order === "number" ? order : 0,
+          desktopImageUrl: desktopImageUrl ?? undefined,
+          mobileImageUrl: mobileImageUrl ?? undefined,
         },
       });
       return NextResponse.json({ success: true, banner: updated });
@@ -55,6 +57,8 @@ export async function POST(request: Request) {
         href: href || "/",
         alt: alt || "Banner",
         order: typeof order === "number" ? order : 0,
+        desktopImageUrl: desktopImageUrl || src,
+        mobileImageUrl: mobileImageUrl || null,
       },
     });
 

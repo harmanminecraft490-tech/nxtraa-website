@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { Save, X, Image as ImageIcon, Trash2, Plus, ArrowLeft, Pencil, Upload, ExternalLink } from "lucide-react";
+import { Save, X, Image as ImageIcon, Trash2, Plus, ArrowLeft, Pencil, Upload, ExternalLink, Monitor, Smartphone } from "lucide-react";
 import Link from "next/link";
 
 type Banner = {
@@ -11,6 +11,8 @@ type Banner = {
   href: string;
   alt: string;
   order: number;
+  desktopImageUrl: string | null;
+  mobileImageUrl: string | null;
 };
 
 export default function BannerClient() {
@@ -22,7 +24,14 @@ export default function BannerClient() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
 
-  const [newBanner, setNewBanner] = useState({ src: "", href: "/shop", alt: "Nxteraa Banner", order: 0 });
+  const [newBanner, setNewBanner] = useState({
+    src: "",
+    href: "/shop",
+    alt: "Nxteraa Banner",
+    order: 0,
+    desktopImageUrl: "",
+    mobileImageUrl: "",
+  });
 
   const showMessage = (type: "success" | "error", text: string) => {
     setMessage({ type, text });
@@ -37,7 +46,7 @@ export default function BannerClient() {
         if (!res.ok) throw new Error("Failed to load banners");
         const data = await res.json();
         if (!cancelled) setBanners(data);
-      } catch (e) {
+      } catch {
         if (!cancelled) showMessage("error", "Error loading banners");
       } finally {
         if (!cancelled) setLoading(false);
@@ -51,7 +60,7 @@ export default function BannerClient() {
 
   const handleFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    target: "new" | "edit"
+    target: "new-desktop" | "new-mobile" | "edit-desktop" | "edit-mobile"
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -76,13 +85,17 @@ export default function BannerClient() {
 
       if (!res.ok || !data.url) throw new Error(data.error || "Upload failed");
 
-      if (target === "new") {
-        setNewBanner((prev) => ({ ...prev, src: data.url }));
-      } else if (editingBanner) {
-        setEditingBanner((prev) => prev ? { ...prev, src: data.url } : null);
+      if (target === "new-desktop") {
+        setNewBanner((prev) => ({ ...prev, desktopImageUrl: data.url, src: data.url }));
+      } else if (target === "new-mobile") {
+        setNewBanner((prev) => ({ ...prev, mobileImageUrl: data.url }));
+      } else if (target === "edit-desktop" && editingBanner) {
+        setEditingBanner((prev) => prev ? { ...prev, desktopImageUrl: data.url, src: data.url } : null);
+      } else if (target === "edit-mobile" && editingBanner) {
+        setEditingBanner((prev) => prev ? { ...prev, mobileImageUrl: data.url } : null);
       }
-      showMessage("success", "Banner image uploaded successfully");
-    } catch (error) {
+      showMessage("success", "Image uploaded successfully");
+    } catch {
       showMessage("error", "Error uploading image");
     } finally {
       setUploading(false);
@@ -91,8 +104,8 @@ export default function BannerClient() {
   };
 
   const handleAddBanner = async () => {
-    if (!newBanner.src) {
-      showMessage("error", "Please upload or provide a banner image URL");
+    if (!newBanner.src && !newBanner.desktopImageUrl) {
+      showMessage("error", "Please upload a desktop banner image");
       return;
     }
 
@@ -100,23 +113,26 @@ export default function BannerClient() {
       const res = await fetch("/api/admin/banners", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newBanner),
+        body: JSON.stringify({
+          ...newBanner,
+          src: newBanner.desktopImageUrl || newBanner.src,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to add banner");
 
       setBanners((prev) => [...prev, data.banner].sort((a, b) => a.order - b.order));
       setShowAddForm(false);
-      setNewBanner({ src: "", href: "/shop", alt: "Nxteraa Banner", order: banners.length + 1 });
+      setNewBanner({ src: "", href: "/shop", alt: "Nxteraa Banner", order: banners.length + 1, desktopImageUrl: "", mobileImageUrl: "" });
       showMessage("success", "Banner added successfully");
-    } catch (e) {
+    } catch {
       showMessage("error", "Error adding banner");
     }
   };
 
   const handleUpdateBanner = async () => {
-    if (!editingBanner || !editingBanner.src) {
-      showMessage("error", "Please upload or provide a banner image URL");
+    if (!editingBanner || (!editingBanner.src && !editingBanner.desktopImageUrl)) {
+      showMessage("error", "Please upload a desktop banner image");
       return;
     }
 
@@ -124,7 +140,10 @@ export default function BannerClient() {
       const res = await fetch("/api/admin/banners", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editingBanner),
+        body: JSON.stringify({
+          ...editingBanner,
+          src: editingBanner.desktopImageUrl || editingBanner.src,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to update banner");
@@ -136,7 +155,7 @@ export default function BannerClient() {
       );
       setEditingBanner(null);
       showMessage("success", "Banner updated successfully");
-    } catch (e) {
+    } catch {
       showMessage("error", "Error updating banner");
     }
   };
@@ -153,7 +172,7 @@ export default function BannerClient() {
 
       setBanners((prev) => prev.filter((b) => b.id !== id));
       showMessage("success", "Banner deleted successfully");
-    } catch (e) {
+    } catch {
       showMessage("error", "Error deleting banner");
     }
   };
@@ -175,7 +194,7 @@ export default function BannerClient() {
               <ArrowLeft size={16} /> Back to Dashboard
             </Link>
             <h1 className="text-3xl font-black text-ink-950 tracking-tight">Manage Banners</h1>
-            <p className="mt-1 text-ink-500 text-sm">All banners (including defaults) shown below. Upload, replace, reorder, or delete any banner.</p>
+            <p className="mt-1 text-ink-500 text-sm">Upload separate desktop and mobile banners for a premium responsive experience.</p>
           </div>
           <button onClick={() => { setShowAddForm(true); setEditingBanner(null); }} className="btn btn-primary flex items-center gap-2 self-start sm:self-auto">
             <Plus size={16} /> Add Banner
@@ -202,57 +221,87 @@ export default function BannerClient() {
                 <X size={18} />
               </button>
             </div>
-            
-            <div className="grid gap-6 md:grid-cols-2">
+
+            {/* Image Uploads */}
+            <div className="grid gap-6 md:grid-cols-2 mb-6">
+              {/* Desktop Image */}
               <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">Banner Image</label>
-                {newBanner.src ? (
-                  <div className="relative aspect-[2.6/1] w-full overflow-hidden rounded-xl bg-mist mb-3 border border-line">
-                    <Image src={newBanner.src} alt="Preview" fill className="object-cover" />
+                <label className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-ink-400">
+                  <Monitor size={14} /> Desktop Banner (Wide)
+                </label>
+                {newBanner.desktopImageUrl ? (
+                  <div className="relative aspect-[2.6/1] w-full overflow-hidden rounded-xl bg-mist mb-2 border border-line">
+                    <Image src={newBanner.desktopImageUrl} alt="Desktop preview" fill className="object-cover" />
+                    <button
+                      onClick={() => setNewBanner((prev) => ({ ...prev, desktopImageUrl: "", src: "" }))}
+                      className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
                 ) : (
-                  <div className="flex aspect-[2.6/1] w-full flex-col items-center justify-center rounded-xl bg-mist mb-3 border-2 border-dashed border-line p-4 text-center">
-                    <ImageIcon className="text-ink-300 mb-2" size={32} />
-                    <p className="text-xs text-ink-500">Upload an image or paste URL below</p>
+                  <div className="flex aspect-[2.6/1] w-full flex-col items-center justify-center rounded-xl bg-mist mb-2 border-2 border-dashed border-line p-4 text-center">
+                    <Monitor className="text-ink-300 mb-2" size={28} />
+                    <p className="text-xs text-ink-500">Upload wide banner for desktop</p>
                   </div>
                 )}
-
-                <div className="space-y-2">
-                  <label className="btn btn-secondary btn-sm w-full flex items-center justify-center gap-2 cursor-pointer">
-                    <Upload size={14} />
-                    {uploading ? "Uploading..." : "Upload Image File"}
-                    <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, "new")} disabled={uploading} className="hidden" />
-                  </label>
-                  <div>
-                    <input
-                      type="text"
-                      value={newBanner.src}
-                      onChange={(e) => setNewBanner({ ...newBanner, src: e.target.value })}
-                      className="w-full rounded-xl border border-line bg-white px-3 py-2 text-xs focus:border-accent"
-                      placeholder="Or enter image URL directly"
-                    />
-                  </div>
-                </div>
+                <label className="btn btn-secondary btn-sm w-full flex items-center justify-center gap-2 cursor-pointer">
+                  <Upload size={14} />
+                  {uploading ? "Uploading..." : "Upload Desktop Image"}
+                  <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, "new-desktop")} disabled={uploading} className="hidden" />
+                </label>
+                <p className="mt-1.5 text-[11px] text-ink-400">Recommended: 1920×720 or 2000×750</p>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">Destination Link (Href)</label>
-                  <input type="text" value={newBanner.href} onChange={(e) => setNewBanner({ ...newBanner, href: e.target.value })} className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm focus:border-accent" placeholder="/shop" />
-                </div>
-                <div>
-                  <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">Alt / Accessibility Text</label>
-                  <input type="text" value={newBanner.alt} onChange={(e) => setNewBanner({ ...newBanner, alt: e.target.value })} className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm focus:border-accent" placeholder="Nxteraa Audio Bestseller" />
-                </div>
-                <div>
-                  <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">Display Order</label>
-                  <input type="number" value={newBanner.order} onChange={(e) => setNewBanner({ ...newBanner, order: Number(e.target.value) })} className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm focus:border-accent" />
-                </div>
+              {/* Mobile Image */}
+              <div>
+                <label className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-ink-400">
+                  <Smartphone size={14} /> Mobile Banner (Portrait)
+                  <span className="text-[10px] font-normal normal-case text-ink-300">Optional</span>
+                </label>
+                {newBanner.mobileImageUrl ? (
+                  <div className="relative aspect-[2.6/1] w-full overflow-hidden rounded-xl bg-mist mb-2 border border-line">
+                    <Image src={newBanner.mobileImageUrl} alt="Mobile preview" fill className="object-cover" />
+                    <button
+                      onClick={() => setNewBanner((prev) => ({ ...prev, mobileImageUrl: "" }))}
+                      className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex aspect-[2.6/1] w-full flex-col items-center justify-center rounded-xl bg-mist mb-2 border-2 border-dashed border-line p-4 text-center">
+                    <Smartphone className="text-ink-300 mb-2" size={28} />
+                    <p className="text-xs text-ink-500">Upload portrait banner for mobile</p>
+                  </div>
+                )}
+                <label className="btn btn-secondary btn-sm w-full flex items-center justify-center gap-2 cursor-pointer">
+                  <Upload size={14} />
+                  {uploading ? "Uploading..." : "Upload Mobile Image"}
+                  <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, "new-mobile")} disabled={uploading} className="hidden" />
+                </label>
+                <p className="mt-1.5 text-[11px] text-ink-400">Recommended: 1080×1350 or 1080×1440</p>
               </div>
             </div>
 
-            <div className="mt-6 flex gap-3 pt-4 border-t border-line">
-              <button onClick={handleAddBanner} disabled={!newBanner.src || uploading} className="btn btn-primary flex items-center gap-2">
+            {/* Link / Alt / Order */}
+            <div className="grid gap-4 md:grid-cols-3 mb-6">
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">Destination Link</label>
+                <input type="text" value={newBanner.href} onChange={(e) => setNewBanner({ ...newBanner, href: e.target.value })} className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm focus:border-accent" placeholder="/shop" />
+              </div>
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">Alt Text</label>
+                <input type="text" value={newBanner.alt} onChange={(e) => setNewBanner({ ...newBanner, alt: e.target.value })} className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm focus:border-accent" placeholder="Nxteraa Audio" />
+              </div>
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">Display Order</label>
+                <input type="number" value={newBanner.order} onChange={(e) => setNewBanner({ ...newBanner, order: Number(e.target.value) })} className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm focus:border-accent" />
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-4 border-t border-line">
+              <button onClick={handleAddBanner} disabled={(!newBanner.desktopImageUrl && !newBanner.src) || uploading} className="btn btn-primary flex items-center gap-2">
                 <Save size={16} /> Save Banner
               </button>
               <button onClick={() => setShowAddForm(false)} className="btn btn-secondary flex items-center gap-2">
@@ -262,7 +311,7 @@ export default function BannerClient() {
           </div>
         )}
 
-        {/* Edit Banner Modal/Form */}
+        {/* Edit Banner Form */}
         {editingBanner && (
           <div className="mb-8 rounded-2xl border border-accent bg-white p-6 shadow-md">
             <div className="flex items-center justify-between mb-4">
@@ -274,55 +323,86 @@ export default function BannerClient() {
               </button>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
+            {/* Image Uploads */}
+            <div className="grid gap-6 md:grid-cols-2 mb-6">
+              {/* Desktop Image */}
               <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">Current / Replacement Image</label>
-                {editingBanner.src ? (
-                  <div className="relative aspect-[2.6/1] w-full overflow-hidden rounded-xl bg-mist mb-3 border border-line">
-                    <Image src={editingBanner.src} alt={editingBanner.alt || "Preview"} fill className="object-cover" />
+                <label className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-ink-400">
+                  <Monitor size={14} /> Desktop Banner (Wide)
+                </label>
+                {editingBanner.desktopImageUrl || editingBanner.src ? (
+                  <div className="relative aspect-[2.6/1] w-full overflow-hidden rounded-xl bg-mist mb-2 border border-line">
+                    <Image src={editingBanner.desktopImageUrl || editingBanner.src} alt="Desktop preview" fill className="object-cover" />
+                    <button
+                      onClick={() => setEditingBanner((prev) => prev ? { ...prev, desktopImageUrl: "", src: "" } : null)}
+                      className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
                 ) : (
-                  <div className="flex aspect-[2.6/1] w-full items-center justify-center rounded-xl bg-mist mb-3 border border-line">
-                    <ImageIcon className="text-ink-300" size={32} />
+                  <div className="flex aspect-[2.6/1] w-full flex-col items-center justify-center rounded-xl bg-mist mb-2 border-2 border-dashed border-line p-4 text-center">
+                    <Monitor className="text-ink-300 mb-2" size={28} />
+                    <p className="text-xs text-ink-500">Upload wide banner for desktop</p>
                   </div>
                 )}
-
-                <div className="space-y-2">
-                  <label className="btn btn-secondary btn-sm w-full flex items-center justify-center gap-2 cursor-pointer">
-                    <Upload size={14} />
-                    {uploading ? "Uploading..." : "Upload Replacement Image"}
-                    <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, "edit")} disabled={uploading} className="hidden" />
-                  </label>
-                  <div>
-                    <input
-                      type="text"
-                      value={editingBanner.src}
-                      onChange={(e) => setEditingBanner({ ...editingBanner, src: e.target.value })}
-                      className="w-full rounded-xl border border-line bg-white px-3 py-2 text-xs focus:border-accent"
-                      placeholder="Image URL"
-                    />
-                  </div>
-                </div>
+                <label className="btn btn-secondary btn-sm w-full flex items-center justify-center gap-2 cursor-pointer">
+                  <Upload size={14} />
+                  {uploading ? "Uploading..." : "Upload Desktop Image"}
+                  <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, "edit-desktop")} disabled={uploading} className="hidden" />
+                </label>
+                <p className="mt-1.5 text-[11px] text-ink-400">Recommended: 1920×720 or 2000×750</p>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">Destination Link (Href)</label>
-                  <input type="text" value={editingBanner.href} onChange={(e) => setEditingBanner({ ...editingBanner, href: e.target.value })} className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm focus:border-accent" />
-                </div>
-                <div>
-                  <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">Alt / Accessibility Text</label>
-                  <input type="text" value={editingBanner.alt} onChange={(e) => setEditingBanner({ ...editingBanner, alt: e.target.value })} className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm focus:border-accent" />
-                </div>
-                <div>
-                  <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">Display Order</label>
-                  <input type="number" value={editingBanner.order} onChange={(e) => setEditingBanner({ ...editingBanner, order: Number(e.target.value) })} className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm focus:border-accent" />
-                </div>
+              {/* Mobile Image */}
+              <div>
+                <label className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-ink-400">
+                  <Smartphone size={14} /> Mobile Banner (Portrait)
+                  <span className="text-[10px] font-normal normal-case text-ink-300">Optional</span>
+                </label>
+                {editingBanner.mobileImageUrl ? (
+                  <div className="relative aspect-[2.6/1] w-full overflow-hidden rounded-xl bg-mist mb-2 border border-line">
+                    <Image src={editingBanner.mobileImageUrl} alt="Mobile preview" fill className="object-cover" />
+                    <button
+                      onClick={() => setEditingBanner((prev) => prev ? { ...prev, mobileImageUrl: "" } : null)}
+                      className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex aspect-[2.6/1] w-full flex-col items-center justify-center rounded-xl bg-mist mb-2 border-2 border-dashed border-line p-4 text-center">
+                    <Smartphone className="text-ink-300 mb-2" size={28} />
+                    <p className="text-xs text-ink-500">Upload portrait banner for mobile</p>
+                  </div>
+                )}
+                <label className="btn btn-secondary btn-sm w-full flex items-center justify-center gap-2 cursor-pointer">
+                  <Upload size={14} />
+                  {uploading ? "Uploading..." : "Upload Mobile Image"}
+                  <input type="file" accept="image/*" onChange={(e) => handleFileUpload(e, "edit-mobile")} disabled={uploading} className="hidden" />
+                </label>
+                <p className="mt-1.5 text-[11px] text-ink-400">Recommended: 1080×1350 or 1080×1440</p>
               </div>
             </div>
 
-            <div className="mt-6 flex gap-3 pt-4 border-t border-line">
-              <button onClick={handleUpdateBanner} disabled={!editingBanner.src || uploading} className="btn btn-primary flex items-center gap-2">
+            {/* Link / Alt / Order */}
+            <div className="grid gap-4 md:grid-cols-3 mb-6">
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">Destination Link</label>
+                <input type="text" value={editingBanner.href} onChange={(e) => setEditingBanner({ ...editingBanner, href: e.target.value })} className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm focus:border-accent" />
+              </div>
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">Alt Text</label>
+                <input type="text" value={editingBanner.alt} onChange={(e) => setEditingBanner({ ...editingBanner, alt: e.target.value })} className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm focus:border-accent" />
+              </div>
+              <div>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">Display Order</label>
+                <input type="number" value={editingBanner.order} onChange={(e) => setEditingBanner({ ...editingBanner, order: Number(e.target.value) })} className="w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm focus:border-accent" />
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-4 border-t border-line">
+              <button onClick={handleUpdateBanner} disabled={(!editingBanner.desktopImageUrl && !editingBanner.src) || uploading} className="btn btn-primary flex items-center gap-2">
                 <Save size={16} /> Save Changes
               </button>
               <button onClick={() => setEditingBanner(null)} className="btn btn-secondary flex items-center gap-2">
@@ -343,14 +423,27 @@ export default function BannerClient() {
             <div className="rounded-2xl border border-line bg-white p-12 text-center">
               <ImageIcon className="mx-auto h-10 w-10 text-ink-300 mb-3" />
               <p className="text-ink-950 font-bold">No banners yet</p>
-              <p className="mt-1 text-sm text-ink-500">Default banners will be auto-added when you refresh. Add a custom banner above to get started.</p>
+              <p className="mt-1 text-sm text-ink-500">Add a custom banner above to get started.</p>
             </div>
           ) : (
             banners.map((banner) => (
               <div key={banner.id} className="flex flex-col md:flex-row gap-6 rounded-2xl border border-line bg-white p-5 items-center shadow-xs hover:border-ink-300 transition-colors">
+                {/* Desktop Preview */}
                 <div className="relative aspect-[2.6/1] w-full md:w-80 overflow-hidden rounded-xl bg-mist shrink-0 border border-line">
-                  <Image src={banner.src} alt={banner.alt || "Banner image"} fill className="object-cover" />
+                  <Image src={banner.desktopImageUrl || banner.src} alt={banner.alt || "Banner image"} fill className="object-cover" />
+                  <div className="absolute top-2 left-2 flex items-center gap-1 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
+                    <Monitor size={10} /> DESKTOP
+                  </div>
                 </div>
+                {/* Mobile Preview */}
+                {banner.mobileImageUrl && (
+                  <div className="relative aspect-[2.6/1] w-full md:w-40 overflow-hidden rounded-xl bg-mist shrink-0 border border-line">
+                    <Image src={banner.mobileImageUrl} alt={banner.alt || "Mobile banner"} fill className="object-cover" />
+                    <div className="absolute top-2 left-2 flex items-center gap-1 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">
+                      <Smartphone size={10} /> MOBILE
+                    </div>
+                  </div>
+                )}
                 <div className="flex-1 space-y-1.5 w-full text-sm">
                   <div className="flex items-center gap-2">
                     <span className="inline-flex items-center rounded-md bg-mist px-2 py-0.5 text-xs font-bold text-ink-700">
@@ -359,9 +452,12 @@ export default function BannerClient() {
                     <a href={banner.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-accent hover:underline text-xs font-semibold">
                       {banner.href} <ExternalLink size={12} />
                     </a>
+                    {!banner.mobileImageUrl && (
+                      <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded font-medium">No mobile image</span>
+                    )}
                   </div>
                   <p className="font-semibold text-ink-950">{banner.alt || "Untitled Banner"}</p>
-                  <p className="text-xs text-ink-400 truncate max-w-md">{banner.src}</p>
+                  <p className="text-xs text-ink-400 truncate max-w-md">{banner.desktopImageUrl || banner.src}</p>
                 </div>
                 <div className="flex items-center gap-2 w-full md:w-auto justify-end border-t md:border-t-0 pt-3 md:pt-0 border-line">
                   <button onClick={() => { setEditingBanner(banner); setShowAddForm(false); }} className="btn btn-secondary btn-sm flex items-center gap-1.5">

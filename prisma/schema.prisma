@@ -166,11 +166,13 @@ model ShipmentLog {
 }
 
 model Banner {
-  id        Int      @id @default(autoincrement())
-  src       String
-  href      String
-  alt       String
-  order     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              Int      @id @default(autoincrement())
+  src             String
+  href            String
+  alt             String
+  order           Int      @default(0)
+  desktopImageUrl String?
+  mobileImageUrl  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

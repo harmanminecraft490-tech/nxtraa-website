@@ -2,6 +2,8 @@ export type SiteBanner = {
   src: string;
   href: string;
   alt: string;
+  desktopImageUrl?: string | null;
+  mobileImageUrl?: string | null;
 };
 
 export const siteBanners: SiteBanner[] = [

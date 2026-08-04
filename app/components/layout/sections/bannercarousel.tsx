@@ -16,6 +16,16 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
   const [paused, setPaused] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   // Use DB banners only — no hardcoded fallback
   const activeBanners = banners;
@@ -71,26 +81,38 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
       <div className="relative w-full">
         {/* Hero banner — fills remaining viewport via calc(100svh - nav heights) */}
         <div className="hero-banner">
-          {activeBanners.map((banner, index) => (
-            <Link
-              key={banner.src + index}
-              href={banner.href}
-              className={`absolute inset-0 block transition-opacity duration-700 ease-in-out ${
-                index === active ? "z-10 opacity-100" : "z-0 opacity-0 pointer-events-none"
-              }`}
-              aria-hidden={index !== active}
-              tabIndex={index === active ? 0 : -1}
-            >
-              <Image
-                src={banner.src}
-                alt={banner.alt}
-                fill
-                priority={index === 0}
-                sizes="100vw"
-                className="object-cover object-center"
-              />
-            </Link>
-          ))}
+          {activeBanners.map((banner, index) => {
+            // Pick the right image: mobile if available and viewport < 768px, else desktop
+            const imageSrc =
+              isMobile && banner.mobileImageUrl
+                ? banner.mobileImageUrl
+                : banner.desktopImageUrl || banner.src;
+
+            return (
+              <Link
+                key={banner.src + index}
+                href={banner.href}
+                className={`absolute inset-0 block transition-opacity duration-700 ease-in-out ${
+                  index === active ? "z-10 opacity-100" : "z-0 opacity-0 pointer-events-none"
+                }`}
+                aria-hidden={index !== active}
+                tabIndex={index === active ? 0 : -1}
+              >
+                <Image
+                  src={imageSrc}
+                  alt={banner.alt}
+                  fill
+                  priority={index === 0}
+                  sizes="100vw"
+                  className={
+                    isMobile && banner.mobileImageUrl
+                      ? "object-cover object-center"
+                      : "object-cover object-center"
+                  }
+                />
+              </Link>
+            );
+          })}
         </div>
 
         {count > 1 && (
