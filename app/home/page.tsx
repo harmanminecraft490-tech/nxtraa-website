@@ -89,7 +89,7 @@ export default async function HomePage() {
       <Navbar />
 
       <main className="w-full bg-white">
-        <BannerCarousel banners={banners} />
+        <BannerCarousel banners={banners as unknown as import("../components/lib/banners").SiteBanner[]} />
         <TrustStrip />
 
         <ProductRow

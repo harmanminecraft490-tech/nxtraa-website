@@ -253,26 +253,31 @@
 }
 
 /* =====================================================
-   HERO BANNER — Viewport-based, fills first screen
+   HERO BANNER — Aspect-ratio driven, never crops
    ===================================================== */
 
 /*
- * Height = 100svh minus announcement bar + navbar.
- * Mobile (<640px):  32px + 56px + 1px  = 89px
- * Desktop (>=640px): 40px + 64px + 1px  = 105px
- * Safe-area inset is subtracted via env() for notched devices.
+ * Height is set dynamically via inline style from the carousel component
+ * based on the uploaded image's natural aspect ratio.
+ * No fixed heights — the banner adapts to the image.
  */
 .hero-banner {
   position: relative;
   width: 100%;
-  height: calc(100svh - 89px - env(safe-area-inset-top, 0px));
   overflow: hidden;
+  background: #f5f5f5;
 }
 
-@media (min-width: 640px) {
-  .hero-banner {
-    height: calc(100svh - 105px - env(safe-area-inset-top, 0px));
-  }
+/* FIT mode: full image visible, object-contain, with background expansion */
+.hero-banner-fit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* FILL mode: fills container, may crop slightly */
+.hero-banner-fill {
+  display: block;
 }
 
 /* =====================================================

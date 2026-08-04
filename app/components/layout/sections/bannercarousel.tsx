@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { SiteBanner } from "../../lib/banners";
@@ -17,6 +17,11 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Natural dimensions of the active image: { w, h } once loaded
+  const [imgNatural, setImgNatural] = useState<{ w: number; h: number } | null>(null);
 
   // Detect mobile viewport
   useEffect(() => {
@@ -27,7 +32,18 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
     return () => mq.removeEventListener("change", handler);
   }, []);
 
-  // Use DB banners only — no hardcoded fallback
+  // Track container width
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+    ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, []);
+
   const activeBanners = banners;
   const count = activeBanners.length;
 
@@ -44,7 +60,7 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
     return () => clearInterval(timer);
   }, [paused, count]);
 
-  // Touch swipe support for mobile phone UI
+  // Touch swipe support
   const minSwipeDistance = 40;
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -68,6 +84,40 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
     }
   };
 
+  // Pick the right image for the current viewport
+  const banner = activeBanners[active];
+  const imageSrc =
+    isMobile && banner.mobileImageUrl
+      ? banner.mobileImageUrl
+      : banner.desktopImageUrl || banner.src;
+
+  const displayMode = banner.displayMode ?? "FIT";
+
+  // Calculate container height from natural aspect ratio
+  // FIT mode: height = width * (naturalH / naturalW) — full image visible
+  // FILL mode: height = width * 0.45 (wide landscape, may crop) — capped at 80vh
+  let containerHeight = 0;
+  if (imgNatural && containerWidth > 0) {
+    if (displayMode === "FIT") {
+      containerHeight = containerWidth * (imgNatural.h / imgNatural.w);
+    } else {
+      // FILL: landscape ratio, capped at 80vh
+      const maxH = typeof window !== "undefined" ? window.innerHeight * 0.8 : 600;
+      containerHeight = Math.min(containerWidth * 0.45, maxH);
+    }
+  }
+
+  // Handle image load — capture natural dimensions
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    setImgNatural({ w: img.naturalWidth, h: img.naturalHeight });
+  };
+
+  // Reset natural dimensions when active banner changes
+  useEffect(() => {
+    setImgNatural(null);
+  }, [active, isMobile]);
+
   return (
     <section
       id="hero"
@@ -77,39 +127,76 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      ref={containerRef}
     >
       <div className="relative w-full">
-        {/* Hero banner — fills remaining viewport via calc(100svh - nav heights) */}
-        <div className="hero-banner">
-          {activeBanners.map((banner, index) => {
-            // Pick the right image: mobile if available and viewport < 768px, else desktop
-            const imageSrc =
-              isMobile && banner.mobileImageUrl
-                ? banner.mobileImageUrl
-                : banner.desktopImageUrl || banner.src;
+        {/* Hero banner — height driven by image aspect ratio */}
+        <div
+          className={`hero-banner ${displayMode === "FIT" ? "hero-banner-fit" : "hero-banner-fill"}`}
+          style={{
+            height: containerHeight > 0 ? `${containerHeight}px` : undefined,
+            minHeight: containerHeight > 0 ? undefined : "200px",
+          }}
+        >
+          {activeBanners.map((b, index) => {
+            const src =
+              isMobile && b.mobileImageUrl
+                ? b.mobileImageUrl
+                : b.desktopImageUrl || b.src;
+
+            const mode = b.displayMode ?? "FIT";
 
             return (
               <Link
-                key={banner.src + index}
-                href={banner.href}
-                className={`absolute inset-0 block transition-opacity duration-700 ease-in-out ${
-                  index === active ? "z-10 opacity-100" : "z-0 opacity-0 pointer-events-none"
+                key={b.src + index}
+                href={b.href}
+                className={`block transition-opacity duration-700 ease-in-out ${
+                  index === active
+                    ? "z-10 opacity-100 relative"
+                    : "z-0 opacity-0 pointer-events-none absolute inset-0"
                 }`}
                 aria-hidden={index !== active}
                 tabIndex={index === active ? 0 : -1}
+                style={index === active ? { width: "100%" } : undefined}
               >
-                <Image
-                  src={imageSrc}
-                  alt={banner.alt}
-                  fill
-                  priority={index === 0}
-                  sizes="100vw"
-                  className={
-                    isMobile && banner.mobileImageUrl
-                      ? "object-cover object-center"
-                      : "object-cover object-center"
-                  }
-                />
+                {mode === "FIT" ? (
+                  <>
+                    {/* FIT: blurred background expansion + sharp foreground image */}
+                    <div className="absolute inset-0">
+                      <Image
+                        src={src}
+                        alt=""
+                        fill
+                        className="object-cover blur-xl scale-110 opacity-40"
+                        sizes="100vw"
+                        aria-hidden
+                      />
+                    </div>
+                    <div className="relative flex items-center justify-center w-full" style={{ height: containerHeight > 0 ? `${containerHeight}px` : "auto" }}>
+                      <Image
+                        src={src}
+                        alt={b.alt}
+                        width={imgNatural?.w ?? 1920}
+                        height={imgNatural?.h ?? 720}
+                        className="max-h-[80vh] w-auto h-auto object-contain"
+                        sizes="100vw"
+                        priority={index === 0}
+                        onLoad={index === active ? handleImageLoad : undefined}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  /* FILL: object-cover, fills the container */
+                  <Image
+                    src={src}
+                    alt={b.alt}
+                    fill
+                    className="object-cover object-center"
+                    sizes="100vw"
+                    priority={index === 0}
+                    onLoad={index === active ? handleImageLoad : undefined}
+                  />
+                )}
               </Link>
             );
           })}
@@ -135,9 +222,9 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
             </button>
 
             <div className="absolute bottom-3 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1.5 sm:bottom-4 sm:gap-2">
-              {activeBanners.map((banner, index) => (
+              {activeBanners.map((b, index) => (
                 <button
-                  key={banner.src + index}
+                  key={b.src + index}
                   type="button"
                   onClick={() => goTo(index)}
                   aria-label={`Banner ${index + 1}`}

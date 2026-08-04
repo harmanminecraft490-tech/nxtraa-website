@@ -28,7 +28,9 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const { id, src, href, alt, order, desktopImageUrl, mobileImageUrl } = body;
+    const { id, src, href, alt, order, desktopImageUrl, mobileImageUrl, displayMode } = body;
+
+    const mode = displayMode === "FILL" ? "FILL" : "FIT";
 
     // Update existing
     if (id) {
@@ -41,6 +43,7 @@ export async function POST(request: Request) {
           order: typeof order === "number" ? order : 0,
           desktopImageUrl: desktopImageUrl ?? undefined,
           mobileImageUrl: mobileImageUrl ?? undefined,
+          displayMode: mode,
         },
       });
       return NextResponse.json({ success: true, banner: updated });
@@ -59,6 +62,7 @@ export async function POST(request: Request) {
         order: typeof order === "number" ? order : 0,
         desktopImageUrl: desktopImageUrl || src,
         mobileImageUrl: mobileImageUrl || null,
+        displayMode: mode,
       },
     });
 

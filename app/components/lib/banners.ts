@@ -4,6 +4,7 @@ export type SiteBanner = {
   alt: string;
   desktopImageUrl?: string | null;
   mobileImageUrl?: string | null;
+  displayMode?: "FIT" | "FILL";
 };
 
 export const siteBanners: SiteBanner[] = [

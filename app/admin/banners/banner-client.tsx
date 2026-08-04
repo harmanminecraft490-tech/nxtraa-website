@@ -13,6 +13,7 @@ type Banner = {
   order: number;
   desktopImageUrl: string | null;
   mobileImageUrl: string | null;
+  displayMode: "FIT" | "FILL";
 };
 
 export default function BannerClient() {
@@ -31,6 +32,7 @@ export default function BannerClient() {
     order: 0,
     desktopImageUrl: "",
     mobileImageUrl: "",
+    displayMode: "FIT" as "FIT" | "FILL",
   });
 
   const showMessage = (type: "success" | "error", text: string) => {
@@ -123,7 +125,7 @@ export default function BannerClient() {
 
       setBanners((prev) => [...prev, data.banner].sort((a, b) => a.order - b.order));
       setShowAddForm(false);
-      setNewBanner({ src: "", href: "/shop", alt: "Nxteraa Banner", order: banners.length + 1, desktopImageUrl: "", mobileImageUrl: "" });
+      setNewBanner({ src: "", href: "/shop", alt: "Nxteraa Banner", order: banners.length + 1, desktopImageUrl: "", mobileImageUrl: "", displayMode: "FIT" });
       showMessage("success", "Banner added successfully");
     } catch {
       showMessage("error", "Error adding banner");
@@ -300,6 +302,37 @@ export default function BannerClient() {
               </div>
             </div>
 
+            {/* Display Mode */}
+            <div className="mb-6">
+              <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">Display Mode</label>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setNewBanner({ ...newBanner, displayMode: "FIT" })}
+                  className={`flex-1 rounded-xl border-2 px-4 py-3 text-left transition-all ${
+                    newBanner.displayMode === "FIT"
+                      ? "border-accent bg-accent/5 shadow-sm"
+                      : "border-line bg-white hover:border-ink-300"
+                  }`}
+                >
+                  <span className="block text-sm font-bold text-ink-950">Fit (Recommended)</span>
+                  <span className="block text-[11px] text-ink-500 mt-0.5">Full image visible, no cropping. Background fill if needed.</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setNewBanner({ ...newBanner, displayMode: "FILL" })}
+                  className={`flex-1 rounded-xl border-2 px-4 py-3 text-left transition-all ${
+                    newBanner.displayMode === "FILL"
+                      ? "border-accent bg-accent/5 shadow-sm"
+                      : "border-line bg-white hover:border-ink-300"
+                  }`}
+                >
+                  <span className="block text-sm font-bold text-ink-950">Fill</span>
+                  <span className="block text-[11px] text-ink-500 mt-0.5">Fills the container. May crop edges slightly.</span>
+                </button>
+              </div>
+            </div>
+
             <div className="flex gap-3 pt-4 border-t border-line">
               <button onClick={handleAddBanner} disabled={(!newBanner.desktopImageUrl && !newBanner.src) || uploading} className="btn btn-primary flex items-center gap-2">
                 <Save size={16} /> Save Banner
@@ -401,6 +434,37 @@ export default function BannerClient() {
               </div>
             </div>
 
+            {/* Display Mode */}
+            <div className="mb-6">
+              <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-ink-400">Display Mode</label>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setEditingBanner((prev) => prev ? { ...prev, displayMode: "FIT" } : null)}
+                  className={`flex-1 rounded-xl border-2 px-4 py-3 text-left transition-all ${
+                    editingBanner.displayMode === "FIT"
+                      ? "border-accent bg-accent/5 shadow-sm"
+                      : "border-line bg-white hover:border-ink-300"
+                  }`}
+                >
+                  <span className="block text-sm font-bold text-ink-950">Fit (Recommended)</span>
+                  <span className="block text-[11px] text-ink-500 mt-0.5">Full image visible, no cropping. Background fill if needed.</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditingBanner((prev) => prev ? { ...prev, displayMode: "FILL" } : null)}
+                  className={`flex-1 rounded-xl border-2 px-4 py-3 text-left transition-all ${
+                    editingBanner.displayMode === "FILL"
+                      ? "border-accent bg-accent/5 shadow-sm"
+                      : "border-line bg-white hover:border-ink-300"
+                  }`}
+                >
+                  <span className="block text-sm font-bold text-ink-950">Fill</span>
+                  <span className="block text-[11px] text-ink-500 mt-0.5">Fills the container. May crop edges slightly.</span>
+                </button>
+              </div>
+            </div>
+
             <div className="flex gap-3 pt-4 border-t border-line">
               <button onClick={handleUpdateBanner} disabled={(!editingBanner.desktopImageUrl && !editingBanner.src) || uploading} className="btn btn-primary flex items-center gap-2">
                 <Save size={16} /> Save Changes
@@ -455,6 +519,13 @@ export default function BannerClient() {
                     {!banner.mobileImageUrl && (
                       <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded font-medium">No mobile image</span>
                     )}
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${
+                      banner.displayMode === "FIT"
+                        ? "text-emerald-700 bg-emerald-50"
+                        : "text-blue-700 bg-blue-50"
+                    }`}>
+                      {banner.displayMode === "FIT" ? "FIT" : "FILL"}
+                    </span>
                   </div>
                   <p className="font-semibold text-ink-950">{banner.alt || "Untitled Banner"}</p>
                   <p className="text-xs text-ink-400 truncate max-w-md">{banner.desktopImageUrl || banner.src}</p>

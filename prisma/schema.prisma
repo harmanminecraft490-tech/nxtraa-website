@@ -173,6 +173,7 @@ model Banner {
   order           Int      @default(0)
   desktopImageUrl String?
   mobileImageUrl  String?
+  displayMode     String   @default("FIT")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
