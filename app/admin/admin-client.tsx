@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Save, X, Image as ImageIcon, Search, Upload, Trash2, Package } from "lucide-react";
+import { Save, X, Image as ImageIcon, Search, Upload, Trash2, Package, Loader2, CreditCard } from "lucide-react";
 
 import { categories, type Product } from "@/app/components/lib/product-types";
 
@@ -48,6 +48,7 @@ export default function AdminClient() {
   const [deletingImage, setDeletingImage] = useState<{ productId: number; url: string } | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const [newProduct, setNewProduct] = useState({
     title: "",
     model: "",
@@ -67,6 +68,31 @@ export default function AdminClient() {
   const showMessage = (type: "success" | "error", text: string) => {
     setMessage({ type, text });
     setTimeout(() => setMessage(null), 3000);
+  };
+
+  const handleVerifyPrepaid = async () => {
+    setVerifying(true);
+    try {
+      const res = await fetch("/api/admin/verify-stuck-orders", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        showMessage("error", data.error || "Failed to verify orders");
+        return;
+      }
+      showMessage(
+        "success",
+        `Verified ${data.total} stuck orders: ${data.fixed} marked PAID, ${data.failed} FAILED, ${data.stillPending} still pending`
+      );
+      // Refresh stats
+      const statsRes = await fetch("/api/admin/stats");
+      if (statsRes.ok) {
+        setStats(await statsRes.json());
+      }
+    } catch {
+      showMessage("error", "Failed to verify orders");
+    } finally {
+      setVerifying(false);
+    }
   };
 
   useEffect(() => {
@@ -331,6 +357,18 @@ export default function AdminClient() {
               <ImageIcon size={16} />
               Manage Banners
             </Link>
+            <button
+              onClick={handleVerifyPrepaid}
+              disabled={verifying}
+              className="inline-flex items-center gap-2 rounded-full border border-yellow-400 text-yellow-700 bg-yellow-50 px-5 py-2.5 text-sm font-bold hover:bg-yellow-100 transition-all duration-300 disabled:opacity-50"
+            >
+              {verifying ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <CreditCard size={16} />
+              )}
+              {verifying ? "Verifying..." : "Verify Prepaid Orders"}
+            </button>
           </div>
         </div>
 
