@@ -98,6 +98,11 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
 
   const displayMode = banner.displayMode ?? "FIT";
 
+  // Mobile FIT with a portrait image: the image itself defines the layout
+  // (width:100%; height:auto) — no JS height math, no letterboxing.
+  const isFitMobile =
+    isMobile && displayMode === "FIT" && !!banner.mobileImageUrl;
+
   // Calculate container height from natural aspect ratio
   // FIT mode: height = width * (naturalH / naturalW) — full image visible
   // FILL mode: height = width * 0.45 (wide landscape, may crop) — capped at 80vh
@@ -111,6 +116,11 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
       containerHeight = Math.min(containerWidth * 0.45, maxH);
     }
   }
+
+  // Container height is only needed where the image can't size itself:
+  // desktop FIT (contain + blur) and FILL (cover). Mobile FIT uses the
+  // image's intrinsic aspect ratio, so the box must stay content-driven.
+  const heightNeeded = isFitMobile ? 0 : containerHeight;
 
   // Handle image load — capture natural dimensions and cache them per URL
   const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
@@ -185,8 +195,9 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
         <div
           className={`hero-banner ${displayMode === "FIT" ? "hero-banner-fit" : "hero-banner-fill"}`}
           style={{
-            height: containerHeight > 0 ? `${containerHeight}px` : undefined,
-            minHeight: containerHeight > 0 ? undefined : "200px",
+            height: heightNeeded > 0 ? `${heightNeeded}px` : undefined,
+            minHeight:
+              heightNeeded > 0 ? undefined : isFitMobile ? undefined : "200px",
           }}
         >
           {activeBanners.map((b, index) => {
@@ -212,7 +223,39 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
                 tabIndex={index === active ? 0 : -1}
                 style={index === active ? { width: "100%" } : undefined}
               >
-                {mode === "FIT" ? (
+                {isFitMobile ? (
+                  /* MOBILE FIT — intrinsic-ratio rendering.
+                     The portrait image IS the layout: width:100%, height:auto
+                     from its own aspect ratio. Edge-to-edge by construction —
+                     no JS heights, no max-h caps, no object-contain, no
+                     letterboxing, no gray margins, no cropping. */
+                  showImage ? (
+                    <Image
+                      src={src}
+                      alt={b.alt}
+                      width={imgNatural?.w ?? 1080}
+                      height={imgNatural?.h ?? 1350}
+                      className="block w-full h-auto"
+                      sizes="100vw"
+                      loading="eager"
+                      onLoad={handleImageLoad}
+                      onError={handleImageError}
+                    />
+                  ) : (
+                    /* Graceful fallback — never a blank hero */
+                    <div className="flex w-full flex-col items-center justify-center bg-ink-950 px-8 py-24 text-center">
+                      <span className="text-lg font-black tracking-tight text-white sm:text-2xl">
+                        Nxteraa
+                      </span>
+                      <span className="mt-1 text-xs font-medium text-white/60 sm:text-sm">
+                        Premium mobile accessories
+                      </span>
+                      <span className="btn btn-primary btn-sm mt-4">
+                        Shop now
+                      </span>
+                    </div>
+                  )
+                ) : mode === "FIT" ? (
                   <>
                     {/* FIT: blurred background expansion + sharp foreground image */}
                     <div className="absolute inset-0">
