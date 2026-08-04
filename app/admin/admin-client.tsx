@@ -19,6 +19,7 @@ type AdminStats = {
   totalRevenue: number;
   paidRevenue: number;
   pendingRevenue: number;
+  codRevenue: number;
   recentOrders: Array<{
     id: string;
     orderNumber: string;
@@ -374,7 +375,7 @@ export default function AdminClient() {
                 </div>
               ))}
             </div>
-            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 text-sm">
+            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4 text-sm">
               <div>
                 <span className="text-ink-500">Paid Revenue:</span>
                 <span className="ml-2 font-bold text-green-600">{formatINR(stats.paidRevenue)}</span>
@@ -382,6 +383,10 @@ export default function AdminClient() {
               <div>
                 <span className="text-ink-500">Pending Revenue:</span>
                 <span className="ml-2 font-bold text-yellow-600">{formatINR(stats.pendingRevenue)}</span>
+              </div>
+              <div>
+                <span className="text-ink-500">COD Revenue:</span>
+                <span className="ml-2 font-bold text-blue-600">{formatINR(stats.codRevenue)}</span>
               </div>
               <div>
                 <span className="text-ink-500">Total Revenue:</span>

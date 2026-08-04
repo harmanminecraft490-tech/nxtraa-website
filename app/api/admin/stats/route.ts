@@ -16,7 +16,7 @@ export async function GET() {
       prisma.user.count(),
     ]);
 
-    const [totalRevenue, paidRevenue, pendingRevenue] = await Promise.all([
+    const [totalRevenue, paidRevenue, pendingRevenue, codRevenue] = await Promise.all([
       prisma.order.aggregate({
         _sum: { total: true },
       }),
@@ -25,7 +25,11 @@ export async function GET() {
         _sum: { total: true },
       }),
       prisma.order.aggregate({
-        where: { paymentStatus: "PENDING" },
+        where: { paymentStatus: "PENDING", payment: { not: "COD" } },
+        _sum: { total: true },
+      }),
+      prisma.order.aggregate({
+        where: { payment: "COD" },
         _sum: { total: true },
       }),
     ]);
@@ -56,6 +60,7 @@ export async function GET() {
       totalRevenue: totalRevenue._sum.total || 0,
       paidRevenue: paidRevenue._sum.total || 0,
       pendingRevenue: pendingRevenue._sum.total || 0,
+      codRevenue: codRevenue._sum.total || 0,
       recentOrders,
       paymentStatusCounts: paymentStatusCounts.reduce(
         (acc, item) => {

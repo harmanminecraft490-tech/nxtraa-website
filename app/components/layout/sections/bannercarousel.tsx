@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import { siteBanners, SiteBanner } from "../../lib/banners";
+import { SiteBanner } from "../../lib/banners";
 
 interface BannerCarouselProps {
   banners?: SiteBanner[];
@@ -17,9 +17,11 @@ export default function BannerCarousel({ banners = [] }: BannerCarouselProps) {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-  // Use DB banners if available, else fallback to hardcoded ones
-  const activeBanners = banners.length > 0 ? banners : siteBanners;
+  // Use DB banners only — no hardcoded fallback
+  const activeBanners = banners;
   const count = activeBanners.length;
+
+  if (count === 0) return null;
 
   const goTo = useCallback(
     (index: number) => setActive((index + count) % count),

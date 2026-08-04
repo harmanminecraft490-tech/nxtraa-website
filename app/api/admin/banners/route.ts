@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSessionUser, isAdminEmail } from "@/lib/auth/session";
 import prisma from "@/lib/prisma";
-import { siteBanners } from "@/app/components/lib/banners";
 
 export async function GET() {
   const user = await getSessionUser();
@@ -10,21 +9,9 @@ export async function GET() {
   }
 
   try {
-    let banners = await prisma.banner.findMany({
+    const banners = await prisma.banner.findMany({
       orderBy: { order: "asc" },
     });
-
-    // Auto-seed default banners into DB if none exist
-    if (banners.length === 0) {
-      const seeded = await Promise.all(
-        siteBanners.map((b, i) =>
-          prisma.banner.create({
-            data: { src: b.src, href: b.href, alt: b.alt, order: i },
-          })
-        )
-      );
-      banners = seeded;
-    }
 
     return NextResponse.json(banners);
   } catch (error) {
