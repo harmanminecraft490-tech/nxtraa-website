@@ -15,7 +15,7 @@ type ProductGalleryProps = {
   imageUrls?: string[];
 };
 
-const VIEW_LABELS = ["Front view", "Features", "Specs", "In the box"];
+const VIEW_LABELS = ["Front view", "Back view"];
 
 export default function ProductGallery({
   category,
@@ -29,7 +29,7 @@ export default function ProductGallery({
     label,
     caption: highlights[i] ?? highlights[0] ?? title,
     variant: i,
-    imageUrl: imageUrls[i] || undefined,
+    imageUrl: imageUrls.slice(0, 2)[i] || undefined,
   }));
 
   const [active, setActive] = useState(0);
