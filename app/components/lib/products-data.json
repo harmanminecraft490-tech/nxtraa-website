@@ -313,44 +313,6 @@
     "imageUrls": []
   },
   {
-    "id": 17,
-    "page": 18,
-    "title": "NX-P018",
-    "model": "NX-P018",
-    "price": 491,
-    "oldPrice": 599,
-    "rating": 4.9,
-    "badge": "Accessories",
-    "category": "Accessories",
-    "color": "White",
-    "description": "Nxteraa accessories — model NX-P018..",
-    "highlights": [
-      "1 year brand warranty",
-      "Made for India",
-      "Nxteraa catalogue 2026"
-    ],
-    "imageUrls": []
-  },
-  {
-    "id": 18,
-    "page": 19,
-    "title": "NX-P019",
-    "model": "NX-P019",
-    "price": 491,
-    "oldPrice": 599,
-    "rating": 4.4,
-    "badge": "Accessories",
-    "category": "Accessories",
-    "color": "Blue",
-    "description": "Nxteraa accessories — model NX-P019..",
-    "highlights": [
-      "1 year brand warranty",
-      "Made for India",
-      "Nxteraa catalogue 2026"
-    ],
-    "imageUrls": []
-  },
-  {
     "id": 19,
     "page": 20,
     "title": "Premium Sound with Deep Bass",
@@ -492,24 +454,6 @@
     "highlights": [
       "Premium Sound with Deep Bass",
       "Type-C compatible"
-    ],
-    "imageUrls": []
-  },
-  {
-    "id": 27,
-    "page": 28,
-    "title": "Premium Sound with Deep Bass",
-    "model": "NX-P028",
-    "price": 491,
-    "oldPrice": 599,
-    "rating": 4.7,
-    "badge": "Premium Sound with Deep ",
-    "category": "Accessories",
-    "color": "Graphite",
-    "description": "Premium Sound with Deep Bass. Steel Buds 3 Pro.",
-    "highlights": [
-      "Premium Sound with Deep Bass",
-      "Steel Buds 3 Pro"
     ],
     "imageUrls": []
   },
@@ -1970,65 +1914,6 @@
     "imageUrls": []
   },
   {
-    "id": 105,
-    "page": 106,
-    "title": "Anti-ultravoilet",
-    "model": "NX-P106",
-    "price": 327,
-    "oldPrice": 399,
-    "rating": 4.7,
-    "badge": "Anti-ultravoilet",
-    "category": "Screen Guards",
-    "color": "White",
-    "description": "Anti-ultravoilet. Air-bubble-proof. Assuring Transparency.",
-    "highlights": [
-      "Anti-ultravoilet",
-      "Air-bubble-proof",
-      "Assuring Transparency",
-      "Strong and Durable"
-    ],
-    "imageUrls": []
-  },
-  {
-    "id": 106,
-    "page": 107,
-    "title": "Anti-ultravoilet",
-    "model": "NX-P107",
-    "price": 327,
-    "oldPrice": 399,
-    "rating": 4.8,
-    "badge": "Anti-ultravoilet",
-    "category": "Screen Guards",
-    "color": "Blue",
-    "description": "Anti-ultravoilet. Air-bubble-proof. Assuring Transparency.",
-    "highlights": [
-      "Anti-ultravoilet",
-      "Air-bubble-proof",
-      "Assuring Transparency",
-      "Strong and Durable"
-    ],
-    "imageUrls": []
-  },
-  {
-    "id": 107,
-    "page": 108,
-    "title": "NX-P108",
-    "model": "NX-P108",
-    "price": 491,
-    "oldPrice": 599,
-    "rating": 4.9,
-    "badge": "Accessories",
-    "category": "Accessories",
-    "color": "Graphite",
-    "description": "Nxteraa accessories — model NX-P108..",
-    "highlights": [
-      "1 year brand warranty",
-      "Made for India",
-      "Nxteraa catalogue 2026"
-    ],
-    "imageUrls": []
-  },
-  {
     "id": 108,
     "page": 109,
     "title": "NBS-311",
@@ -2040,175 +1925,6 @@
     "category": "Speakers",
     "color": "Black",
     "description": "Nxteraa speakers — model NBS-311..",
-    "highlights": [
-      "1 year brand warranty",
-      "Made for India",
-      "Nxteraa catalogue 2026"
-    ],
-    "imageUrls": []
-  },
-  {
-    "id": 109,
-    "page": 110,
-    "title": "NX-P110",
-    "model": "NX-P110",
-    "price": 491,
-    "oldPrice": 599,
-    "rating": 4.5,
-    "badge": "Accessories",
-    "category": "Accessories",
-    "color": "White",
-    "description": "Nxteraa accessories — model NX-P110..",
-    "highlights": [
-      "1 year brand warranty",
-      "Made for India",
-      "Nxteraa catalogue 2026"
-    ],
-    "imageUrls": []
-  },
-  {
-    "id": 110,
-    "page": 111,
-    "title": "NX-P111",
-    "model": "NX-P111",
-    "price": 491,
-    "oldPrice": 599,
-    "rating": 4.6,
-    "badge": "Accessories",
-    "category": "Accessories",
-    "color": "Blue",
-    "description": "Nxteraa accessories — model NX-P111..",
-    "highlights": [
-      "1 year brand warranty",
-      "Made for India",
-      "Nxteraa catalogue 2026"
-    ],
-    "imageUrls": []
-  },
-  {
-    "id": 111,
-    "page": 112,
-    "title": "NX-P112",
-    "model": "NX-P112",
-    "price": 491,
-    "oldPrice": 599,
-    "rating": 4.7,
-    "badge": "Accessories",
-    "category": "Accessories",
-    "color": "Graphite",
-    "description": "Nxteraa accessories — model NX-P112..",
-    "highlights": [
-      "1 year brand warranty",
-      "Made for India",
-      "Nxteraa catalogue 2026"
-    ],
-    "imageUrls": []
-  },
-  {
-    "id": 112,
-    "page": 113,
-    "title": "NX-P113",
-    "model": "NX-P113",
-    "price": 491,
-    "oldPrice": 599,
-    "rating": 4.8,
-    "badge": "Accessories",
-    "category": "Accessories",
-    "color": "Black",
-    "description": "Nxteraa accessories — model NX-P113..",
-    "highlights": [
-      "1 year brand warranty",
-      "Made for India",
-      "Nxteraa catalogue 2026"
-    ],
-    "imageUrls": []
-  },
-  {
-    "id": 113,
-    "page": 114,
-    "title": "PORTABLE",
-    "model": "NX-P114",
-    "price": 1065,
-    "oldPrice": 1299,
-    "rating": 4.9,
-    "badge": "PORTABLE",
-    "category": "Speakers",
-    "color": "White",
-    "description": "PORTABLE.",
-    "highlights": [
-      "PORTABLE"
-    ],
-    "imageUrls": []
-  },
-  {
-    "id": 114,
-    "page": 115,
-    "title": "NX-P115",
-    "model": "NX-P115",
-    "price": 491,
-    "oldPrice": 599,
-    "rating": 4.4,
-    "badge": "Accessories",
-    "category": "Accessories",
-    "color": "Blue",
-    "description": "Nxteraa accessories — model NX-P115..",
-    "highlights": [
-      "1 year brand warranty",
-      "Made for India",
-      "Nxteraa catalogue 2026"
-    ],
-    "imageUrls": []
-  },
-  {
-    "id": 115,
-    "page": 116,
-    "title": "NX-P116",
-    "model": "NX-P116",
-    "price": 491,
-    "oldPrice": 599,
-    "rating": 4.5,
-    "badge": "Accessories",
-    "category": "Accessories",
-    "color": "Graphite",
-    "description": "Nxteraa accessories — model NX-P116..",
-    "highlights": [
-      "1 year brand warranty",
-      "Made for India",
-      "Nxteraa catalogue 2026"
-    ],
-    "imageUrls": []
-  },
-  {
-    "id": 116,
-    "page": 117,
-    "title": "NX-P117",
-    "model": "NX-P117",
-    "price": 491,
-    "oldPrice": 599,
-    "rating": 4.6,
-    "badge": "Accessories",
-    "category": "Accessories",
-    "color": "Black",
-    "description": "Nxteraa accessories — model NX-P117..",
-    "highlights": [
-      "1 year brand warranty",
-      "Made for India",
-      "Nxteraa catalogue 2026"
-    ],
-    "imageUrls": []
-  },
-  {
-    "id": 117,
-    "page": 118,
-    "title": "NX-P118",
-    "model": "NX-P118",
-    "price": 491,
-    "oldPrice": 599,
-    "rating": 4.7,
-    "badge": "Accessories",
-    "category": "Accessories",
-    "color": "White",
-    "description": "Nxteraa accessories — model NX-P118..",
     "highlights": [
       "1 year brand warranty",
       "Made for India",
@@ -2484,26 +2200,6 @@
     "description": "TYPE-C.",
     "highlights": [
       "TYPE-C"
-    ],
-    "imageUrls": []
-  },
-  {
-    "id": 133,
-    "page": 134,
-    "title": "Music",
-    "model": "NX-P134",
-    "price": 491,
-    "oldPrice": 599,
-    "rating": 4.5,
-    "badge": "Music",
-    "category": "Accessories",
-    "color": "White",
-    "description": "Music. Files. Movie.",
-    "highlights": [
-      "Music",
-      "Files",
-      "Movie",
-      "Compressed File"
     ],
     "imageUrls": []
   },
